@@ -12,7 +12,7 @@
 #include "TKN.h"
 #include "rs232.h"
 
-#define TKN_DEBUG
+//#define TKN_DEBUG
 #ifdef TKN_DEBUG
     #define ECHO_ATTEMPTS	    //Define this in order to print a dot in every attempt to detect valid packet.
     #define ECHO_TOKENS		    //Define this in order to print a little string in every sent/received token.
