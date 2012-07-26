@@ -3,29 +3,26 @@
 #include <time.h>
 
 #include "TKN.h"
+extern BYTE dest_id;
 
-int
-main (int argc, char *argv[])
+int main (int argc, char *argv[])
 {
-    int action = 'x', bypassUser = 1, tokenCounter = 0;
-    BYTE dest_id = 5;
+    int tokenCounter = 0;
     time_t time_start;
 
     if (init (argc, argv) != 0) 
         exit (1);
 
-    time_start = time (NULL);
-    
-    while (time (NULL) - time_start < 10 && (bypassUser || ((action = getKey ("Ee Dd .>")) != 'e')))
+    time_start = time(NULL);
+	
+    while ( time(NULL) - time_start < 10 )
     {
-        if (action == 'd') 
-            TKN_Send ("__From Laptop___", dest_id);
-		
+        TKN_Send ("__From Laptop___", dest_id);
         TKN_PassToken ();
         TKN_Receive ();
         tokenCounter++;
     }
-
+	
     time_t time_end = time (NULL);
     printf ("\nEllapsed time: %ld sec \n", time_end - time_start);
     printf ("Token Counter: %d", tokenCounter);
