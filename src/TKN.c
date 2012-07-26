@@ -2,12 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#ifndef __linux__
-    #include <conio.h>
-    #include <windows.h>
-#else
-    int getch ();
-#endif
 
 #include "TKN.h"
 #include "rs232.h"

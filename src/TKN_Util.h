@@ -1,4 +1,4 @@
-/* Proto */
+/* Prototypes */
 int init (int argc, char *argv[]);
 int getKey (char *);
 

@@ -1,10 +1,19 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+
+#ifndef __linux__
+    #include <conio.h>
+#else
+    #include <termios.h>
+    #include <unistd.h>
+    #include <sys/ioctl.h>
+#endif
 
 #include "TKN.h"
+#include "TKN_Util.h"
 
 /* Globals */
-
 BYTE dest_id=0;
 
 /* UI Functions */
@@ -28,7 +37,7 @@ int init (int argc, char *argv[])
         dest_id = dest_id;
 
     if (argc > 4)
-        baud = atoi (argv[4]);
+        node_id = atoi (argv[4]);
     else
         node_id = TKN_ID_DEFAULT;
 
