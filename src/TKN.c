@@ -24,12 +24,21 @@ static BYTE MY_ID;
 static const int maxAttempts = 10;
 
 /* The necessary packet buffers */
+static BYTE PACKET_COUNTER; // Used as packet id in each packet send.
 static BYTE DATA_PACKET[TKN_OFFS_DATA_EOF + 1]    = { 0x00, TKN_TYPE_DATA, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xFF };
 static BYTE ACK_PACKET[TKN_OFFS_ACK_EOF + 1]      = { 0x00, TKN_TYPE_ACK, 0x00, 0x00, 0x00, 0xFF };
 static BYTE TOKEN_PACKET[TKN_OFFS_TOKEN_EOF + 1]  = { 0x00, TKN_TYPE_TOKEN, 0x00, 0x00, 0xFF };
-static BYTE RX_DATA[TKN_PACKET_SIZE];
-static BYTE PACKET_COUNTER;
-static int RX_PENDING = 0;  
+
+/* Data Queues*/
+#define TKN_QUEUE_SIZE 100
+
+static BYTE RX_QUEUE [sizeof(BYTE) * TKN_PACKET_SIZE * TKN_QUEUE_SIZE];
+static BYTE RX_QUEUE_ID [sizeof(BYTE) * TKN_QUEUE_SIZE];
+static int  RX_PENDING = 0;
+
+static BYTE TX_QUEUE [sizeof(BYTE) * TKN_PACKET_SIZE * TKN_QUEUE_SIZE];
+static BYTE TX_QUEUE_ID [sizeof(BYTE) * TKN_QUEUE_SIZE];
+static int  TX_PENDING = 0;
 
 
 int TKN_PrintCols ()
@@ -225,7 +234,7 @@ int TKN_Receive ()
             {
                 case TKN_TYPE_DATA:
                 for (i = TKN_OFFS_DATA_START; i <= TKN_OFFS_DATA_STOP; i++)
-                RX_DATA[i - TKN_OFFS_DATA_START] = RX_Buffer[i];	//Extract the data from tha packet and store it in a buffer
+                RX_QUEUE[i - TKN_OFFS_DATA_START] = RX_Buffer[i];	//Extract the data from tha packet and store it in a buffer
                 RX_PENDING = 1;
                 #ifdef ECHO_DATA
                 printf ("D<");
@@ -341,12 +350,47 @@ int TKN_IsDataValid (BYTE * data, BYTE checkByte)
 /* TKN Client functions */
 int TKN_PopData (BYTE * cpBuf)
 {
+    
     if (RX_PENDING > 0)
     {
-        memcpy (cpBuf, RX_DATA, TKN_PACKET_SIZE);
-        RX_PENDING = 0;
+        memcpy (cpBuf, RX_QUEUE, TKN_PACKET_SIZE);
+        BYTE senderId = *(RX_QUEUE_ID + RX_PENDING);
+        RX_PENDING--;
+        
+        return (int) senderId;
+    }
+    
+    return -1;
+}
+
+int TKN_PushData (BYTE * cpBuf, BYTE recipientId)
+{
+    
+    if (TX_PENDING < TKN_QUEUE_SIZE)
+    {
+        memcpy (TX_QUEUE + (TKN_PACKET_SIZE* TX_PENDING), cpBuf, TKN_PACKET_SIZE);
+        *(TX_QUEUE_ID + TX_PENDING) = recipientId;
+        RX_PENDING++;
         return RX_PENDING;
     }
-    else
-        return -1;
+    
+    return -1;
+}
+
+
+int TKN_Run()
+{
+    
+    while ( 1 ) 
+    {
+        if (TX_PENDING > 0) {
+            TKN_Send (TX_QUEUE + (TKN_PACKET_SIZE* TX_PENDING), *(TX_QUEUE + TX_PENDING));
+            TX_PENDING--;
+        }
+        
+        TKN_PassToken ();
+        TKN_Receive ();
+    }
+    
+    return 0;
 }
