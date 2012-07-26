@@ -1,8 +1,8 @@
 #ifndef TKN_H
 #define TKN_H
 
-#define TKN_BAUD_DEFAULT 9600
-#define TKN_PORT_DEFAULT 16
+#define TKN_BAUD_DEFAULT 57600
+#define TKN_PORT_DEFAULT 1
 #define TKN_READ_TIMEOUT 100
 #define TKN_ID_DEFAULT 1
   

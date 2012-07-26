@@ -23,6 +23,7 @@ int main (int argc, char *argv[])
         perror("Cannot open data file");
         exit (1);
     }
+	
     /* Send file */ 
     while (!fileSent)
     {        if (!readHexLine (hexFile, hexLine)) 

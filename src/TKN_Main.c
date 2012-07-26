@@ -7,8 +7,8 @@
 int
 main (int argc, char *argv[])
 {
-    int action = 'd', bypassUser = 0, tokenCounter = 0;
-    BYTE dest_id = 3;
+    int action = 'x', bypassUser = 1, tokenCounter = 0;
+    BYTE dest_id = 5;
     time_t time_start;
 
     if (init (argc, argv) != 0) 
@@ -20,6 +20,7 @@ main (int argc, char *argv[])
     {
         if (action == 'd') 
             TKN_Send ("__From Laptop___", dest_id);
+		
         TKN_PassToken ();
         TKN_Receive ();
         tokenCounter++;

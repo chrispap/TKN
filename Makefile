@@ -40,10 +40,10 @@ Test: TKN_CreatePackets.o TKN.o rs232.o
 	$(CC) -o TKN_CreatePackets TKN_CreatePackets.o TKN.o rs232.o
 
 
-rs232.o: src/rs232.c
+rs232.o: src/rs232.c src/rs232.h
 	$(CC) -c src/rs232.c -o rs232.o $(CFLAGS)
 
-TKN.o: src/TKN.c
+TKN.o: src/TKN.c src/TKN.h
 	$(CC) -c src/TKN.c -o TKN.o $(CFLAGS)
 
 TKN_Main.o: src/TKN_Main.c
