@@ -1,6 +1,19 @@
 # Project: TKN
 # Makefile created by Chris Papapavlou
-	
+
+
+#Specifically for win
+ifdef SystemRoot
+	#windows compilers
+	CPP  = g++.exe
+	CC   = gcc.exe
+	WINDRES = windres.exe
+	#windows paths
+	INCS =  -I"C:/Dev-Cpp/include" 
+	CXXINCS =  -I"C:/Dev-Cpp/lib/gcc/mingw32/3.4.2/include"  -I"C:/Dev-Cpp/include/c++/3.4.2/backward"  -I"C:/Dev-Cpp/include/c++/3.4.2/mingw32"  -I"C:/Dev-Cpp/include/c++/3.4.2"  -I"C:/Dev-Cpp/include" 	
+endif
+
+
 OBJ  = rs232.o TKN.o TKN_Main.o TKN_Boot.o TKN_CreatePackets.o $(RES)
 LINKOBJ  = rs232.o TKN.o TKN_Main.o TKN_Boot.o  TKN_CreatePackets.o $(RES)
 BIN  = TKN TKN_BOOT TKN_CreatePackets
