@@ -16,6 +16,7 @@ endif
 
 ### ... ###
 OBJ  = rs232.o TKN.o TKN_Interactive.o TKN_Boot.o TKN_PacketCreator.o TKN_Util.o TKN_Elapse.o $(RES)
+BIN = TKN_Interactive TKN_Elapse TKN_PacketCreator TKN_Boot
 CXXFLAGS = $(CXXINCS)  
 CFLAGS = $(INCS) -O2 -g
 RM = rm -f
@@ -24,8 +25,11 @@ RM = rm -f
 all: Interactive Elapse PacketCreator Boot
 .PHONY: all
 
-clean: 
+cleanObj:
 	${RM} $(OBJ)
+
+clean:
+	${RM} $(OBJ) $(BIN)
 
 ### Executables ###
 Interactive: TKN_Interactive.o TKN.o rs232.o TKN_Util.o
