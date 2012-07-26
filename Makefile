@@ -1,9 +1,9 @@
 # Project: TKN
 # Makefile created by Chris Papapavlou
-
-OBJ  = rs232.o TKN.o TKN_Main.o TKN_Boot.o TKN_Test.o $(RES)
-LINKOBJ  = rs232.o TKN.o TKN_Main.o TKN_Boot.o  TKN_Test.o $(RES)
-BIN  = TKN TKN_BOOT TKN_TEST
+	
+OBJ  = rs232.o TKN.o TKN_Main.o TKN_Boot.o TKN_CreatePackets.o $(RES)
+LINKOBJ  = rs232.o TKN.o TKN_Main.o TKN_Boot.o  TKN_CreatePackets.o $(RES)
+BIN  = TKN TKN_BOOT TKN_CreatePackets
 CXXFLAGS = $(CXXINCS)  
 CFLAGS = $(INCS) -O2 -g
 RM = rm -f
@@ -23,8 +23,8 @@ Main: TKN_Main.o TKN.o rs232.o
 Boot: TKN_Boot.o TKN.o rs232.o
 	$(CC) -o TKN_BOOT TKN_Boot.o TKN.o rs232.o
 
-Test: TKN_Test.o TKN.o rs232.o
-	$(CC) -o TKN_TEST TKN_Test.o TKN.o rs232.o
+Test: TKN_CreatePackets.o TKN.o rs232.o
+	$(CC) -o TKN_CreatePackets TKN_CreatePackets.o TKN.o rs232.o
 
 
 rs232.o: src/rs232.c
@@ -39,5 +39,5 @@ TKN_Main.o: src/TKN_Main.c
 TKN_Boot.o: src/TKN_Boot.c
 	$(CC) -c src/TKN_Boot.c -o TKN_Boot.o $(CFLAGS)
 
-TKN_Test.o: src/TKN_Test.c
-	$(CC) -c src/TKN_Test.c -o TKN_Test.o $(CFLAGS)
+TKN_CreatePackets.o: src/TKN_CreatePackets.c
+	$(CC) -c src/TKN_CreatePackets.c -o TKN_CreatePackets.o $(CFLAGS)
