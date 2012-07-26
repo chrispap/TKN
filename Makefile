@@ -29,16 +29,16 @@ clean:
 
 ### Executables ###
 Interactive: TKN_Interactive.o TKN.o rs232.o TKN_Util.o
-	$(CC) -o bin/TKN_Interactive TKN_Interactive.o TKN.o rs232.o TKN_Util.o
+	$(CC) -o TKN_Interactive TKN_Interactive.o TKN.o rs232.o TKN_Util.o
 
 Elapse: TKN_Elapse.o TKN.o rs232.o TKN_Util.o
-	$(CC) -o bin/TKN_Elapse TKN_Elapse.o TKN.o rs232.o TKN_Util.o
+	$(CC) -o TKN_Elapse TKN_Elapse.o TKN.o rs232.o TKN_Util.o
 
 PacketCreator: TKN_PacketCreator.o TKN.o rs232.o
-	$(CC) -o bin/TKN_PacketCreator TKN_PacketCreator.o TKN.o rs232.o
+	$(CC) -o TKN_PacketCreator TKN_PacketCreator.o TKN.o rs232.o
 
 Boot: TKN_Boot.o TKN.o rs232.o TKN_Util.o
-	$(CC) -o bin/TKN_Boot TKN_Boot.o TKN.o rs232.o TKN_Util.o
+	$(CC) -o TKN_Boot TKN_Boot.o TKN.o rs232.o TKN_Util.o
 
 ### Object files ###
 rs232.o: src/rs232.c src/rs232.h
