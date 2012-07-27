@@ -25,7 +25,7 @@
 #define TKN_OFFS_DATA_STOP	21
 #define TKN_OFFS_DATA_EOF	22
   
-#define TKN_PACKET_SIZE		TKN_OFFS_DATA_STOP - TKN_OFFS_DATA_START + 1
+#define TKN_PACKET_SIZE		(TKN_OFFS_DATA_STOP - TKN_OFFS_DATA_START + 1)
   
 /* Prototypes */ 
 typedef unsigned char BYTE;

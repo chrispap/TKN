@@ -369,7 +369,7 @@ int TKN_PushData (BYTE * cpBuf, BYTE recipientId)
 {
     if (TX_PENDING < TKN_QUEUE_SIZE)
     {
-        memcpy (TX_QUEUE + ((TKN_PACKET_SIZE) * TX_PENDING), cpBuf, TKN_PACKET_SIZE);
+        memcpy (TX_QUEUE + (TKN_PACKET_SIZE * TX_PENDING), cpBuf, TKN_PACKET_SIZE);
         TX_QUEUE_ID [TX_PENDING] = recipientId;
         TX_PENDING++;
         return TX_PENDING;
@@ -383,7 +383,7 @@ void* TKN_Run(void* params)
     while ( TKN_Running ) 
     {
         if (TX_PENDING > 0) {
-            TKN_Send ( TX_QUEUE + ((TKN_PACKET_SIZE) * (TX_PENDING-1)), TX_QUEUE_ID [TX_PENDING-1]);
+            TKN_Send ( TX_QUEUE + (TKN_PACKET_SIZE * (TX_PENDING-1)), TX_QUEUE_ID [TX_PENDING-1]);
             TX_PENDING--;
         }
         
