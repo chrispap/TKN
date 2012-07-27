@@ -36,7 +36,7 @@ static BYTE TX_QUEUE [TKN_PACKET_SIZE * TKN_QUEUE_SIZE];
 static BYTE TX_QUEUE_ID [TKN_QUEUE_SIZE];
 static int  TX_PENDING = 0;
 
-static int TKN_Running=0;
+static volatile int TKN_Running=0;
 static pthread_t TKN_Thread;
 
 /* Params */
@@ -392,7 +392,7 @@ int TKN_PushData (BYTE * cpBuf, BYTE recipientId)
 
 void* TKN_Run(void* params)
 {
-    while (1) 
+    while (TKN_Running) 
     {
         TX_PENDING=1;
         if (TX_PENDING > 0) {
@@ -407,17 +407,22 @@ void* TKN_Run(void* params)
             printf("\n>> Did not get the token back! \n");
             
         fflush (stdout);
-        pthread_testcancel();
     }
     
+    #ifdef TKN_DEBUG
+    printf("\n\n>>TKN_Thread exited normally.\n");
+    #endif
+    
+    return 0;
 }
 
 int TKN_Start()
 {
     if (!TKN_Running)
     {
-        if (!pthread_create (&TKN_Thread, NULL, &TKN_Run, NULL))
-            TKN_Running=1;
+        TKN_Running=1;
+        if ( pthread_create (&TKN_Thread, NULL, &TKN_Run, NULL))
+            TKN_Running=0;
         return !TKN_Running;
     }
     else return -1;
@@ -427,9 +432,9 @@ int TKN_Stop()
 {
     if (TKN_Running)
     {
-        pthread_cancel(TKN_Thread);
-        if (!pthread_join(TKN_Thread, NULL)) 
-            TKN_Running=0;
+        TKN_Running=0;
+        if ( pthread_join(TKN_Thread, NULL)) 
+            TKN_Running=1;
         
         return TKN_Running;
     }
