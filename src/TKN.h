@@ -40,5 +40,14 @@ typedef unsigned char BYTE;
 int TKN_PrintDataPacket (BYTE *, int, int);
 int TKN_PrintCols ();
 int TKN_PrintByte (BYTE c, int forceHex);
-int TKN_PopData (BYTE *); 
+int TKN_PopData (BYTE *);
+
+int TKN_PushData (BYTE * cpBuf, BYTE recipientId); 
+void* TKN_Run(void* );
+
+int TKN_Start();
+
+int TKN_Stop();
+
+int TKN_TokenCount();
 #endif

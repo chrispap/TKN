@@ -18,7 +18,7 @@ endif
 OBJ  = rs232.o TKN.o TKN_Interactive.o TKN_Boot.o TKN_PacketCreator.o TKN_Util.o TKN_Elapse.o $(RES)
 BIN = TKN_Interactive TKN_Elapse TKN_PacketCreator TKN_Boot
 CXXFLAGS = $(CXXINCS)  
-CFLAGS = $(INCS) -O2 -g
+CFLAGS = $(INCS) -O2 -g 
 RM = rm -f
 
 ### Actions ###
@@ -33,16 +33,16 @@ clean:
 
 ### Executables ###
 Interactive: TKN_Interactive.o TKN.o rs232.o TKN_Util.o
-	$(CC) -o TKN_Interactive TKN_Interactive.o TKN.o rs232.o TKN_Util.o
+	$(CC) -o TKN_Interactive TKN_Interactive.o TKN.o rs232.o TKN_Util.o -lpthread 
 
 Elapse: TKN_Elapse.o TKN.o rs232.o TKN_Util.o
-	$(CC) -o TKN_Elapse TKN_Elapse.o TKN.o rs232.o TKN_Util.o
+	$(CC) -o TKN_Elapse TKN_Elapse.o TKN.o rs232.o TKN_Util.o -lpthread  
 
 PacketCreator: TKN_PacketCreator.o TKN.o rs232.o
-	$(CC) -o TKN_PacketCreator TKN_PacketCreator.o TKN.o rs232.o
+	$(CC) -o TKN_PacketCreator TKN_PacketCreator.o TKN.o rs232.o -lpthread 
 
 Boot: TKN_Boot.o TKN.o rs232.o TKN_Util.o
-	$(CC) -o TKN_Boot TKN_Boot.o TKN.o rs232.o TKN_Util.o
+	$(CC) -o TKN_Boot TKN_Boot.o TKN.o rs232.o TKN_Util.o -lpthread 
 
 ### Object files ###
 rs232.o: src/rs232.c src/rs232.h
