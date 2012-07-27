@@ -1,7 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 #include "TKN.h"
+#include "TKN_Util.h"
 
 /* Gloabals */
 extern BYTE dest_id;
@@ -17,11 +19,20 @@ int main (int argc, char *argv[])
     TKN_Start();
     
     int action;
-    while ( (action = getKey ("Ee Dd")) != 'e' )
+    while ( (action = getKey ("Ee Dd .>")) != 'e' )
     {
         if (action == 'd') 
-            TKN_PushData("__From Laptop___", dest_id);
-    
+            TKN_PushData((BYTE*)"__From Laptop___", dest_id);
+        
+        int rid;
+        BYTE rbuf[TKN_PACKET_SIZE + 1]; // One extra byte for zero termination.
+        rbuf[TKN_PACKET_SIZE]= '\0';
+        
+        rid = TKN_PopData(rbuf);
+        if (rid>0)
+            printf("Received from: %2d Data: %16s \n", rid, rbuf);
+        else printf("No-Data \n");
+        
     }
 
     /* Shut downn the network */

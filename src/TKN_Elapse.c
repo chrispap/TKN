@@ -2,8 +2,10 @@
 #include <stdlib.h>
 #include <time.h>
 #include <signal.h>
+#include <unistd.h>
 
 #include "TKN.h"
+#include "TKN_Util.h"
 
 extern BYTE dest_id;
 static time_t time_start, time_end;
@@ -13,6 +15,8 @@ int main (int argc, char *argv[])
     if (init (argc, argv)) 
         exit (1);
 
+    TKN_PushData((BYTE*)"__From Laptop___", dest_id);
+    
     /* Start the network */
     time_start = time(NULL);
     TKN_Start();

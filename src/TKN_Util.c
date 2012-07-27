@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <ctype.h>
 #include <string.h>
 
 #ifndef __linux__
@@ -85,9 +86,9 @@ int getch ()
     newT.c_lflag &= ~ECHO;      //echo off
     newT.c_lflag &= ~ICANON;    //one char @ a time
     ioctl (0, TCSETS, &newT);
-    int r = read (0, &c, 1);    // Read 1 char
+    int r = read (0, &c, 1);            // Read 1 char
     ioctl (0, TCSETS, &oldT);   //Restore normaal mode
-
-    return (int) c;
+    
+    return r<0? r: (int) c;
 }
 #endif

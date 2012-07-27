@@ -3,10 +3,11 @@
 #include <string.h>
 
 #include "TKN.h"
-  
+#include "TKN_Util.h"
+
 #define HEXLINE_SIZE 1024
 
-int readHexLine (FILE * hexFile, char *hexLine);int sendHexLine (BYTE * hexLine, BYTE dest_id);int waitForString (char *);
+int readHexLine (FILE * hexFile, BYTE *hexLine);int sendHexLine (BYTE * hexLine, BYTE dest_id);int waitForString (char *);
 
 
 /* Main */ 
@@ -14,7 +15,7 @@ int main (int argc, char *argv[])
 {      FILE * hexFile;
     char *flname = "data/test1.hex",          *MCU_ready_str = "----------------";
     BYTE hexLine[HEXLINE_SIZE], dest_id = 2;
-    int txActive = 0, fileSent = 0, waitMCU = 0;
+    int fileSent = 0;
 
     /* Init network and open the hex file */ 
     if (init (argc, argv) != 0)
@@ -35,14 +36,14 @@ int main (int argc, char *argv[])
 
 
 /* Functions */ 
-int readHexLine (FILE * hexFile, char *hexLine) 
+int readHexLine (FILE * hexFile, BYTE *hexLine) 
 {    memset (hexLine, 0, HEXLINE_SIZE);
-    if (fgets (hexLine, HEXLINE_SIZE, hexFile) == NULL)
+    if (fgets ((char*)hexLine, HEXLINE_SIZE, hexFile) == NULL)
         return 0;
     else        return 1;}
  int sendHexLine (BYTE * hexLine, BYTE dest_id) 
 {    BYTE lineBuf[TKN_PACKET_SIZE];    int rem;
-    while ((rem = strlen (hexLine)) > 0)
+    while ((rem = strlen ((char*)hexLine)) > 0)
     {
         if (rem > TKN_PACKET_SIZE)
         {
@@ -64,6 +65,6 @@ int readHexLine (FILE * hexFile, char *hexLine)
     do
     {
         TKN_PassToken ();        TKN_Receive ();        TKN_PopData (recData);    }
-    while (strcmp (recData, str) != 0);
+    while (strcmp ((char*)recData, str) != 0);
     return 0;
 }

@@ -15,14 +15,14 @@ ifdef SystemRoot
 endif
 
 ### ... ###
-OBJ  = rs232.o TKN.o TKN_Interactive.o TKN_Boot.o TKN_PacketCreator.o TKN_Util.o TKN_Elapse.o $(RES)
-BIN = TKN_Interactive TKN_Elapse TKN_PacketCreator TKN_Boot
+OBJ  = rs232.o TKN.o TKN_Interactive.o TKN_Step.o TKN_Boot.o TKN_PacketCreator.o TKN_Util.o TKN_Elapse.o $(RES)
+BIN = TKN_Interactive TKN_Step TKN_Elapse TKN_PacketCreator TKN_Boot
 CXXFLAGS = $(CXXINCS)  
-CFLAGS = $(INCS) -O2 -g 
+CFLAGS = $(INCS) -Wall -O2  
 RM = rm -f
 
 ### Actions ###
-all: Interactive Elapse PacketCreator Boot
+all: Interactive Step Elapse PacketCreator Boot
 .PHONY: all
 
 cleanObj:
@@ -34,6 +34,9 @@ clean:
 ### Executables ###
 Interactive: TKN_Interactive.o TKN.o rs232.o TKN_Util.o
 	$(CC) -o TKN_Interactive TKN_Interactive.o TKN.o rs232.o TKN_Util.o -lpthread 
+
+Step: TKN_Step.o TKN.o rs232.o TKN_Util.o
+	$(CC) -o TKN_Step TKN_Step.o TKN.o rs232.o TKN_Util.o -lpthread 
 
 Elapse: TKN_Elapse.o TKN.o rs232.o TKN_Util.o
 	$(CC) -o TKN_Elapse TKN_Elapse.o TKN.o rs232.o TKN_Util.o -lpthread  
@@ -57,6 +60,9 @@ TKN_Util.o: src/TKN_Util.c src/TKN_Util.h
 ### Object files (for executables) ###
 TKN_Interactive.o: src/TKN_Interactive.c
 	$(CC) -c src/TKN_Interactive.c -o TKN_Interactive.o $(CFLAGS)
+
+TKN_Step.o: src/TKN_Step.c
+	$(CC) -c src/TKN_Step.c -o TKN_Step.o $(CFLAGS)
 
 TKN_Elapse.o: src/TKN_Elapse.c
 	$(CC) -c src/TKN_Elapse.c -o TKN_Elapse.o $(CFLAGS)
