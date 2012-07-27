@@ -1,54 +1,48 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <signal.h>
 
 #include "TKN.h"
+
 extern BYTE dest_id;
-extern pthread_t TKN_Thread;
+static time_t time_start, time_end;
+static volatile int running;
+
+void interruptHandler (int signum)
+{
+    running=0;
+}
 
 int main (int argc, char *argv[])
 {
-    time_t time_start, time_end;
-
     if (init (argc, argv)) 
         exit (1);
+        
+    /* Handler for ctl+C */
+    struct sigaction new_action;
+    new_action.sa_handler = interruptHandler;
+    sigemptyset (&new_action.sa_mask);
+    new_action.sa_flags = 0;
+    sigaction (SIGINT, &new_action, NULL);
 
-    TKN_PushData("AAAAAAAAAAAAAAAA", dest_id);
-    TKN_PushData("BBBBBBBBBBBBBBBB", dest_id);
-    TKN_PushData("CCCCCCCCCCCCCCCC", dest_id);
-    TKN_PushData("AAAAAAAAAAAAAAAA", dest_id);
-    TKN_PushData("BBBBBBBBBBBBBBBB", dest_id);
-    TKN_PushData("CCCCCCCCCCCCCCCC", dest_id);
-    TKN_PushData("AAAAAAAAAAAAAAAA", dest_id);
-    TKN_PushData("BBBBBBBBBBBBBBBB", dest_id);
-    TKN_PushData("CCCCCCCCCCCCCCCC", dest_id);
-    TKN_PushData("CCCCCCCCCCCCCCCC", dest_id);
-    TKN_PushData("AAAAAAAAAAAAAAAA", dest_id);
-    TKN_PushData("BBBBBBBBBBBBBBBB", dest_id);
-    TKN_PushData("CCCCCCCCCCCCCCCC", dest_id);
-    TKN_PushData("CCCCCCCCCCCCCCCC", dest_id);
-    TKN_PushData("AAAAAAAAAAAAAAAA", dest_id);
-    TKN_PushData("BBBBBBBBBBBBBBBB", dest_id);
-    TKN_PushData("CCCCCCCCCCCCCCCC", dest_id);
-    TKN_PushData("CCCCCCCCCCCCCCCC", dest_id);
-    TKN_PushData("AAAAAAAAAAAAAAAA", dest_id);
-    TKN_PushData("BBBBBBBBBBBBBBBB", dest_id);
-    TKN_PushData("CCCCCCCCCCCCCCCC", dest_id);
-
+    /* Enter a loop */
+    running=1;
     time_start = time(NULL);
     TKN_Start();
-    sleep(2);
+    while(running){
+        sleep(1);
+        
+        
+    }
+    
+    /* Shut downn the network */
     TKN_Stop();
     TKN_Close();
     time_end = time (NULL);
-    
-    /* Print the count of tokens cycles that were completed. */
+         
     printf ("\nEllapsed time: %ld sec \n", time_end - time_start);
     printf ("Token Counter: %d \n", TKN_TokenCount() );
     
     return 0;
 }
-
-
-    //~ void **rv;
-    //~ pthread_join(TKN_Thread, rv);

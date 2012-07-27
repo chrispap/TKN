@@ -2,8 +2,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <errno.h>
+
 //#ifdef __linux__
     #include <pthread.h>
+    #include <signal.h>
 //#endif
 
 #include "TKN.h"
@@ -40,6 +43,9 @@ static int tokenCounter=0;// For statistic reasons */
 
 static volatile int TKN_Running=0;
 pthread_t TKN_Thread;
+
+#define handle_error(en, msg) \
+        do { errno = en; perror(msg); exit(EXIT_FAILURE); } while (0)
 
 /* Print Functions */
 int TKN_PrintCols ()
@@ -380,6 +386,7 @@ int TKN_PushData (BYTE * cpBuf, BYTE recipientId)
 
 void* TKN_Run(void* params)
 {
+
     while ( TKN_Running ) 
     {
         if (TX_PENDING > 0) {
@@ -391,8 +398,8 @@ void* TKN_Run(void* params)
         TKN_Receive();
         tokenCounter++;
     }
+    
     printf("\n\n>>Thread exits normally.\n");
-    TKN_Running=2;
     return 0;
 }
 
@@ -400,13 +407,16 @@ int TKN_Start()
 {
     TKN_Running=1;
     pthread_create (&TKN_Thread, NULL, &TKN_Run, NULL);
+    
     return 0;
 }
 
 int TKN_Stop()
 {
     TKN_Running=0;
-    while( TKN_Running != 2 );
+    void **rv;
+    pthread_join(TKN_Thread, rv); //Wait for clean exit of the working thread.
+
     return 0;
 }
 
