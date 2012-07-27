@@ -18,7 +18,7 @@ endif
 OBJ  = rs232.o TKN.o TKN_Interactive.o TKN_Step.o TKN_Boot.o TKN_PacketCreator.o TKN_Util.o TKN_Elapse.o $(RES)
 BIN = TKN_Interactive TKN_Step TKN_Elapse TKN_PacketCreator TKN_Boot
 CXXFLAGS = $(CXXINCS)  
-CFLAGS = $(INCS) -Wall -O2  
+CFLAGS = $(INCS) -Wall -O2  -g
 RM = rm -f
 
 ### Actions ###

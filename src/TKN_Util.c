@@ -35,7 +35,7 @@ int init (int argc, char *argv[])
     if (argc > 3)
         dest_id = atoi (argv[3]);
     else
-        dest_id = dest_id;
+        dest_id = TKN_DEST_ID_DEFAULT;
 
     if (argc > 4)
         node_id = atoi (argv[4]);

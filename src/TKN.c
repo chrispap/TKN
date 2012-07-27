@@ -14,8 +14,8 @@
 
 #define TKN_DEBUG
 #ifdef TKN_DEBUG
-    #define ECHO_ATTEMPTS
-    #define ECHO_TOKENS
+    //~ #define ECHO_ATTEMPTS
+    //~ #define ECHO_TOKENS
     #define ECHO_EVENTS
     //~ #define ECHO_DATA
 #endif
@@ -27,7 +27,7 @@ static BYTE ACK_PACKET[TKN_OFFS_ACK_EOF + 1]      = { 0x00, TKN_TYPE_ACK, 0x00, 
 static BYTE TOKEN_PACKET[TKN_OFFS_TOKEN_EOF + 1]  = { 0x00, TKN_TYPE_TOKEN, 0x00, 0x00, 0xFF };
 
 /* Data Queues*/
-#define TKN_QUEUE_SIZE 100
+#define TKN_QUEUE_SIZE 8
 static BYTE RX_QUEUE [TKN_PACKET_SIZE * TKN_QUEUE_SIZE];
 static BYTE RX_QUEUE_ID [TKN_QUEUE_SIZE];
 static int  RX_PENDING = 0;
@@ -242,14 +242,13 @@ int TKN_Receive ()
             int i;
             switch (pType)
             {
-                case TKN_TYPE_DATA:
-                /*
+            case TKN_TYPE_DATA:
                 for (i = TKN_OFFS_DATA_START; i <= TKN_OFFS_DATA_STOP; i++)
                     RX_QUEUE[i - TKN_OFFS_DATA_START] = RX_Buffer[i];	//Extract the data from tha packet and store it in a buffer
                 
                 RX_QUEUE_ID[RX_PENDING] = RX_Buffer[TKN_OFFS_SENDER];
                 RX_PENDING++;
-                */
+                
                 #ifdef ECHO_EVENTS
                 printf ("D< ");
                 #endif
@@ -259,12 +258,12 @@ int TKN_Receive ()
                 TKN_SendAckPacket (RX_Buffer[TKN_OFFS_SENDER], MY_ID,
                 RX_Buffer[TKN_OFFS_PACKET_ID]);
                 continue;
-                case TKN_TYPE_ACK:
+            case TKN_TYPE_ACK:
                 #ifdef ECHO_EVENTS
                 printf ("A< ");
                 #endif
                 break;
-                case TKN_TYPE_TOKEN:
+            case TKN_TYPE_TOKEN:
                 #ifdef ECHO_TOKENS
                 printf ("T< ");
                 #endif
@@ -394,7 +393,6 @@ void* TKN_Run(void* params)
 {
     while (TKN_Running) 
     {
-        TX_PENDING=1;
         if (TX_PENDING > 0) {
             TKN_Send ( TX_QUEUE + (TKN_PACKET_SIZE * (TX_PENDING-1)), TX_QUEUE_ID [TX_PENDING-1]);
             TX_PENDING--;
@@ -410,7 +408,9 @@ void* TKN_Run(void* params)
     }
     
     #ifdef TKN_DEBUG
-    printf("\n\n>>TKN_Thread exited normally.\n");
+    printf("\n\n>> TKN_Thread exited normally. \n");
+    printf(">> TX_PENDING: %d \n", TX_PENDING);
+    printf(">> RX_PENDING: %d \n", RX_PENDING);
     #endif
     
     return 0;

@@ -2,9 +2,10 @@
 #define TKN_H
 
 #define TKN_BAUD_DEFAULT 57600
-#define TKN_PORT_DEFAULT 1
+#define TKN_PORT_DEFAULT 17
 #define TKN_READ_TIMEOUT 100
 #define TKN_ID_DEFAULT 1
+#define TKN_DEST_ID_DEFAULT 2
   
 /* Token Protocol Packet Types */ 
 #define TKN_TYPE_NONE 		0x00
