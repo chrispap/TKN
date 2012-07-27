@@ -7,34 +7,17 @@
 
 extern BYTE dest_id;
 static time_t time_start, time_end;
-static volatile int running;
-
-void interruptHandler (int signum)
-{
-    running=0;
-}
 
 int main (int argc, char *argv[])
 {
     if (init (argc, argv)) 
         exit (1);
-        
-    /* Handler for ctl+C */
-    struct sigaction new_action;
-    new_action.sa_handler = interruptHandler;
-    sigemptyset (&new_action.sa_mask);
-    new_action.sa_flags = 0;
-    sigaction (SIGINT, &new_action, NULL);
 
-    /* Enter a loop */
-    running=1;
+    /* Start the network */
     time_start = time(NULL);
     TKN_Start();
-    while(running){
-        sleep(1);
-        
-        
-    }
+    
+    sleep(10);
     
     /* Shut downn the network */
     TKN_Stop();
