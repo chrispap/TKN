@@ -50,7 +50,7 @@ int TKN_PopData (BYTE *);
 
 /* TODO
  * Thes funcs should become static !!! */
-int TKN_Send (BYTE * data, BYTE to);
+int TKN_SendDataPacket (BYTE * data, BYTE to);
 int TKN_PassToken ();
 int TKN_Receive ();
 

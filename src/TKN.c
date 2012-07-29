@@ -3,6 +3,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <errno.h>
+
 #ifdef __linux__
   #include <pthread.h>
   #include <sys/stat.h>
@@ -11,8 +12,10 @@
   #include <windows.h>
 #endif
 
+
 #include "TKN.h"
 #include "rs232.h"
+
 
 #define TKN_DEBUG
 #ifdef TKN_DEBUG
@@ -21,6 +24,7 @@
   #define ECHO_EVENTS
   #define ECHO_DATA
 #endif
+
 
 /* The Packet Buffers */
 static BYTE PACKET_COUNTER;
@@ -46,11 +50,14 @@ static int TKN_TokenCount=0;
 
 /* Status Variables */
 static volatile int TKN_Running=0;
+#ifdef __linux__
 static pthread_t TKN_Thread;
+#else
+static DWORD TKN_Thread;
+#endif
 
 /* Static Function Prototypes */
 static void* TKN_Run(void* );
-static int   TKN_SendDataPacket (BYTE * data, BYTE to, BYTE from, BYTE pack_id);
 static int   TKN_SendAckPacket (BYTE to, BYTE from, BYTE pack_id);
 static int   TKN_IsDataValid (BYTE *, BYTE);
 static int   TKN_PrintDataPacket (BYTE *, int, int);
@@ -148,7 +155,6 @@ int TKN_ExportPackets ()
   strcat(packetDir, "/");
   char *flnm_ptr = packetDir + strlen(packetDir);
 
-
   for (i=0; i<3; i++){
     strcpy(flnm_ptr, fileNames[i]);
     fd = fopen(packetDir, "w");
@@ -232,21 +238,24 @@ int TKN_Receive ()
         while (pAttempts++ < TKN_MAX_ATTEMPTS && (!(RX_Buffer[0] == 0x00 && pType != TKN_TYPE_NONE)));
 
         /* Here either I detected a valid data type, or the max attempts were exhausted */
-        if (RX_Buffer[0] == 0x00 && pType != TKN_TYPE_NONE)
-        {
+        if ( !(RX_Buffer[0] == 0x00 && pType != TKN_TYPE_NONE)) {
+	  printf (" no response\n");
+	} 
+	else
+	{
             /* Determine packet length */
             switch (pType)
             {
-                case TKN_TYPE_DATA:
+            case TKN_TYPE_DATA:
                 pLength = TKN_OFFS_DATA_EOF + 1;
                 break;
-                case TKN_TYPE_ACK:
+            case TKN_TYPE_ACK:
                 pLength = TKN_OFFS_ACK_EOF + 1;
                 break;
-                case TKN_TYPE_TOKEN:
+            case TKN_TYPE_TOKEN:
                 pLength = TKN_OFFS_TOKEN_EOF + 1;
                 break;
-                default:
+            default:
                 pLength = 0;
             }
 
@@ -255,13 +264,13 @@ int TKN_Receive ()
             int remaining = pLength - 2, rec = 0;
             BYTE *RX_Buffer_tmp = RX_Buffer + 2;
             while (remaining > 0 && pAttempts < (TKN_MAX_ATTEMPTS << 2)) // Be more tolerant compared to the first byte max-Attempts
-                {
+	    {
                 #ifdef ECHO_ATTEMPTS
                 printf (",");
                 #endif
                 rec = PollComport (PORT_NUM, RX_Buffer_tmp, remaining);
                 if (rec < 0)
-                break;
+		  break;
                 remaining -= rec;
                 RX_Buffer_tmp += rec;
                 pAttempts++;
@@ -271,11 +280,11 @@ int TKN_Receive ()
             return -2;
 
             /* Analyze the packet */
-            if (pType != TKN_TYPE_TOKEN)	// The Token is always for the one who receives it, so no need to check receivers etc.
+            if (pType != TKN_TYPE_TOKEN) // The Token is always for the one who receives it, so no need to check receivers etc.
             {
-                if (RX_Buffer[TKN_OFFS_SENDER] != MY_ID)	// OK, I didnt send this packet!
+                if (RX_Buffer[TKN_OFFS_SENDER] != MY_ID) // OK, I didnt send this packet!
                 {
-                    if (RX_Buffer[TKN_OFFS_RECEIVER] != MY_ID)	// Packet NOT for me!! // Forward and keep receiving!!!
+                    if (RX_Buffer[TKN_OFFS_RECEIVER] != MY_ID) // Packet NOT for me!! // Forward and keep receiving!!!
                     {
                         SendBuf (PORT_NUM, RX_Buffer, pLength);
                         #ifdef ECHO_EVENTS
@@ -287,7 +296,7 @@ int TKN_Receive ()
                         continue;
                     }
                 }
-                else		// This packet was sent by me and apparently nobody received it!
+                else // This packet was sent by me and apparently nobody received it!
                 {
                     #ifdef ECHO_EVENTS
                     printf ("L< ");
@@ -301,45 +310,44 @@ int TKN_Receive ()
 
             /* Here I have a packet which is ~FOR ME~ */
             int i;
-            switch (pType)
-            {
-            case TKN_TYPE_DATA:
-                for (i = TKN_OFFS_DATA_START; i <= TKN_OFFS_DATA_STOP; i++)
-                    RX_QUEUE_DATA[i - TKN_OFFS_DATA_START] = RX_Buffer[i];	//Extract the data from tha packet and store it in a buffer
-                
-                RX_QUEUE_ID[RX_PENDING] = RX_Buffer[TKN_OFFS_SENDER];
-                RX_PENDING++;
-                
-                #ifdef ECHO_EVENTS
-                printf ("D< ");
-                #endif
-                #ifdef ECHO_DATA
-                TKN_PrintDataPacket (RX_Buffer, 1, 1);
-                #endif
-                TKN_SendAckPacket (RX_Buffer[TKN_OFFS_SENDER], MY_ID,
-                RX_Buffer[TKN_OFFS_PACKET_ID]);
-                continue;
-            case TKN_TYPE_ACK:
-                #ifdef ECHO_EVENTS
-                printf ("A< ");
-                #endif
-                break;
-            case TKN_TYPE_TOKEN:
-                #ifdef ECHO_TOKENS
-                printf ("T< ");
-                #endif
-                break;
-            }
-        }
-        else
-        {
-            printf (" no response\n");
-        }
+	    switch (pType)
+	      {
+	      case TKN_TYPE_DATA:
+		  if (TKN_IsDataValid(RX_Buffer+TKN_OFFS_DATA_START, RX_Buffer[TKN_OFFS_CONTROL]))
+		  {
+		      for (i = TKN_OFFS_DATA_START; i <= TKN_OFFS_DATA_STOP; i++)
+			  RX_QUEUE_DATA [i-TKN_OFFS_DATA_START] = RX_Buffer [i];	//Extract the data from tha packet and store it in a buffer
 
-        return (int) pType;
+		      RX_QUEUE_ID[RX_PENDING] = RX_Buffer[TKN_OFFS_SENDER];
+		      RX_PENDING++;
 
-    }
-    while (1);
+		      #ifdef ECHO_EVENTS
+		      printf ("D< ");
+		      #endif
+		      #ifdef ECHO_DATA
+		      TKN_PrintDataPacket (RX_Buffer, 1, 1);
+		      #endif
+		      TKN_SendAckPacket (RX_Buffer[TKN_OFFS_SENDER], MY_ID, RX_Buffer[TKN_OFFS_PACKET_ID]);
+		  }
+		  continue;
+	      case TKN_TYPE_ACK:
+		  #ifdef ECHO_EVENTS
+		  printf ("A< ");
+		  #endif
+		  break;
+	      case TKN_TYPE_TOKEN:
+		  #ifdef ECHO_TOKENS
+		  printf ("T< ");
+		  #endif
+		  break;
+	      }
+        }
+        
+        // Either return TKN_TYPE_NONE which will mean timeout or a valid TKN_TYPE_
+        return (int) pType; 
+
+    } while (1);
+    
 }
 
 /**
@@ -379,22 +387,14 @@ int TKN_SendAckPacket (BYTE to, BYTE from, BYTE pack_id)
 /**
  * Send the 16 bytes of a data buffer.
  */
-int TKN_Send (BYTE * data, BYTE to)
-{
-    return TKN_SendDataPacket (data, to, MY_ID, PACKET_COUNTER++);
-}
-
-/**
- * Send the 16 bytes of a data buffer.
- */
-int TKN_SendDataPacket (BYTE * data, BYTE to, BYTE from, BYTE pack_id)
+int TKN_SendDataPacket (BYTE * data, BYTE to)
 {
     /* Put the data into the DATA_PACKET */
     memcpy (DATA_PACKET + TKN_OFFS_DATA_START, data, TKN_PACKET_SIZE);
 
-    DATA_PACKET[TKN_OFFS_SENDER] = from;
+    DATA_PACKET[TKN_OFFS_SENDER] = MY_ID;
     DATA_PACKET[TKN_OFFS_RECEIVER] = to;
-    DATA_PACKET[TKN_OFFS_PACKET_ID] = pack_id;
+    DATA_PACKET[TKN_OFFS_PACKET_ID] = PACKET_COUNTER++;
 
     /* Send it */
     SendBuf (PORT_NUM, DATA_PACKET, sizeof (DATA_PACKET));
@@ -410,6 +410,7 @@ int TKN_SendDataPacket (BYTE * data, BYTE to, BYTE from, BYTE pack_id)
         return 0;
     else
         return 1;
+    
 }
 
 /**
@@ -450,12 +451,21 @@ int TKN_PushData (BYTE * cpBuf, BYTE recipientId)
     return -1;
 }
 
-static void* TKN_Run(void* params)
+int TKN_GetTokenCount()
+{
+    return TKN_TokenCount;
+}
+
+#ifdef __linux__ 
+void* TKN_Run(void* params)
+#else
+DWORD WINAPI TKN_Run (LPVOID params)
+#endif
 {
     while (TKN_Running) 
     {
         if (TX_PENDING > 0) {
-            TKN_Send ( TX_QUEUE_DATA + (TKN_PACKET_SIZE * (TX_PENDING-1)), TX_QUEUE_ID [TX_PENDING-1]);
+            TKN_SendDataPacket ( TX_QUEUE_DATA + (TKN_PACKET_SIZE * (TX_PENDING-1)), TX_QUEUE_ID [TX_PENDING-1]);
             TX_PENDING--;
         }
         
@@ -476,6 +486,9 @@ static void* TKN_Run(void* params)
     
     return 0;
 }
+
+
+#ifdef __linux__ /* linux */
 
 int TKN_Start()
 {
@@ -502,7 +515,41 @@ int TKN_Stop()
     else return -1;
 }
 
-int TKN_GetTokenCount()
+
+#else /* windows */
+
+int TKN_Start()
 {
-    return TKN_TokenCount;
+
+    if (!TKN_Running)
+    {
+        TKN_Running=1;
+        if ( !CreateThread( NULL, 0, &TKN_Run, NULL, 0, &TKN_Thread))
+            TKN_Running=0;
+        return !TKN_Running;
+    }
+    else return -1;
+
 }
+
+int TKN_Stop()
+{
+
+    if (TKN_Running)
+    {
+        TKN_Running=0;
+        if ( waitForSingleObject (TKN_Thread, 100)) 
+            TKN_Running=1;
+        else {
+	  CloseHandle(TKN_Thread);
+	}
+
+        return TKN_Running;
+    }
+    else return -1;
+    
+    
+
+}
+
+#endif

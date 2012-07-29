@@ -2,12 +2,15 @@
 #include <stdlib.h>
 #include <time.h>
 
+
 #include "TKN.h"
 #include "TKN_Util.h"
+
 
 /* Gloabals */
 extern BYTE dest_id;
 static time_t time_start, time_end;
+
 
 int main (int argc, char *argv[])
 {

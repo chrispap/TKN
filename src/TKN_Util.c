@@ -3,19 +3,22 @@
 #include <ctype.h>
 #include <string.h>
 
-#ifndef __linux__
-    #include <conio.h>
+#ifdef __linux__
+  #include <termios.h>
+  #include <unistd.h>
+  #include <sys/ioctl.h>
 #else
-    #include <termios.h>
-    #include <unistd.h>
-    #include <sys/ioctl.h>
+  #include <conio.h>
 #endif
+
 
 #include "TKN.h"
 #include "TKN_Util.h"
 
+
 /* Globals */
 BYTE dest_id=0;
+
 
 /* UI Functions */
 int init (int argc, char *argv[])
@@ -42,6 +45,7 @@ int init (int argc, char *argv[])
     else
         node_id = TKN_ID_DEFAULT;
 
+    
     if (TKN_Init (portNum, baud, node_id) != 0)
     {
         printf ("Cannot open PORT%d\n", portNum);
