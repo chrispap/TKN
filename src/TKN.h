@@ -31,12 +31,12 @@
 #define TKN_OFFS_DATA_START	6
 #define TKN_OFFS_DATA_STOP	21
 #define TKN_OFFS_DATA_EOF	22
-#define TKN_PACKET_SIZE	  	(TKN_OFFS_DATA_STOP - TKN_OFFS_DATA_START + 1)
+#define TKN_DATA_SIZE	  	(TKN_OFFS_DATA_STOP - TKN_OFFS_DATA_START + 1)
 
 
 /* TKN Data types */
 typedef unsigned char BYTE;
-
+typedef struct {BYTE data[16]; } TKN_Data;
 
 /* TKN Function Prototypes */ 
 int TKN_ExportPackets ();

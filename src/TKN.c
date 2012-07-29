@@ -33,11 +33,11 @@ static BYTE ACK_PACKET[TKN_OFFS_ACK_EOF + 1]      = { 0x00, TKN_TYPE_ACK, 0x00, 
 static BYTE TOKEN_PACKET[TKN_OFFS_TOKEN_EOF + 1]  = { 0x00, TKN_TYPE_TOKEN, 0x00, 0x00, 0xFF };
 
 /* The Data Queues*/
-static BYTE RX_QUEUE_DATA [TKN_PACKET_SIZE * TKN_QUEUE_SIZE];
+static BYTE RX_QUEUE_DATA [TKN_DATA_SIZE * TKN_QUEUE_SIZE];
 static BYTE RX_QUEUE_ID [TKN_QUEUE_SIZE];
 static int  RX_PENDING = 0;
 
-static BYTE TX_QUEUE_DATA [TKN_PACKET_SIZE * TKN_QUEUE_SIZE];
+static BYTE TX_QUEUE_DATA [TKN_DATA_SIZE * TKN_QUEUE_SIZE];
 static BYTE TX_QUEUE_ID [TKN_QUEUE_SIZE];
 static int  TX_PENDING = 0;
 
@@ -76,7 +76,7 @@ int TKN_PrintCols ()
 
 int TKN_PrintDataPacket (BYTE * buffer, int details, int bin)
 {
-    static char data[TKN_PACKET_SIZE + 1];	// +1 for the zero char
+    static char data[TKN_DATA_SIZE + 1];	// +1 for the zero char
 
     printf ("\n");
 
@@ -95,8 +95,8 @@ int TKN_PrintDataPacket (BYTE * buffer, int details, int bin)
 
     if (!bin)
     {
-        memcpy (data, buffer + TKN_OFFS_DATA_START, TKN_PACKET_SIZE);
-        data[TKN_PACKET_SIZE] = '\0';
+        memcpy (data, buffer + TKN_OFFS_DATA_START, TKN_DATA_SIZE);
+        data[TKN_DATA_SIZE] = '\0';
         printf ("%-16s\t", data);
     }
     else
@@ -390,7 +390,7 @@ int TKN_SendAckPacket (BYTE to, BYTE from, BYTE pack_id)
 int TKN_SendDataPacket (BYTE * data, BYTE to)
 {
     /* Put the data into the DATA_PACKET */
-    memcpy (DATA_PACKET + TKN_OFFS_DATA_START, data, TKN_PACKET_SIZE);
+    memcpy (DATA_PACKET + TKN_OFFS_DATA_START, data, TKN_DATA_SIZE);
 
     DATA_PACKET[TKN_OFFS_SENDER] = MY_ID;
     DATA_PACKET[TKN_OFFS_RECEIVER] = to;
@@ -428,7 +428,7 @@ int TKN_PopData (BYTE * cpBuf)
 {
     if (RX_PENDING > 0)
     {
-        memcpy (cpBuf, RX_QUEUE_DATA, TKN_PACKET_SIZE);
+        memcpy (cpBuf, RX_QUEUE_DATA, TKN_DATA_SIZE);
         BYTE senderId = RX_QUEUE_ID [RX_PENDING-1];
         RX_PENDING--;
         
@@ -442,7 +442,7 @@ int TKN_PushData (BYTE * cpBuf, BYTE recipientId)
 {
     if (TX_PENDING < TKN_QUEUE_SIZE)
     {
-        memcpy (TX_QUEUE_DATA + (TKN_PACKET_SIZE * TX_PENDING), cpBuf, TKN_PACKET_SIZE);
+        memcpy (TX_QUEUE_DATA + (TKN_DATA_SIZE * TX_PENDING), cpBuf, TKN_DATA_SIZE);
         TX_QUEUE_ID [TX_PENDING] = recipientId;
         TX_PENDING++;
         return TX_PENDING;
@@ -465,7 +465,7 @@ DWORD WINAPI TKN_Run (LPVOID params)
     while (TKN_Running) 
     {
         if (TX_PENDING > 0) {
-            TKN_SendDataPacket ( TX_QUEUE_DATA + (TKN_PACKET_SIZE * (TX_PENDING-1)), TX_QUEUE_ID [TX_PENDING-1]);
+            TKN_SendDataPacket ( TX_QUEUE_DATA + (TKN_DATA_SIZE * (TX_PENDING-1)), TX_QUEUE_ID [TX_PENDING-1]);
             TX_PENDING--;
         }
         

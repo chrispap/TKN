@@ -28,8 +28,8 @@ int main (int argc, char *argv[])
             TKN_PushData((BYTE*)"__From Laptop___", dest_id);
         
         int rid;
-        BYTE rbuf[TKN_PACKET_SIZE + 1]; // One extra byte for zero termination.
-        rbuf[TKN_PACKET_SIZE]= '\0';
+        BYTE rbuf[TKN_DATA_SIZE + 1]; // One extra byte for zero termination.
+        rbuf[TKN_DATA_SIZE]= '\0';
         
         rid = TKN_PopData(rbuf);
         if (rid>0)

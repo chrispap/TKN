@@ -66,15 +66,15 @@ int readHexLine (FILE * hexFile, BYTE *hexLine)
  
 int sendHexLine (BYTE * hexLine, BYTE dest_id) 
 {
-    BYTE lineBuf[TKN_PACKET_SIZE];
+    BYTE lineBuf[TKN_DATA_SIZE];
     int rem;
 
     while ((rem = strlen ((char*)hexLine)) > 0)
     {
-        if (rem > TKN_PACKET_SIZE)
+        if (rem > TKN_DATA_SIZE)
         {
-            memcpy (lineBuf, hexLine, TKN_PACKET_SIZE);
-            hexLine += TKN_PACKET_SIZE;
+            memcpy (lineBuf, hexLine, TKN_DATA_SIZE);
+            hexLine += TKN_DATA_SIZE;
         } 
         else
         {
@@ -93,7 +93,7 @@ int sendHexLine (BYTE * hexLine, BYTE dest_id)
 
 int waitForString (char *str) 
 {
-    BYTE recData[TKN_PACKET_SIZE + 1];
+    BYTE recData[TKN_DATA_SIZE + 1];
     memset (recData, 0, sizeof (recData));
 
     do
