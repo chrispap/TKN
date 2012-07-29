@@ -53,7 +53,7 @@ static volatile int TKN_Running=0;
 #ifdef __linux__
 static pthread_t TKN_Thread;
 #else
-static DWORD TKN_Thread;
+static HANDLE TKN_Thread;
 #endif
 
 /* Static Function Prototypes */
@@ -524,7 +524,7 @@ int TKN_Start()
     if (!TKN_Running)
     {
         TKN_Running=1;
-        if ( !CreateThread( NULL, 0, &TKN_Run, NULL, 0, &TKN_Thread))
+        if ( !(TKN_Thread = CreateThread( NULL, 0, &TKN_Run, NULL, 0, &TKN_Thread)))
             TKN_Running=0;
         return !TKN_Running;
     }
