@@ -33,7 +33,7 @@ int main (int argc, char *argv[])
     time_end = time (NULL);
          
     printf ("\n>> Ellapsed time: %ld sec \n", time_end - time_start);
-    printf (">> Token Counter: %d \n", TKN_TokenCount() );
+    printf (">> Token Counter: %d \n", TKN_GetTokenCount() );
     printf (">> Data Packets pushed: %d \n", packC );
     
     return 0;

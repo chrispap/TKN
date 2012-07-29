@@ -3,10 +3,12 @@
 #include <string.h>
 #include <ctype.h>
 #include <errno.h>
-
 #ifdef __linux__
-    #include <pthread.h>
-    #include <signal.h>
+  #include <pthread.h>
+  #include <sys/stat.h>
+  #include <sys/types.h>
+#else
+  #include <windows.h>
 #endif
 
 #include "TKN.h"
@@ -14,39 +16,46 @@
 
 #define TKN_DEBUG
 #ifdef TKN_DEBUG
-    //~ #define ECHO_ATTEMPTS
-    //~ #define ECHO_TOKENS
-    #define ECHO_EVENTS
-    //~ #define ECHO_DATA
+  #define ECHO_ATTEMPTS
+  #define ECHO_TOKENS
+  #define ECHO_EVENTS
+  #define ECHO_DATA
 #endif
 
-/* The necessary packet buffers */
-static BYTE PACKET_COUNTER; // Used as packet id in each packet send.
+/* The Packet Buffers */
+static BYTE PACKET_COUNTER;
 static BYTE DATA_PACKET[TKN_OFFS_DATA_EOF + 1]    = { 0x00, TKN_TYPE_DATA, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xFF };
 static BYTE ACK_PACKET[TKN_OFFS_ACK_EOF + 1]      = { 0x00, TKN_TYPE_ACK, 0x00, 0x00, 0x00, 0xFF };
 static BYTE TOKEN_PACKET[TKN_OFFS_TOKEN_EOF + 1]  = { 0x00, TKN_TYPE_TOKEN, 0x00, 0x00, 0xFF };
 
-/* Data Queues*/
-#define TKN_QUEUE_SIZE 8
-static BYTE RX_QUEUE [TKN_PACKET_SIZE * TKN_QUEUE_SIZE];
+/* The Data Queues*/
+static BYTE RX_QUEUE_DATA [TKN_PACKET_SIZE * TKN_QUEUE_SIZE];
 static BYTE RX_QUEUE_ID [TKN_QUEUE_SIZE];
 static int  RX_PENDING = 0;
 
-static BYTE TX_QUEUE [TKN_PACKET_SIZE * TKN_QUEUE_SIZE];
+static BYTE TX_QUEUE_DATA [TKN_PACKET_SIZE * TKN_QUEUE_SIZE];
 static BYTE TX_QUEUE_ID [TKN_QUEUE_SIZE];
 static int  TX_PENDING = 0;
 
+/* Params */
+static int PORT_NUM;
+static BYTE MY_ID;
+
+/* Stats */
+static int TKN_TokenCount=0;
+
+/* Status Variables */
 static volatile int TKN_Running=0;
 static pthread_t TKN_Thread;
 
-/* Params */
-#define maxAttempts 10
-static int PORT_NUM;        // The serial port to use
-static BYTE MY_ID;         //Every node MUST have an id! */
-static int tokenCounter=0;// For statistic reasons */
-
-#define handle_error(en, msg) \
-        do { errno = en; perror(msg); exit(EXIT_FAILURE); } while (0)
+/* Static Function Prototypes */
+static void* TKN_Run(void* );
+static int   TKN_SendDataPacket (BYTE * data, BYTE to, BYTE from, BYTE pack_id);
+static int   TKN_SendAckPacket (BYTE to, BYTE from, BYTE pack_id);
+static int   TKN_IsDataValid (BYTE *, BYTE);
+static int   TKN_PrintDataPacket (BYTE *, int, int);
+static int   TKN_PrintCols ();
+static int   TKN_PrintByte (BYTE c, int forceHex);
 
 
 /* Print Functions */
@@ -104,8 +113,50 @@ int TKN_PrintByte (BYTE c, int forceHex)
     return 0;
 }
 
+int TKN_ExportPackets ()
+{
+  /* Create packets dir if not exist */
+  char packetDir[50] = "packets";
+  
+  #ifdef __linux__
+  mkdir(packetDir, (mode_t) 0777);
+  #else
+  CreateDirectory( packetDir, NULL);
+  #endif
+  
+  char* fileNames[3] = 
+    { "DATA.hex", 
+      "ACK.hex", 
+      "TOKEN.hex" 
+    };
+    
+  int lengths[3] = 
+    { sizeof(DATA_PACKET), 
+      sizeof(ACK_PACKET), 
+      sizeof(TOKEN_PACKET) 
+    };
+    
+  BYTE* packets[3] = 
+    { DATA_PACKET, 
+      ACK_PACKET, 
+      TOKEN_PACKET 
+    };
+  
+  /* Create the 3 packet files */    
+  FILE *fd = NULL;
+  int i,j;
+  strcat(packetDir, "/");
+  char *flnm_ptr = packetDir + strlen(packetDir);
 
-/* TKN Protocol Implementation */
+
+  for (i=0; i<3; i++){
+    strcpy(flnm_ptr, fileNames[i]);
+    fd = fopen(packetDir, "w");
+    for (j=0; j<lengths[i]; j++) fputc(packets[i][j], fd);
+  }
+
+  return 0;
+}
 
 /**
  * 1. Open the serial port
@@ -117,11 +168,17 @@ int TKN_Init (int port, int baud, BYTE id)
     MY_ID = id;
     PACKET_COUNTER = 0;
 
-    if (OpenComport (PORT_NUM, baud, TKN_READ_TIMEOUT) == 1)
+    if (!OpenComport (PORT_NUM, baud, TKN_READ_TIMEOUT) == 1){
         return 1; //error
+    }
     else 
-        return 0; //success
-    
+    {
+      printf ("COM PORT %d OPENED SUCCESFULLY\n\n", port);
+      printf ("D  -> Send data \n>  -> Send token\nE  -> Exit\n\n");
+      TKN_PrintCols ();
+      
+      return 0; //success
+    }
 }
 
 /**
@@ -134,10 +191,14 @@ int TKN_Close ()
     return 0;
 }
 
-/**
- * Receive one packet.
- */
 
+/* TKN Protocol Implementation */
+
+/**
+ * Listen to the network channel
+ * until to receive a packet which
+ * is for us.
+ */
 int TKN_Receive ()
 {
     static BYTE RX_Buffer[TKN_OFFS_DATA_EOF + 1];	// Receive buffer. Its size is determined by the largest packet which is the data packet.
@@ -168,7 +229,7 @@ int TKN_Receive ()
             || pType == TKN_TYPE_TOKEN))
             pType = TKN_TYPE_NONE;
         }
-        while (pAttempts++ < maxAttempts && (!(RX_Buffer[0] == 0x00 && pType != TKN_TYPE_NONE)));
+        while (pAttempts++ < TKN_MAX_ATTEMPTS && (!(RX_Buffer[0] == 0x00 && pType != TKN_TYPE_NONE)));
 
         /* Here either I detected a valid data type, or the max attempts were exhausted */
         if (RX_Buffer[0] == 0x00 && pType != TKN_TYPE_NONE)
@@ -193,7 +254,7 @@ int TKN_Receive ()
             pAttempts = 0;
             int remaining = pLength - 2, rec = 0;
             BYTE *RX_Buffer_tmp = RX_Buffer + 2;
-            while (remaining > 0 && pAttempts < (maxAttempts << 2)) // Be more tolerant compared to the first byte max-Attempts
+            while (remaining > 0 && pAttempts < (TKN_MAX_ATTEMPTS << 2)) // Be more tolerant compared to the first byte max-Attempts
                 {
                 #ifdef ECHO_ATTEMPTS
                 printf (",");
@@ -244,7 +305,7 @@ int TKN_Receive ()
             {
             case TKN_TYPE_DATA:
                 for (i = TKN_OFFS_DATA_START; i <= TKN_OFFS_DATA_STOP; i++)
-                    RX_QUEUE[i - TKN_OFFS_DATA_START] = RX_Buffer[i];	//Extract the data from tha packet and store it in a buffer
+                    RX_QUEUE_DATA[i - TKN_OFFS_DATA_START] = RX_Buffer[i];	//Extract the data from tha packet and store it in a buffer
                 
                 RX_QUEUE_ID[RX_PENDING] = RX_Buffer[TKN_OFFS_SENDER];
                 RX_PENDING++;
@@ -366,7 +427,7 @@ int TKN_PopData (BYTE * cpBuf)
 {
     if (RX_PENDING > 0)
     {
-        memcpy (cpBuf, RX_QUEUE, TKN_PACKET_SIZE);
+        memcpy (cpBuf, RX_QUEUE_DATA, TKN_PACKET_SIZE);
         BYTE senderId = RX_QUEUE_ID [RX_PENDING-1];
         RX_PENDING--;
         
@@ -380,7 +441,7 @@ int TKN_PushData (BYTE * cpBuf, BYTE recipientId)
 {
     if (TX_PENDING < TKN_QUEUE_SIZE)
     {
-        memcpy (TX_QUEUE + (TKN_PACKET_SIZE * TX_PENDING), cpBuf, TKN_PACKET_SIZE);
+        memcpy (TX_QUEUE_DATA + (TKN_PACKET_SIZE * TX_PENDING), cpBuf, TKN_PACKET_SIZE);
         TX_QUEUE_ID [TX_PENDING] = recipientId;
         TX_PENDING++;
         return TX_PENDING;
@@ -389,18 +450,18 @@ int TKN_PushData (BYTE * cpBuf, BYTE recipientId)
     return -1;
 }
 
-void* TKN_Run(void* params)
+static void* TKN_Run(void* params)
 {
     while (TKN_Running) 
     {
         if (TX_PENDING > 0) {
-            TKN_Send ( TX_QUEUE + (TKN_PACKET_SIZE * (TX_PENDING-1)), TX_QUEUE_ID [TX_PENDING-1]);
+            TKN_Send ( TX_QUEUE_DATA + (TKN_PACKET_SIZE * (TX_PENDING-1)), TX_QUEUE_ID [TX_PENDING-1]);
             TX_PENDING--;
         }
         
         TKN_PassToken();
         if (TKN_Receive() == TKN_TYPE_TOKEN)
-            tokenCounter++;
+            TKN_TokenCount++;
         else
             printf("\n>> Did not get the token back! \n");
             
@@ -441,7 +502,7 @@ int TKN_Stop()
     else return -1;
 }
 
-int TKN_TokenCount()
+int TKN_GetTokenCount()
 {
-    return tokenCounter;
+    return TKN_TokenCount;
 }

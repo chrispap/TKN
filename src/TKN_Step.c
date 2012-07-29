@@ -9,7 +9,7 @@ extern BYTE dest_id;
 
 int main (int argc, char *argv[])
 {
-    int action = 'x', tokenCounter = 0;
+    int action = 'x';
     
     if (init (argc, argv) != 0) 
         exit (1);
@@ -21,7 +21,6 @@ int main (int argc, char *argv[])
 		
         TKN_PassToken ();
         TKN_Receive ();
-        tokenCounter++;
     }
 
     TKN_Close ();

@@ -40,8 +40,8 @@ int main (int argc, char *argv[])
     TKN_Close();
     time_end = time (NULL);
          
-    printf ("\>> nEllapsed time: %ld sec \n", time_end - time_start);
-    printf (">> Token Counter: %d \n", TKN_TokenCount() );
+    printf (">> nEllapsed time: %ld sec \n", time_end - time_start);
+    printf (">> Token Counter: %d \n", TKN_GetTokenCount() );
     
     return 0;
 }

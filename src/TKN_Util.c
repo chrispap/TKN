@@ -47,13 +47,8 @@ int init (int argc, char *argv[])
         printf ("Cannot open PORT%d\n", portNum);
         return 1;
     }
-    else
-    {
-        printf ("COM PORT %d OPENED SUCCESFULLY\n\n", portNum);
-        printf ("D  -> Send data \n>  -> Send token\nE  -> Exit\n\n");
-        TKN_PrintCols ();
-        return 0;
-    }
+    else 
+      return 0;
     
 }
 
