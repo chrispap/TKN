@@ -83,7 +83,7 @@ int sendHexLine (BYTE * hexLine, BYTE dest_id)
             hexLine += rem;
         }
 
-        TKN_SendDataPacket (lineBuf, dest_id);
+        TKN_SendDataPacket ((TKN_Data*) lineBuf, dest_id);
         TKN_PassToken ();	// Pass the token... 
         TKN_Receive ();		// ...and wait to get it back.
     }
@@ -101,7 +101,7 @@ int waitForString (char *str)
 
         TKN_PassToken ();
         TKN_Receive ();
-        TKN_PopData (recData);
+        TKN_PopData ((TKN_Data*) recData);
     }
     while (strcmp ((char*)recData, str) != 0);
 

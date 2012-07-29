@@ -11,7 +11,7 @@
 /* TKN Parameters */
 #define TKN_READ_TIMEOUT 	100
 #define TKN_MAX_ATTEMPTS 	10
-#define TKN_QUEUE_SIZE 		8
+#define TKN_QUEUE_SIZE 		50
 
 /* TKN Packet Types */ 
 #define TKN_TYPE_NONE 		0x00
@@ -45,12 +45,12 @@ int TKN_Close ();
 int TKN_Start ();
 int TKN_Stop ();
 int TKN_GetTokenCount ();
-int TKN_PushData (BYTE * cpBuf, BYTE recipientId);
-int TKN_PopData (BYTE *);
+int TKN_PushData (TKN_Data * cpBuf, BYTE recipientId);
+int TKN_PopData (TKN_Data *);
 
 /* TODO
  * Thes funcs should become static !!! */
-int TKN_SendDataPacket (BYTE * data, BYTE to);
+int TKN_SendDataPacket (TKN_Data * data, BYTE to);
 int TKN_PassToken ();
 int TKN_Receive ();
 

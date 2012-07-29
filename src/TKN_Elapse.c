@@ -28,9 +28,9 @@ int main (int argc, char *argv[])
     
 	//Sleep(10000);
 	do{
-        if (TKN_PushData((BYTE*)"__From Laptop___", dest_id) > 0)
+        if (TKN_PushData((TKN_Data*) "__From Laptop___", dest_id) == 0)
             packC++;
-            
+	
     } while ((time(NULL) - time_start) < 10); 
 	
     /* Shut downn the network */

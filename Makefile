@@ -19,7 +19,7 @@ else
 endif
 
 ### ... ###
-OBJ  = rs232.o TKN.o TKN_Interactive.o TKN_Step.o TKN_Boot.o TKN_PacketCreator.o TKN_Util.o TKN_Elapse.o $(RES)
+OBJ  = rs232.o TKN.o TKN_Queue.o TKN_Interactive.o TKN_Step.o TKN_Boot.o TKN_PacketCreator.o TKN_Util.o TKN_Elapse.o $(RES)
 BIN = TKN_Interactive TKN_Step TKN_Elapse TKN_PacketCreator TKN_Boot
 CXXFLAGS = $(CXXINCS)  
 CFLAGS = $(INCS) -Wall -O2  -g
@@ -36,20 +36,20 @@ clean:
 	${RM} $(OBJ) $(BIN)
 
 ### Executables ###
-Interactive: TKN_Interactive.o TKN.o rs232.o TKN_Util.o
-	$(CC) -o TKN_Interactive TKN_Interactive.o TKN.o rs232.o TKN_Util.o $(THREADLIB)
+Interactive: TKN_Interactive.o TKN.o rs232.o TKN_Util.o TKN_Queue.o 
+	$(CC) -o TKN_Interactive TKN_Interactive.o TKN.o rs232.o TKN_Util.o TKN_Queue.o $(THREADLIB)
 
-Step: TKN_Step.o TKN.o rs232.o TKN_Util.o
-	$(CC) -o TKN_Step TKN_Step.o TKN.o rs232.o TKN_Util.o $(THREADLIB)
+Step: TKN_Step.o TKN.o rs232.o TKN_Util.o TKN_Queue.o 
+	$(CC) -o TKN_Step TKN_Step.o TKN.o rs232.o TKN_Util.o TKN_Queue.o $(THREADLIB)
 
-Elapse: TKN_Elapse.o TKN.o rs232.o TKN_Util.o
-	$(CC) -o TKN_Elapse TKN_Elapse.o TKN.o rs232.o TKN_Util.o $(THREADLIB) 
+Elapse: TKN_Elapse.o TKN.o rs232.o TKN_Util.o TKN_Queue.o 
+	$(CC) -o TKN_Elapse TKN_Elapse.o TKN.o rs232.o TKN_Util.o TKN_Queue.o $(THREADLIB) 
 
-PacketCreator: TKN_PacketCreator.o TKN.o rs232.o
-	$(CC) -o TKN_PacketCreator TKN_PacketCreator.o TKN.o rs232.o $(THREADLIB)
+PacketCreator: TKN_PacketCreator.o TKN.o rs232.o TKN_Util.o TKN_Queue.o 
+	$(CC) -o TKN_PacketCreator TKN_PacketCreator.o TKN.o rs232.o TKN_Util.o TKN_Queue.o $(THREADLIB)
 
-Boot: TKN_Boot.o TKN.o rs232.o TKN_Util.o
-	$(CC) -o TKN_Boot TKN_Boot.o TKN.o rs232.o TKN_Util.o $(THREADLIB)
+Boot: TKN_Boot.o TKN.o rs232.o TKN_Util.o TKN_Queue.o 
+	$(CC) -o TKN_Boot TKN_Boot.o TKN.o rs232.o TKN_Util.o TKN_Queue.o $(THREADLIB)
 
 ### Object files ###
 rs232.o: src/rs232.c src/rs232.h
@@ -60,6 +60,9 @@ TKN.o: src/TKN.c src/TKN.h
 
 TKN_Util.o: src/TKN_Util.c src/TKN_Util.h
 	$(CC) -c src/TKN_Util.c -o TKN_Util.o $(CFLAGS)
+
+TKN_Queue.o: src/TKN_Queue.c src/TKN_Queue.h
+	$(CC) -c src/TKN_Queue.c -o TKN_Queue.o $(CFLAGS)
 
 ### Object files (for executables) ###
 TKN_Interactive.o: src/TKN_Interactive.c

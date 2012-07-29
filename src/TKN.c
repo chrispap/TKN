@@ -14,6 +14,7 @@
 
 
 #include "TKN.h"
+#include "TKN_Queue.h"
 #include "rs232.h"
 
 
@@ -21,7 +22,7 @@
 #ifdef TKN_DEBUG
   //#define ECHO_ATTEMPTS
   //#define ECHO_TOKENS
-  //#define ECHO_DATA
+  #define ECHO_DATA
   #define ECHO_EVENTS
 #endif
 
@@ -33,13 +34,8 @@ static BYTE ACK_PACKET[TKN_OFFS_ACK_EOF + 1]      = { 0x00, TKN_TYPE_ACK, 0x00, 
 static BYTE TOKEN_PACKET[TKN_OFFS_TOKEN_EOF + 1]  = { 0x00, TKN_TYPE_TOKEN, 0x00, 0x00, 0xFF };
 
 /* The Data Queues*/
-static BYTE RX_QUEUE_DATA [TKN_DATA_SIZE * TKN_QUEUE_SIZE];
-static BYTE RX_QUEUE_ID [TKN_QUEUE_SIZE];
-static int  RX_PENDING = 0;
-
-static BYTE TX_QUEUE_DATA [TKN_DATA_SIZE * TKN_QUEUE_SIZE];
-static BYTE TX_QUEUE_ID [TKN_QUEUE_SIZE];
-static int  TX_PENDING = 0;
+static TKN_Queue RX_QUEUE;
+static TKN_Queue TX_QUEUE;
 
 /* Params */
 static int PORT_NUM;
@@ -183,6 +179,9 @@ int TKN_Init (int port, int baud, BYTE id)
     }
     else 
     {
+	  TKN_Queue_Init( &RX_QUEUE, TKN_QUEUE_SIZE);
+	  TKN_Queue_Init( &TX_QUEUE, TKN_QUEUE_SIZE);
+	  
       printf ("COM PORT %d OPENED SUCCESFULLY\n\n", port);
       printf ("D  -> Send data \n>  -> Send token\nE  -> Exit\n\n");
       TKN_PrintCols ();
@@ -198,6 +197,9 @@ int TKN_Close ()
 {
     CloseComport (PORT_NUM);
     printf ("\n>> PORT %d CLOSED.\n", PORT_NUM);
+	
+	TKN_Queue_Free (&TX_QUEUE);
+	TKN_Queue_Free (&RX_QUEUE);
     return 0;
 }
 
@@ -212,6 +214,7 @@ int TKN_Close ()
 int TKN_Receive ()
 {
     static BYTE RX_Buffer[TKN_OFFS_DATA_EOF + 1];	// Receive buffer. Its size is determined by the largest packet which is the data packet.
+	static TKN_Data rxdata;
     int pLength, pAttempts;
     BYTE pType;
 
@@ -320,11 +323,11 @@ int TKN_Receive ()
 		  if (TKN_IsDataValid(RX_Buffer+TKN_OFFS_DATA_START, RX_Buffer[TKN_OFFS_CONTROL]))
 		  {
 		      for (i = TKN_OFFS_DATA_START; i <= TKN_OFFS_DATA_STOP; i++)
-			  RX_QUEUE_DATA [i-TKN_OFFS_DATA_START] = RX_Buffer [i];	//Extract the data from tha packet and store it in a buffer
-
-		      RX_QUEUE_ID[RX_PENDING] = RX_Buffer[TKN_OFFS_SENDER];
-		      RX_PENDING++;
-
+				rxdata.data[i-TKN_OFFS_DATA_START] = RX_Buffer [i];	//Extract the data from tha packet and store it in a buffer
+				
+		      if ( !TKN_Queue_IsFull(&RX_QUEUE))
+			    TKN_Queue_Push(&RX_QUEUE, &rxdata, RX_Buffer[TKN_OFFS_SENDER]);
+			  
 		      #ifdef ECHO_EVENTS
 		      printf ("D< ");
 		      #endif
@@ -391,7 +394,7 @@ int TKN_SendAckPacket (BYTE to, BYTE from, BYTE pack_id)
 /**
  * Send the 16 bytes of a data buffer.
  */
-int TKN_SendDataPacket (BYTE * data, BYTE to)
+int TKN_SendDataPacket (TKN_Data *data, BYTE to)
 {
     /* Put the data into the DATA_PACKET */
     memcpy (DATA_PACKET + TKN_OFFS_DATA_START, data, TKN_DATA_SIZE);
@@ -428,28 +431,22 @@ int TKN_IsDataValid (BYTE * data, BYTE checkByte)
 
 
 /* TKN Client functions */
-int TKN_PopData (BYTE * cpBuf)
+int TKN_PopData (TKN_Data *cBuf)
 {
-    if (RX_PENDING > 0)
+    if ( !TKN_Queue_IsEmpty(&RX_QUEUE) )
     {
-        memcpy (cpBuf, RX_QUEUE_DATA, TKN_DATA_SIZE);
-        BYTE senderId = RX_QUEUE_ID [RX_PENDING-1];
-        RX_PENDING--;
-        
-        return (int) senderId;
+		return (int) TKN_Queue_Pop (&RX_QUEUE, cBuf);
     }
     
     return -1;
 }
 
-int TKN_PushData (BYTE * cpBuf, BYTE recipientId)
+int TKN_PushData (TKN_Data * cBuf, BYTE recipientId)
 {
-    if (TX_PENDING < TKN_QUEUE_SIZE)
+    if ( !TKN_Queue_IsFull( &TX_QUEUE) )
     {
-        memcpy (TX_QUEUE_DATA + (TKN_DATA_SIZE * TX_PENDING), cpBuf, TKN_DATA_SIZE);
-        TX_QUEUE_ID [TX_PENDING] = recipientId;
-        TX_PENDING++;
-        return TX_PENDING;
+        TKN_Queue_Push (&TX_QUEUE, cBuf, recipientId);
+        return 0;
     }
     
     return -1;
@@ -468,11 +465,12 @@ DWORD WINAPI TKN_Run (LPVOID params)
 {
     while (TKN_Running) 
     {
-        if (TX_PENDING > 0) {
-            TKN_SendDataPacket ( TX_QUEUE_DATA + (TKN_DATA_SIZE * (TX_PENDING-1)), TX_QUEUE_ID [TX_PENDING-1]);
-            TX_PENDING--;
+        if ( !TKN_Queue_IsEmpty(&TX_QUEUE) ) {
+			TKN_Data data;
+			BYTE rid = TKN_Queue_Pop(&TX_QUEUE, &data);
+            TKN_SendDataPacket ( &data, rid);
         }
-        
+		
         TKN_PassToken();
         if (TKN_Receive() == TKN_TYPE_TOKEN)
             TKN_TokenCount++;
@@ -484,8 +482,8 @@ DWORD WINAPI TKN_Run (LPVOID params)
     
     #ifdef TKN_DEBUG
     printf("\n\n>> TKN_Thread exited normally. \n");
-    printf(">> TX_PENDING: %d \n", TX_PENDING);
-    printf(">> RX_PENDING: %d \n", RX_PENDING);
+    printf(">> TX_PENDING: %d \n", TX_QUEUE.count);
+    printf(">> RX_PENDING: %d \n", RX_QUEUE.count);
     #endif
     
     return 0;

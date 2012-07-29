@@ -25,13 +25,13 @@ int main (int argc, char *argv[])
     while ( (action = getKey ("Ee Dd .>")) != 'e' )
     {
         if (action == 'd') 
-            TKN_PushData((BYTE*)"__From Laptop___", dest_id);
+            TKN_PushData((TKN_Data*)"__From Laptop___", dest_id);
         
         int rid;
         BYTE rbuf[TKN_DATA_SIZE + 1]; // One extra byte for zero termination.
         rbuf[TKN_DATA_SIZE]= '\0';
         
-        rid = TKN_PopData(rbuf);
+        rid = TKN_PopData((TKN_Data*)rbuf);
         if (rid>0)
             printf("Received from: %2d Data: %16s \n", rid, rbuf);
         else printf("No-Data \n");
