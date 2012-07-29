@@ -11,14 +11,11 @@
   #include <conio.h>
 #endif
 
-
 #include "TKN.h"
 #include "TKN_Util.h"
 
-
 /* Globals */
 BYTE dest_id=0;
-
 
 /* UI Functions */
 int init (int argc, char *argv[])

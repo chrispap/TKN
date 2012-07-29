@@ -2,13 +2,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-
 #include "TKN.h"
 #include "TKN_Util.h"
 
-
 #define HEXLINE_SIZE 1024
-
 
 int readHexLine (FILE * hexFile, BYTE *hexLine);
 int sendHexLine (BYTE * hexLine, BYTE dest_id);
