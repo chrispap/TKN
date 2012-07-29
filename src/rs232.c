@@ -242,7 +242,7 @@ HANDLE Cport[16];
  * About the port names:
  * http://msdn.microsoft.com/en-us/library/windows/desktop/aa365247%28v=vs.85%29.aspx#win32_device_namespaces
  */
-char* comports[17] = 
+char* comports[18] = 
     {   
         "COM0", 
         "COM1", 
@@ -260,7 +260,8 @@ char* comports[17] =
         "\\\\.\\COM13", 
         "\\\\.\\COM14", 
         "\\\\.\\COM15", 
-        "\\\\.\\COM16"
+        "\\\\.\\COM16",
+		"\\\\.\\COM17"
     };
 
 char baudr[64];
@@ -269,9 +270,9 @@ char baudr[64];
 int
 OpenComport (int comport_number, int baudrate, char read_timeout)
 {
-  if ((comport_number > 15) || (comport_number < 0))
+  if ((comport_number > 17) || (comport_number < 0))
     {
-      printf ("illegal comport number\n");
+      printf ("Illegal comport number\n");
       return (1);
     }
 
@@ -357,7 +358,7 @@ OpenComport (int comport_number, int baudrate, char read_timeout)
       /* If the dialog succeeds set the new values to the DCB struct */
       if (!CommConfigDialog (comports[comport_number], NULL, &commConfig))
 	{
-	  printf ("Error #%d on config dialog.\n", GetLastError ());
+	  printf ("Error #%ld on config dialog. \n", GetLastError ());
 	}
       else
 	{

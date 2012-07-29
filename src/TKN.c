@@ -19,10 +19,10 @@
 
 #define TKN_DEBUG
 #ifdef TKN_DEBUG
-  #define ECHO_ATTEMPTS
-  #define ECHO_TOKENS
+  //#define ECHO_ATTEMPTS
+  //#define ECHO_TOKENS
+  //#define ECHO_DATA
   #define ECHO_EVENTS
-  #define ECHO_DATA
 #endif
 
 
@@ -57,7 +57,11 @@ static HANDLE TKN_Thread;
 #endif
 
 /* Static Function Prototypes */
-static void* TKN_Run(void* );
+#ifdef __linux__ 
+static void* TKN_Run(void* params);
+#else
+static DWORD WINAPI TKN_Run (LPVOID params);
+#endif
 static int   TKN_SendAckPacket (BYTE to, BYTE from, BYTE pack_id);
 static int   TKN_IsDataValid (BYTE *, BYTE);
 static int   TKN_PrintDataPacket (BYTE *, int, int);
@@ -174,7 +178,7 @@ int TKN_Init (int port, int baud, BYTE id)
     MY_ID = id;
     PACKET_COUNTER = 0;
 
-    if (!OpenComport (PORT_NUM, baud, TKN_READ_TIMEOUT) == 1){
+    if (OpenComport (PORT_NUM, baud, TKN_READ_TIMEOUT) == 1){
         return 1; //error
     }
     else 
@@ -193,7 +197,7 @@ int TKN_Init (int port, int baud, BYTE id)
 int TKN_Close ()
 {
     CloseComport (PORT_NUM);
-    printf ("\nPORT %d CLOSED.\n", PORT_NUM);
+    printf ("\n>> PORT %d CLOSED.\n", PORT_NUM);
     return 0;
 }
 
@@ -524,7 +528,7 @@ int TKN_Start()
     if (!TKN_Running)
     {
         TKN_Running=1;
-        if ( !(TKN_Thread = CreateThread( NULL, 0, &TKN_Run, NULL, 0, &TKN_Thread)))
+        if ( !(TKN_Thread = CreateThread( NULL, 0, &TKN_Run, NULL, 0, NULL)))
             TKN_Running=0;
         return !TKN_Running;
     }
@@ -538,7 +542,7 @@ int TKN_Stop()
     if (TKN_Running)
     {
         TKN_Running=0;
-        if ( waitForSingleObject (TKN_Thread, 100)) 
+        if ( WaitForSingleObject (TKN_Thread, 100)) 
             TKN_Running=1;
         else {
 	  CloseHandle(TKN_Thread);

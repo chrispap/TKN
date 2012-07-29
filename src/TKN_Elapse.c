@@ -3,6 +3,7 @@
 #include <time.h>
 #include <signal.h>
 #include <unistd.h>
+#include <windows.h>
 
 
 #include "TKN.h"
@@ -24,12 +25,14 @@ int main (int argc, char *argv[])
     
     int packC=0;
     /* Wait 10 sec and then shut it down */
-    do{
+    
+	//Sleep(10000);
+	do{
         if (TKN_PushData((BYTE*)"__From Laptop___", dest_id) > 0)
             packC++;
             
-    } while ((time(NULL) - time_start) < 10);
-    
+    } while ((time(NULL) - time_start) < 10); 
+	
     /* Shut downn the network */
     TKN_Stop();
     TKN_Close();

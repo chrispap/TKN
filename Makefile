@@ -12,6 +12,10 @@ ifdef SystemRoot
 	#windows paths
 	INCS =  -I"C:/Dev-Cpp/include" 
 	CXXINCS =  -I"C:/Dev-Cpp/lib/gcc/mingw32/3.4.2/include"  -I"C:/Dev-Cpp/include/c++/3.4.2/backward"  -I"C:/Dev-Cpp/include/c++/3.4.2/mingw32"  -I"C:/Dev-Cpp/include/c++/3.4.2"  -I"C:/Dev-Cpp/include" 	
+	THREADLIB = 
+### For linux only
+else
+	THREADLIB = -lpthread 
 endif
 
 ### ... ###
@@ -33,19 +37,19 @@ clean:
 
 ### Executables ###
 Interactive: TKN_Interactive.o TKN.o rs232.o TKN_Util.o
-	$(CC) -o TKN_Interactive TKN_Interactive.o TKN.o rs232.o TKN_Util.o -lpthread 
+	$(CC) -o TKN_Interactive TKN_Interactive.o TKN.o rs232.o TKN_Util.o $(THREADLIB)
 
 Step: TKN_Step.o TKN.o rs232.o TKN_Util.o
-	$(CC) -o TKN_Step TKN_Step.o TKN.o rs232.o TKN_Util.o -lpthread 
+	$(CC) -o TKN_Step TKN_Step.o TKN.o rs232.o TKN_Util.o $(THREADLIB)
 
 Elapse: TKN_Elapse.o TKN.o rs232.o TKN_Util.o
-	$(CC) -o TKN_Elapse TKN_Elapse.o TKN.o rs232.o TKN_Util.o -lpthread  
+	$(CC) -o TKN_Elapse TKN_Elapse.o TKN.o rs232.o TKN_Util.o $(THREADLIB) 
 
 PacketCreator: TKN_PacketCreator.o TKN.o rs232.o
-	$(CC) -o TKN_PacketCreator TKN_PacketCreator.o TKN.o rs232.o -lpthread 
+	$(CC) -o TKN_PacketCreator TKN_PacketCreator.o TKN.o rs232.o $(THREADLIB)
 
 Boot: TKN_Boot.o TKN.o rs232.o TKN_Util.o
-	$(CC) -o TKN_Boot TKN_Boot.o TKN.o rs232.o TKN_Util.o -lpthread 
+	$(CC) -o TKN_Boot TKN_Boot.o TKN.o rs232.o TKN_Util.o $(THREADLIB)
 
 ### Object files ###
 rs232.o: src/rs232.c src/rs232.h
