@@ -429,6 +429,11 @@ int TKN_IsDataValid (BYTE * data, BYTE checkByte)
 
 
 /* TKN Client functions */
+
+/**
+ * @return The id of the sender if a packet was received
+ *         -1 if the queue was empty.
+ */
 int TKN_PopData (TKN_Data *cBuf)
 {
     if ( !TKN_Queue_IsEmpty(&RX_QUEUE) )

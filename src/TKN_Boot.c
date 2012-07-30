@@ -7,101 +7,82 @@
 
 #define HEXLINE_SIZE 1024
 
-int readHexLine (FILE * hexFile, BYTE *hexLine);
-int sendHexLine (BYTE * hexLine, BYTE dest_id);
-int waitForString (char *);
+extern BYTE dest_id;
 
-
-/* Main */ 
-int main (int argc, char *argv[]) 
-{  
-    FILE * hexFile;
-
-    char *flname = "data/test1.hex", 
-         *MCU_ready_str = "----------------";
-
-    BYTE hexLine[HEXLINE_SIZE], dest_id = 2;
-
-    int fileSent = 0;
-
-    /* Init network and open the hex file */ 
-    if (init (argc, argv) != 0)
-        exit (1);
-
-    if ((hexFile = fopen (flname, "r")) == NULL) { 
-        perror("Cannot open data file");
-        exit (1);
-    }
-	
-    /* Send file */ 
-    while (!fileSent)
-    {
-        if (!readHexLine (hexFile, hexLine)) 
-            fileSent = 1;
-        
-        sendHexLine (hexLine, dest_id);
-        
-        if (!fileSent) 
-            waitForString (MCU_ready_str);
-    }
-
-    TKN_Close ();
-    return 0;
-}
-
-
-/* Functions */ 
-int readHexLine (FILE * hexFile, BYTE *hexLine) 
-{
-    memset (hexLine, 0, HEXLINE_SIZE);
-
-    if (fgets ((char*)hexLine, HEXLINE_SIZE, hexFile) == NULL)
-        return 0;
-    else
-        return 1;
-}
- 
-int sendHexLine (BYTE * hexLine, BYTE dest_id) 
+int sendHexLine (char * hexLine, BYTE dest_id) 
 {
     BYTE lineBuf[TKN_DATA_SIZE];
     int rem;
 
     while ((rem = strlen ((char*)hexLine)) > 0)
     {
-        if (rem > TKN_DATA_SIZE)
-        {
-            memcpy (lineBuf, hexLine, TKN_DATA_SIZE);
-            hexLine += TKN_DATA_SIZE;
-        } 
-        else
-        {
-            memset (lineBuf, 0, sizeof (lineBuf));
-            memcpy (lineBuf, hexLine, rem);
-            hexLine += rem;
-        }
+	if (rem > TKN_DATA_SIZE)
+	{
+	    memcpy (lineBuf, hexLine, TKN_DATA_SIZE);
+	    hexLine += TKN_DATA_SIZE;
+	} 
+	else
+	{
+	    memset (lineBuf, 0, sizeof (lineBuf));
+	    memcpy (lineBuf, hexLine, rem);
+	    hexLine += rem;
+	}
 
-        TKN_SendDataPacket ((TKN_Data*) lineBuf, dest_id);
-        TKN_PassToken ();	// Pass the token... 
-        TKN_Receive ();		// ...and wait to get it back.
+	TKN_PushData ((TKN_Data*) lineBuf, dest_id);
     }
     
     return 0;
 }
 
-int waitForString (char *str) 
+int waitforString(char *ready_str)
 {
-    BYTE recData[TKN_DATA_SIZE + 1];
-    memset (recData, 0, sizeof (recData));
-
-    do
-    {
-
-        TKN_PassToken ();
-        TKN_Receive ();
-        TKN_PopData ((TKN_Data*) recData);
+  char recData[sizeof(TKN_Data)+1];
+  recData[sizeof(TKN_Data)] = '\0';
+  
+  do{
+    while (TKN_PopData ( (TKN_Data*) recData) <0 );
+    /* Strip trailing new lines */
+    int len = strlen(recData); 
+    if (len>0 && recData[len-1] == '\n') recData[len-1]=0;
+    len = strlen(recData); 
+    if (len>0) puts(recData);
+    
+  } while (strncmp ( recData, ready_str, sizeof(TKN_Data)) != 0);
+  
+  return 0;	
+}
+      
+int main (int argc, char *argv[]) 
+{
+    FILE *hexFile;
+    char *flname = "data/100packets.hex";
+    char *mcuReadyStr = "----------------";
+    char  hexLine[HEXLINE_SIZE];
+    int   fileIsRead = 0;
+    
+    /* Open the file */
+    if ((hexFile = fopen (flname, "r")) == NULL) { 
+	perror("Cannot open data file");
+	exit (1);
     }
-    while (strcmp ((char*)recData, str) != 0);
 
+    /* Init network */ 
+    if (init (argc, argv) != 0)
+	exit (1);
+    TKN_Start();
+
+    /* Send file */ 
+    while (!(fileIsRead = fgets(hexLine, HEXLINE_SIZE, hexFile)==NULL? 1:0))
+    {
+      /* Send the line */
+      sendHexLine (hexLine, dest_id);
+      
+      /* Wait MCU */
+      waitforString(mcuReadyStr); 
+    }
+
+    /* Shut down the network */
+    TKN_Stop();
+    TKN_Close ();
     return 0;
-
 }

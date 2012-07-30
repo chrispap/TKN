@@ -36,7 +36,7 @@
 
 /* TKN Data types */
 typedef unsigned char BYTE;
-typedef struct {BYTE data[16]; } TKN_Data;
+typedef struct {BYTE data[TKN_DATA_SIZE]; } TKN_Data;
 
 /* TKN Function Prototypes */ 
 int TKN_ExportPackets ();
