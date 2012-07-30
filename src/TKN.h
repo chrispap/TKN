@@ -47,6 +47,8 @@ int TKN_Stop ();
 int TKN_GetTokenCount ();
 int TKN_PushData (TKN_Data * cpBuf, BYTE recipientId);
 int TKN_PopData (TKN_Data *);
+int TKN_SendString (char * str, BYTE dest_id);
+int TKN_WaitString(char *ready_str);
 
 /* TODO
  * Thes funcs should become static !!! */

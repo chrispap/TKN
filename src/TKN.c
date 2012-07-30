@@ -21,8 +21,9 @@
   //#define ECHO_ATTEMPTS
   //#define ECHO_TOKENS
   //#define ECHO_DATA
-  //#define ECHO_EVENTS
+  #define ECHO_EVENTS
 #endif
+
 
 
 /* The Packet Buffers */
@@ -51,19 +52,29 @@ static HANDLE TKN_Thread;
 #endif
 
 /* Static Function Prototypes */
-#ifdef __linux__ 
-static void* TKN_Run(void* params);
-#else
-static DWORD WINAPI TKN_Run (LPVOID params);
-#endif
 static int   TKN_SendAckPacket (BYTE to, BYTE from, BYTE pack_id);
 static int   TKN_IsDataValid (BYTE *, BYTE);
 static int   TKN_PrintDataPacket (BYTE *, int, int);
 static int   TKN_PrintCols ();
 static int   TKN_PrintByte (BYTE c, int forceHex);
+static char* stripLF(char *str);
+#ifdef __linux__ 
+static void* TKN_Run(void* params);
+#else
+static DWORD WINAPI TKN_Run (LPVOID params);
+#endif
+
 
 
 /* Print Functions */
+
+static char* stripLF(char *str)
+{
+	int len = strlen(str); 
+    if (len>0 && str[len-1] == '\n') str[len-1]= '\0';
+    return str;
+}
+
 int TKN_PrintCols ()
 {
     printf ("FROM\tTO\tID\tDATA \n");
@@ -162,44 +173,6 @@ int TKN_ExportPackets ()
   return 0;
 }
 
-/**
- * 1. Open the serial port
- * 2. Assign the node ID
- */
-int TKN_Init (int port, int baud, BYTE id)
-{
-    PORT_NUM = port;
-    MY_ID = id;
-    PACKET_COUNTER = 0;
-
-    if (OpenComport (PORT_NUM, baud, TKN_READ_TIMEOUT) == 1){
-        return 1; //error
-    }
-    else 
-    {
-	  TKN_Queue_Init( &RX_QUEUE, TKN_QUEUE_SIZE);
-	  TKN_Queue_Init( &TX_QUEUE, TKN_QUEUE_SIZE);
-	  
-      printf ("COM PORT %d OPENED SUCCESFULLY\n\n", port);
-      printf ("D  -> Send data \n>  -> Send token\nE  -> Exit\n\n");
-      TKN_PrintCols ();
-      
-      return 0; //success
-    }
-}
-
-/**
- * Close the serial port.
- */
-int TKN_Close ()
-{
-    CloseComport (PORT_NUM);
-    printf ("\n>> PORT %d CLOSED.\n", PORT_NUM);
-	
-	TKN_Queue_Free (&TX_QUEUE);
-	TKN_Queue_Free (&RX_QUEUE);
-    return 0;
-}
 
 
 /* TKN Protocol Implementation */
@@ -428,70 +401,47 @@ int TKN_IsDataValid (BYTE * data, BYTE checkByte)
 }
 
 
+
 /* TKN Client functions */
 
 /**
- * @return The id of the sender if a packet was received
- *         -1 if the queue was empty.
+ * 1. Open the serial port
+ * 2. Assign the node ID
  */
-int TKN_PopData (TKN_Data *cBuf)
+int TKN_Init (int port, int baud, BYTE id)
 {
-    if ( !TKN_Queue_IsEmpty(&RX_QUEUE) )
-    {
-		return (int) TKN_Queue_Pop (&RX_QUEUE, cBuf);
+    PORT_NUM = port;
+    MY_ID = id;
+    PACKET_COUNTER = 0;
+
+    if (OpenComport (PORT_NUM, baud, TKN_READ_TIMEOUT) == 1){
+        return 1; //error
     }
-    
-    return -1;
+    else 
+    {
+	  TKN_Queue_Init( &RX_QUEUE, TKN_QUEUE_SIZE);
+	  TKN_Queue_Init( &TX_QUEUE, TKN_QUEUE_SIZE);
+	  
+      printf ("COM PORT %d OPENED SUCCESFULLY\n\n", port);
+      printf ("D  -> Send data \n>  -> Send token\nE  -> Exit\n\n");
+      TKN_PrintCols ();
+      
+      return 0; //success
+    }
 }
 
-int TKN_PushData (TKN_Data * cBuf, BYTE recipientId)
+/**
+ * Close the serial port.
+ */
+int TKN_Close ()
 {
-    if ( !TKN_Queue_IsFull( &TX_QUEUE) )
-    {
-        TKN_Queue_Push (&TX_QUEUE, cBuf, recipientId);
-        return 0;
-    }
-    
-    return -1;
-}
-
-int TKN_GetTokenCount()
-{
-    return TKN_TokenCount;
-}
-
-#ifdef __linux__ 
-void* TKN_Run(void* params)
-#else
-DWORD WINAPI TKN_Run (LPVOID params)
-#endif
-{
-    while (TKN_Running) 
-    {
-        if ( !TKN_Queue_IsEmpty(&TX_QUEUE) ) {
-			TKN_Data data;
-			BYTE rid = TKN_Queue_Pop(&TX_QUEUE, &data);
-            TKN_SendDataPacket ( &data, rid);
-        }
-		
-        TKN_PassToken();
-        if (TKN_Receive() == TKN_TYPE_TOKEN)
-            TKN_TokenCount++;
-        else
-            printf("\n>> Did not get the token back! \n");
-            
-        fflush (stdout);
-    }
-    
-    #ifdef TKN_DEBUG
-    printf("\n\n>> TKN_Thread exited normally. \n");
-    printf(">> TX_PENDING: %d \n", TX_QUEUE.count);
-    printf(">> RX_PENDING: %d \n", RX_QUEUE.count);
-    #endif
-    
+    CloseComport (PORT_NUM);
+    printf ("\n>> PORT %d CLOSED.\n", PORT_NUM);
+	
+	TKN_Queue_Free (&TX_QUEUE);
+	TKN_Queue_Free (&RX_QUEUE);
     return 0;
 }
-
 
 #ifdef __linux__ /* linux */
 
@@ -558,3 +508,94 @@ int TKN_Stop()
 }
 
 #endif
+
+/**
+ * @return The id of the sender if a packet was received
+ *         -1 if the queue was empty.
+ */
+int TKN_PopData (TKN_Data *cBuf)
+{
+    if ( !TKN_Queue_IsEmpty(&RX_QUEUE) )
+    {
+		return (int) TKN_Queue_Pop (&RX_QUEUE, cBuf);
+    }
+    
+    return -1;
+}
+
+int TKN_PushData (TKN_Data * cBuf, BYTE recipientId)
+{
+    if ( !TKN_Queue_IsFull( &TX_QUEUE) )
+    {
+        TKN_Queue_Push (&TX_QUEUE, cBuf, recipientId);
+        return 0;
+    }
+    
+    return -1;
+}
+
+int TKN_SendString (char * str, BYTE dest_id) 
+{
+    TKN_Data lineBuf;
+    int rem = strlen(str);
+	
+    while (rem>0) {
+		strncpy( (char*) &lineBuf, str, sizeof(lineBuf));
+		str += sizeof(lineBuf);
+		rem -= sizeof(lineBuf);
+		TKN_PushData ( &lineBuf, dest_id);
+    }
+    
+    return 0;
+}
+
+int TKN_WaitString(char *ready_str)
+{
+  char recData[sizeof(TKN_Data)+1];
+  recData[sizeof(TKN_Data)] = '\0';
+  
+  do{
+    while (TKN_PopData ( (TKN_Data*) recData) <0 );
+	if (strlen(recData)) puts(stripLF(recData));
+  } while (strncmp ( recData, ready_str, sizeof(TKN_Data)) != 0);
+  
+  return 0;	
+}
+
+int TKN_GetTokenCount()
+{
+    return TKN_TokenCount;
+}
+
+#ifdef __linux__ 
+void* TKN_Run(void* params)
+#else
+DWORD WINAPI TKN_Run (LPVOID params)
+#endif
+{
+    while (TKN_Running) 
+    {
+        if ( !TKN_Queue_IsEmpty(&TX_QUEUE) ) {
+			TKN_Data data;
+			BYTE rid = TKN_Queue_Pop(&TX_QUEUE, &data);
+            TKN_SendDataPacket ( &data, rid);
+        }
+		
+        TKN_PassToken();
+        if (TKN_Receive() == TKN_TYPE_TOKEN)
+            TKN_TokenCount++;
+        else
+            printf("\n>> Did not get the token back! \n");
+            
+        fflush (stdout);
+    }
+    
+    #ifdef TKN_DEBUG
+    printf("\n\n>> TKN_Thread exited normally. \n");
+    printf(">> TX_PENDING: %d \n", TX_QUEUE.count);
+    printf(">> RX_PENDING: %d \n", RX_QUEUE.count);
+    #endif
+    
+    return 0;
+}
+

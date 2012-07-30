@@ -1,11 +1,20 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include <signal.h>
-#include <unistd.h>
+
+#ifdef __linux
+  #include <signal.h>
+  #include <unistd.h>
+#else
+  #include <windows.h>
+  #define sleep(x) Sleep(x*1000)
+#endif
 
 #include "TKN.h"
 #include "TKN_Util.h"
+
+#define FULL_LOAD 0
+#define SECONDS_TO_RUN 10
 
 extern BYTE dest_id;
 static time_t time_start, time_end;
@@ -18,18 +27,21 @@ int main (int argc, char *argv[])
   /* Start the network */
   time_start = time (NULL);
   TKN_Start ();
-
   int packC = 0;
-  /* Wait 10 sec and then shut it down */
-  // sleep (10);
   
-  do
+  if (FULL_LOAD)  // Send non-stop!
   {
-    if (TKN_PushData ((TKN_Data *) "__From Laptop___", dest_id) == 0)
-    packC++;
-  } while ((time (NULL) - time_start) < 10);
-  
-  
+	  do{
+		if (TKN_PushData ((TKN_Data *) "__From Laptop___", dest_id) == 0)
+		packC++;
+	  } while ((time (NULL) - time_start) < SECONDS_TO_RUN);
+	  
+  }
+  else  // Send nothing
+  {
+	sleep (SECONDS_TO_RUN);
+  }
+
   /* Shut downn the network */
   TKN_Stop ();
   TKN_Close ();
