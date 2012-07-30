@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #include "TKN.h"
 #include "TKN_Util.h"
@@ -8,30 +9,38 @@
 #define HEXLINE_SIZE 1024
 
 extern BYTE dest_id;
+static time_t time_start, time_end;
 
 int sendHexLine (char * hexLine, BYTE dest_id) 
 {
-    BYTE lineBuf[TKN_DATA_SIZE];
+    TKN_Data lineBuf;
     int rem;
 
-    while ((rem = strlen ((char*)hexLine)) > 0)
+    while ((rem=strlen(hexLine)) > 0)
     {
-	if (rem > TKN_DATA_SIZE)
-	{
-	    memcpy (lineBuf, hexLine, TKN_DATA_SIZE);
-	    hexLine += TKN_DATA_SIZE;
-	} 
-	else
-	{
-	    memset (lineBuf, 0, sizeof (lineBuf));
-	    memcpy (lineBuf, hexLine, rem);
-	    hexLine += rem;
-	}
+		if (rem > TKN_DATA_SIZE)
+		{
+			memcpy (&lineBuf, hexLine, TKN_DATA_SIZE);
+			hexLine += TKN_DATA_SIZE;
+		} 
+		else
+		{
+			memset (&lineBuf, 0, sizeof (lineBuf));
+			memcpy (&lineBuf, hexLine, rem);
+			hexLine += rem;
+		}
 
-	TKN_PushData ((TKN_Data*) lineBuf, dest_id);
+	TKN_PushData ( &lineBuf, dest_id);
     }
     
     return 0;
+}
+
+char* stripNL(char *str)
+{
+	int len = strlen(str); 
+    if (len>0 && str[len-1] == '\n') str[len-1]=0;
+    return str;
 }
 
 int waitforString(char *ready_str)
@@ -41,12 +50,7 @@ int waitforString(char *ready_str)
   
   do{
     while (TKN_PopData ( (TKN_Data*) recData) <0 );
-    /* Strip trailing new lines */
-    int len = strlen(recData); 
-    if (len>0 && recData[len-1] == '\n') recData[len-1]=0;
-    len = strlen(recData); 
-    if (len>0) puts(recData);
-    
+	if (strlen(recData)) puts(recData);
   } while (strncmp ( recData, ready_str, sizeof(TKN_Data)) != 0);
   
   return 0;	
@@ -55,7 +59,7 @@ int waitforString(char *ready_str)
 int main (int argc, char *argv[]) 
 {
     FILE *hexFile;
-    char *flname = "data/100packets.hex";
+    char *flname = "data/codesmall.hex";
     char *mcuReadyStr = "----------------";
     char  hexLine[HEXLINE_SIZE];
     int   fileIsRead = 0;
@@ -70,7 +74,8 @@ int main (int argc, char *argv[])
     if (init (argc, argv) != 0)
 	exit (1);
     TKN_Start();
-
+	time_start = time(NULL);
+	
     /* Send file */ 
     while (!(fileIsRead = fgets(hexLine, HEXLINE_SIZE, hexFile)==NULL? 1:0))
     {
@@ -84,5 +89,9 @@ int main (int argc, char *argv[])
     /* Shut down the network */
     TKN_Stop();
     TKN_Close ();
+	time_end = time (NULL);
+    printf (">> Ellapsed time: %ld sec \n", time_end - time_start);
+    printf (">> Token Counter: %d \n", TKN_GetTokenCount() );
     return 0;
 }
+
