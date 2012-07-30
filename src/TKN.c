@@ -481,6 +481,7 @@ int TKN_Start()
         TKN_Running=1;
         if ( !(TKN_Thread = CreateThread( NULL, 0, &TKN_Run, NULL, 0, NULL)))
             TKN_Running=0;
+			
         return !TKN_Running;
     }
     else return -1;

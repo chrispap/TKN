@@ -13,7 +13,7 @@
 #include "TKN.h"
 #include "TKN_Util.h"
 
-#define FULL_LOAD 0
+#define FULL_LOAD 1
 #define SECONDS_TO_RUN 10
 
 extern BYTE dest_id;
