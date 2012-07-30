@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <windows.h>
 
 #include "TKN.h"
 #include "TKN_Util.h"
@@ -14,23 +15,13 @@ static time_t time_start, time_end;
 int sendHexLine (char * hexLine, BYTE dest_id) 
 {
     TKN_Data lineBuf;
-    int rem;
-
-    while ((rem=strlen(hexLine)) > 0)
-    {
-		if (rem > TKN_DATA_SIZE)
-		{
-			memcpy (&lineBuf, hexLine, TKN_DATA_SIZE);
-			hexLine += TKN_DATA_SIZE;
-		} 
-		else
-		{
-			memset (&lineBuf, 0, sizeof (lineBuf));
-			memcpy (&lineBuf, hexLine, rem);
-			hexLine += rem;
-		}
-
-	TKN_PushData ( &lineBuf, dest_id);
+    int rem = strlen(hexLine);
+	
+    while (rem>0) {
+		strncpy( (char*) &lineBuf, hexLine, sizeof(lineBuf));
+		hexLine += sizeof(lineBuf);
+		rem -= sizeof(lineBuf);
+		TKN_PushData ( &lineBuf, dest_id);
     }
     
     return 0;
@@ -39,7 +30,7 @@ int sendHexLine (char * hexLine, BYTE dest_id)
 char* stripNL(char *str)
 {
 	int len = strlen(str); 
-    if (len>0 && str[len-1] == '\n') str[len-1]=0;
+    if (len>0 && str[len-1] == '\n') str[len-1]= '\0';
     return str;
 }
 
@@ -50,16 +41,17 @@ int waitforString(char *ready_str)
   
   do{
     while (TKN_PopData ( (TKN_Data*) recData) <0 );
-	if (strlen(recData)) puts(recData);
+	if (strlen(recData)) puts(stripNL(recData));
   } while (strncmp ( recData, ready_str, sizeof(TKN_Data)) != 0);
   
   return 0;	
 }
-      
+
+
 int main (int argc, char *argv[]) 
 {
     FILE *hexFile;
-    char *flname = "data/codesmall.hex";
+    char *flname = "data/test.hex";
     char *mcuReadyStr = "----------------";
     char  hexLine[HEXLINE_SIZE];
     int   fileIsRead = 0;
@@ -85,7 +77,7 @@ int main (int argc, char *argv[])
       /* Wait MCU */
       waitforString(mcuReadyStr); 
     }
-
+	
     /* Shut down the network */
     TKN_Stop();
     TKN_Close ();
@@ -94,4 +86,3 @@ int main (int argc, char *argv[])
     printf (">> Token Counter: %d \n", TKN_GetTokenCount() );
     return 0;
 }
-

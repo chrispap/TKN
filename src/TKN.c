@@ -21,7 +21,7 @@
   //#define ECHO_ATTEMPTS
   //#define ECHO_TOKENS
   //#define ECHO_DATA
-  #define ECHO_EVENTS
+  //#define ECHO_EVENTS
 #endif
 
 
