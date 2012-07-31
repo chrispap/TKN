@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include <windows.h>
 
 #include "TKN.h"
 #include "TKN_Util.h"
@@ -15,10 +14,10 @@ static time_t time_start, time_end;
 int main (int argc, char *argv[]) 
 {
     FILE *hexFile;
-    char *flname = "data/codebig.hex";
+    char *flname = ((argc>4)? argv[4] : "data/test.hex");
     char *mcuReadyStr = "-MCU-READY------";
     char  hexLine[HEXLINE_SIZE];
-    int   fileIsRead = 0;
+    int   fileIsRead = 0, lineCounter=0;
     
     /* Open the file */
     if ((hexFile = fopen (flname, "r")) == NULL) {
@@ -31,12 +30,14 @@ int main (int argc, char *argv[])
 		exit (1);
     TKN_Start();
 	time_start = time(NULL);
-	
+
     /* Send file */ 
     while (!(fileIsRead = fgets(hexLine, HEXLINE_SIZE, hexFile)==NULL? 1:0))
     {
+      lineCounter++;
       TKN_SendString (hexLine, dest_id);
-      TKN_WaitString(mcuReadyStr); 
+      printf(">> Pushed line #%3d\n", lineCounter);
+      TKN_WaitString(mcuReadyStr);
     }
 	
     /* Shut down the network */
@@ -45,5 +46,6 @@ int main (int argc, char *argv[])
 	time_end = time (NULL);
     printf (">> Ellapsed time: %ld sec \n", time_end - time_start);
     printf (">> Token Counter: %d \n", TKN_GetTokenCount() );
+    printf (">> Lines sent   : %d \n", lineCounter );
     return 0;
 }

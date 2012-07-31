@@ -21,7 +21,7 @@
   //#define ECHO_ATTEMPTS
   //#define ECHO_TOKENS
   //#define ECHO_DATA
-  #define ECHO_EVENTS
+  //#define ECHO_EVENTS
 #endif
 
 
@@ -557,9 +557,9 @@ int TKN_WaitString(char *ready_str)
   
   do{
     while (TKN_PopData ( (TKN_Data*) recData) <0 );
-	if (strlen(recData)) puts(stripLF(recData));
+    // dont print your tries ... if (strlen(recData)) puts(stripLF(recData));
   } while (strncmp ( recData, ready_str, sizeof(TKN_Data)) != 0);
-  
+  printf(">> Received string: +%s+\n",stripLF(recData));
   return 0;	
 }
 

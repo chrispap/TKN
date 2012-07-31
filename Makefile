@@ -19,37 +19,42 @@ else
 endif
 
 ### ... ###
-OBJ  = rs232.o TKN.o TKN_Queue.o TKN_Interactive.o TKN_Step.o TKN_Boot.o TKN_PacketCreator.o TKN_Util.o TKN_Elapse.o $(RES)
+OBJ  =  TKN_Interactive.o TKN_Step.o TKN_Boot.o TKN_PacketCreator.o TKN_Elapse.o $(RES)
+LINKOBJ = rs232.o TKN.o TKN_Util.o TKN_Queue.o $(RES)
 BIN = TKN_Interactive TKN_Step TKN_Elapse TKN_PacketCreator TKN_Boot
 CXXFLAGS = $(CXXINCS)  
 CFLAGS = $(INCS) -Wall -O2  -g
 RM = rm -f
 
 ### Actions ###
-all: Interactive Step Elapse PacketCreator Boot
 .PHONY: all
 
+all: Interactive Step Elapse PacketCreator Boot PrintPackets
+
 cleanObj:
-	${RM} $(OBJ)
+	${RM} $(OBJ) $(LINKOBJ)
 
 clean:
-	${RM} $(OBJ) $(BIN)
+	${RM} $(OBJ) $(LINKOBJ) $(BIN)
 
 ### Executables ###
-Interactive: TKN_Interactive.o TKN.o rs232.o TKN_Util.o TKN_Queue.o 
-	$(CC) -o TKN_Interactive TKN_Interactive.o TKN.o rs232.o TKN_Util.o TKN_Queue.o $(THREADLIB)
+Interactive: TKN_Interactive.o $(LINKOBJ)
+	$(CC) -o TKN_Interactive TKN_Interactive.o $(LINKOBJ) $(THREADLIB)
 
-Step: TKN_Step.o TKN.o rs232.o TKN_Util.o TKN_Queue.o 
-	$(CC) -o TKN_Step TKN_Step.o TKN.o rs232.o TKN_Util.o TKN_Queue.o $(THREADLIB)
+Step: TKN_Step.o $(LINKOBJ)
+	$(CC) -o TKN_Step TKN_Step.o $(LINKOBJ) $(THREADLIB)
 
-Elapse: TKN_Elapse.o TKN.o rs232.o TKN_Util.o TKN_Queue.o 
-	$(CC) -o TKN_Elapse TKN_Elapse.o TKN.o rs232.o TKN_Util.o TKN_Queue.o $(THREADLIB) 
+Elapse: TKN_Elapse.o $(LINKOBJ)
+	$(CC) -o TKN_Elapse TKN_Elapse.o $(LINKOBJ) $(THREADLIB) 
 
-PacketCreator: TKN_PacketCreator.o TKN.o rs232.o TKN_Util.o TKN_Queue.o 
-	$(CC) -o TKN_PacketCreator TKN_PacketCreator.o TKN.o rs232.o TKN_Util.o TKN_Queue.o $(THREADLIB)
+PacketCreator: TKN_PacketCreator.o $(LINKOBJ)
+	$(CC) -o TKN_PacketCreator TKN_PacketCreator.o $(LINKOBJ) $(THREADLIB)
 
-Boot: TKN_Boot.o TKN.o rs232.o TKN_Util.o TKN_Queue.o 
-	$(CC) -o TKN_Boot TKN_Boot.o TKN.o rs232.o TKN_Util.o TKN_Queue.o $(THREADLIB)
+Boot: TKN_Boot.o $(LINKOBJ)
+	$(CC) -o TKN_Boot TKN_Boot.o $(LINKOBJ) $(THREADLIB)
+
+PrintPackets: src/printPackets.c
+	$(CC) -o printPackets src/printPackets.c
 
 ### Object files ###
 rs232.o: src/rs232.c src/rs232.h

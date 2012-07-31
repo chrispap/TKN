@@ -4,7 +4,7 @@
 
 /* Program default values */
 #define TKN_BAUD_DEFAULT 	57600
-#define TKN_PORT_DEFAULT 	17
+#define TKN_PORT_DEFAULT 	16
 #define TKN_ID_DEFAULT 		1
 #define TKN_DEST_ID_DEFAULT 	2
 
