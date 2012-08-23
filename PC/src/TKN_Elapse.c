@@ -13,7 +13,7 @@
 #include "TKN.h"
 #include "TKN_Util.h"
 
-#define FULL_LOAD 1
+#define FULL_LOAD 0
 #define SECONDS_TO_RUN 10
 
 extern BYTE dest_id;
@@ -29,7 +29,7 @@ int main (int argc, char *argv[])
   TKN_Start ();
   int packC = 0;
   
-  if (FULL_LOAD)  // Send non-stop!
+  if (FULL_LOAD)  // Send DATA whenever possible!
   {
 	  do{
 		if (TKN_PushData ((TKN_Data *) "__From Laptop___", dest_id) == 0)

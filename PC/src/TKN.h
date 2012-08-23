@@ -1,7 +1,6 @@
 #ifndef TKN_H
 #define TKN_H
 
-
 /* Program default values */
 #define TKN_BAUD_DEFAULT 	57600
 #define TKN_PORT_DEFAULT 	16
@@ -32,7 +31,6 @@
 #define TKN_OFFS_DATA_STOP	21
 #define TKN_OFFS_DATA_EOF	22
 #define TKN_DATA_SIZE	  	(TKN_OFFS_DATA_STOP - TKN_OFFS_DATA_START + 1)
-
 
 /* TKN Data types */
 typedef unsigned char BYTE;
