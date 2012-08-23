@@ -1,0 +1,2746 @@
+
+AVRASM ver. 2.1.43  C:\Users\laptop\Documents\GitHub\TKN\AVR\Main.asm Thu Aug 23 15:53:57 2012
+
+[builtin](2): Including file 'C:\Program Files (x86)\Atmel\AVR Studio 5.0\avrassembler\include\m644padef.inc'
+C:\Users\laptop\Documents\GitHub\TKN\AVR\Main.asm(1): Including file 'C:\Program Files (x86)\Atmel\AVR Studio 5.0\avrassembler\include\m644PAdef.inc'
+C:\Users\laptop\Documents\GitHub\TKN\AVR\Main.asm(25): Including file 'C:\Users\laptop\Documents\GitHub\TKN\AVR\Vectors.asm'
+C:\Users\laptop\Documents\GitHub\TKN\AVR\Main.asm(26): Including file 'C:\Users\laptop\Documents\GitHub\TKN\AVR\TKN.asm'
+C:\Users\laptop\Documents\GitHub\TKN\AVR\Main.asm(27): Including file 'C:\Users\laptop\Documents\GitHub\TKN\AVR\BL_.asm'
+C:\Users\laptop\Documents\GitHub\TKN\AVR\Main.asm(28): Including file 'C:\Users\laptop\Documents\GitHub\TKN\AVR\Usart.asm'
+C:\Users\laptop\Documents\GitHub\TKN\AVR\Main.asm(29): Including file 'C:\Users\laptop\Documents\GitHub\TKN\AVR\Utils.asm'
+                 
+                 .include "m644PAdef.inc"
+                 
+                 ;***** Created: 2011-02-09 12:03 ******* Source: ATmega644PA.xml *********
+                 ;*************************************************************************
+                 ;* A P P L I C A T I O N   N O T E   F O R   T H E   A V R   F A M I L Y
+                 ;* 
+                 ;* Number            : AVR000
+                 ;* File Name         : "m644PAdef.inc"
+                 ;* Title             : Register/Bit Definitions for the ATmega644PA
+                 ;* Date              : 2011-02-09
+                 ;* Version           : 2.35
+                 ;* Support E-mail    : avr@atmel.com
+                 ;* Target MCU        : ATmega644PA
+                 ;* 
+                 ;* DESCRIPTION
+                 ;* When including this file in the assembly program file, all I/O register 
+                 ;* names and I/O register bit names appearing in the data book can be used.
+                 ;* In addition, the six registers forming the three data pointers X, Y and 
+                 ;* Z have been assigned names XL - ZH. Highest RAM address for Internal 
+                 ;* SRAM is also defined 
+                 ;* 
+                 ;* The Register names are represented by their hexadecimal address.
+                 ;* 
+                 ;* The Register Bit names are represented by their bit number (0-7).
+                 ;* 
+                 ;* Please observe the difference in using the bit names with instructions
+                 ;* such as "sbr"/"cbr" (set/clear bit in register) and "sbrs"/"sbrc"
+                 ;* (skip if bit in register set/cleared). The following example illustrates
+                 ;* this:
+                 ;* 
+                 ;* in    r16,PORTB             ;read PORTB latch
+                 ;* sbr   r16,(1<<PB6)+(1<<PB5) ;set PB6 and PB5 (use masks, not bit#)
+                 ;* out   PORTB,r16             ;output to PORTB
+                 ;* 
+                 ;* in    r16,TIFR              ;read the Timer Interrupt Flag Register
+                 ;* sbrc  r16,TOV0              ;test the overflow flag (use bit#)
+                 ;* rjmp  TOV0_is_set           ;jump if set
+                 ;* ...                         ;otherwise do something else
+                 ;*************************************************************************
+                 
+                 #ifndef _M644PADEF_INC_
+                 #define _M644PADEF_INC_
+                 
+                 
+                 #pragma partinc 0
+                 
+                 ; ***** SPECIFY DEVICE ***************************************************
+                 .device ATmega644PA
+                 #pragma AVRPART ADMIN PART_NAME ATmega644PA
+                 .equ	SIGNATURE_000	= 0x1e
+                 .equ	SIGNATURE_001	= 0x96
+                 .equ	SIGNATURE_002	= 0x0a
+                 
+                 #pragma AVRPART CORE CORE_VERSION V2E
+                 
+                 
+                 ; ***** I/O REGISTER DEFINITIONS *****************************************
+                 ; NOTE:
+                 ; Definitions marked "MEMORY MAPPED"are extended I/O ports
+                 ; and cannot be used with IN/OUT instructions
+                 .equ	UDR1	= 0xce	; MEMORY MAPPED
+                 .equ	UBRR1L	= 0xcc	; MEMORY MAPPED
+                 .equ	UBRR1H	= 0xcd	; MEMORY MAPPED
+                 .equ	UCSR1C	= 0xca	; MEMORY MAPPED
+                 .equ	UCSR1B	= 0xc9	; MEMORY MAPPED
+                 .equ	UCSR1A	= 0xc8	; MEMORY MAPPED
+                 .equ	UDR0	= 0xc6	; MEMORY MAPPED
+                 .equ	UBRR0L	= 0xc4	; MEMORY MAPPED
+                 .equ	UBRR0H	= 0xc5	; MEMORY MAPPED
+                 .equ	UCSR0C	= 0xc2	; MEMORY MAPPED
+                 .equ	UCSR0B	= 0xc1	; MEMORY MAPPED
+                 .equ	UCSR0A	= 0xc0	; MEMORY MAPPED
+                 .equ	TWAMR	= 0xbd	; MEMORY MAPPED
+                 .equ	TWCR	= 0xbc	; MEMORY MAPPED
+                 .equ	TWDR	= 0xbb	; MEMORY MAPPED
+                 .equ	TWAR	= 0xba	; MEMORY MAPPED
+                 .equ	TWSR	= 0xb9	; MEMORY MAPPED
+                 .equ	TWBR	= 0xb8	; MEMORY MAPPED
+                 .equ	ASSR	= 0xb6	; MEMORY MAPPED
+                 .equ	OCR2B	= 0xb4	; MEMORY MAPPED
+                 .equ	OCR2A	= 0xb3	; MEMORY MAPPED
+                 .equ	TCNT2	= 0xb2	; MEMORY MAPPED
+                 .equ	TCCR2B	= 0xb1	; MEMORY MAPPED
+                 .equ	TCCR2A	= 0xb0	; MEMORY MAPPED
+                 .equ	OCR1BL	= 0x8a	; MEMORY MAPPED
+                 .equ	OCR1BH	= 0x8b	; MEMORY MAPPED
+                 .equ	OCR1AL	= 0x88	; MEMORY MAPPED
+                 .equ	OCR1AH	= 0x89	; MEMORY MAPPED
+                 .equ	ICR1L	= 0x86	; MEMORY MAPPED
+                 .equ	ICR1H	= 0x87	; MEMORY MAPPED
+                 .equ	TCNT1L	= 0x84	; MEMORY MAPPED
+                 .equ	TCNT1H	= 0x85	; MEMORY MAPPED
+                 .equ	TCCR1C	= 0x82	; MEMORY MAPPED
+                 .equ	TCCR1B	= 0x81	; MEMORY MAPPED
+                 .equ	TCCR1A	= 0x80	; MEMORY MAPPED
+                 .equ	DIDR1	= 0x7f	; MEMORY MAPPED
+                 .equ	DIDR0	= 0x7e	; MEMORY MAPPED
+                 .equ	ADMUX	= 0x7c	; MEMORY MAPPED
+                 .equ	ADCSRB	= 0x7b	; MEMORY MAPPED
+                 .equ	ADCSRA	= 0x7a	; MEMORY MAPPED
+                 .equ	ADCH	= 0x79	; MEMORY MAPPED
+                 .equ	ADCL	= 0x78	; MEMORY MAPPED
+                 .equ	PCMSK3	= 0x73	; MEMORY MAPPED
+                 .equ	TIMSK2	= 0x70	; MEMORY MAPPED
+                 .equ	TIMSK1	= 0x6f	; MEMORY MAPPED
+                 .equ	TIMSK0	= 0x6e	; MEMORY MAPPED
+                 .equ	PCMSK2	= 0x6d	; MEMORY MAPPED
+                 .equ	PCMSK1	= 0x6c	; MEMORY MAPPED
+                 .equ	PCMSK0	= 0x6b	; MEMORY MAPPED
+                 .equ	EICRA	= 0x69	; MEMORY MAPPED
+                 .equ	PCICR	= 0x68	; MEMORY MAPPED
+                 .equ	OSCCAL	= 0x66	; MEMORY MAPPED
+                 .equ	PRR0	= 0x64	; MEMORY MAPPED
+                 .equ	CLKPR	= 0x61	; MEMORY MAPPED
+                 .equ	WDTCSR	= 0x60	; MEMORY MAPPED
+                 .equ	SREG	= 0x3f
+                 .equ	SPL	= 0x3d
+                 .equ	SPH	= 0x3e
+                 .equ	SPMCSR	= 0x37
+                 .equ	MCUCR	= 0x35
+                 .equ	MCUSR	= 0x34
+                 .equ	SMCR	= 0x33
+                 .equ	OCDR	= 0x31
+                 .equ	ACSR	= 0x30
+                 .equ	SPDR	= 0x2e
+                 .equ	SPSR	= 0x2d
+                 .equ	SPCR	= 0x2c
+                 .equ	GPIOR2	= 0x2b
+                 .equ	GPIOR1	= 0x2a
+                 .equ	OCR0B	= 0x28
+                 .equ	OCR0A	= 0x27
+                 .equ	TCNT0	= 0x26
+                 .equ	TCCR0B	= 0x25
+                 .equ	TCCR0A	= 0x24
+                 .equ	GTCCR	= 0x23
+                 .equ	EEARH	= 0x22
+                 .equ	EEARL	= 0x21
+                 .equ	EEDR	= 0x20
+                 .equ	EECR	= 0x1f
+                 .equ	GPIOR0	= 0x1e
+                 .equ	EIMSK	= 0x1d
+                 .equ	EIFR	= 0x1c
+                 .equ	PCIFR	= 0x1b
+                 .equ	TIFR2	= 0x17
+                 .equ	TIFR1	= 0x16
+                 .equ	TIFR0	= 0x15
+                 .equ	PORTD	= 0x0b
+                 .equ	DDRD	= 0x0a
+                 .equ	PIND	= 0x09
+                 .equ	PORTC	= 0x08
+                 .equ	DDRC	= 0x07
+                 .equ	PINC	= 0x06
+                 .equ	PORTB	= 0x05
+                 .equ	DDRB	= 0x04
+                 .equ	PINB	= 0x03
+                 .equ	PORTA	= 0x02
+                 .equ	DDRA	= 0x01
+                 .equ	PINA	= 0x00
+                 
+                 
+                 ; ***** BIT DEFINITIONS **************************************************
+                 
+                 ; ***** ANALOG_COMPARATOR ************
+                 ; ADCSRB - ADC Control and Status Register B
+                 .equ	ACME	= 6	; Analog Comparator Multiplexer Enable
+                 
+                 ; ACSR - Analog Comparator Control And Status Register
+                 .equ	ACIS0	= 0	; Analog Comparator Interrupt Mode Select bit 0
+                 .equ	ACIS1	= 1	; Analog Comparator Interrupt Mode Select bit 1
+                 .equ	ACIC	= 2	; Analog Comparator Input Capture Enable
+                 .equ	ACIE	= 3	; Analog Comparator Interrupt Enable
+                 .equ	ACI	= 4	; Analog Comparator Interrupt Flag
+                 .equ	ACO	= 5	; Analog Compare Output
+                 .equ	ACBG	= 6	; Analog Comparator Bandgap Select
+                 .equ	ACD	= 7	; Analog Comparator Disable
+                 
+                 ; DIDR1 - Digital Input Disable Register 1
+                 .equ	AIN0D	= 0	; AIN0 Digital Input Disable
+                 .equ	AIN1D	= 1	; AIN1 Digital Input Disable
+                 
+                 
+                 ; ***** USART0 ***********************
+                 ; UDR0 - USART I/O Data Register
+                 .equ	UDR0_0	= 0	; USART I/O Data Register bit 0
+                 .equ	UDR0_1	= 1	; USART I/O Data Register bit 1
+                 .equ	UDR0_2	= 2	; USART I/O Data Register bit 2
+                 .equ	UDR0_3	= 3	; USART I/O Data Register bit 3
+                 .equ	UDR0_4	= 4	; USART I/O Data Register bit 4
+                 .equ	UDR0_5	= 5	; USART I/O Data Register bit 5
+                 .equ	UDR0_6	= 6	; USART I/O Data Register bit 6
+                 .equ	UDR0_7	= 7	; USART I/O Data Register bit 7
+                 
+                 ; UCSR0A - USART Control and Status Register A
+                 .equ	MPCM0	= 0	; Multi-processor Communication Mode
+                 .equ	U2X0	= 1	; Double the USART transmission speed
+                 .equ	UPE0	= 2	; Parity Error
+                 .equ	DOR0	= 3	; Data overRun
+                 .equ	FE0	= 4	; Framing Error
+                 .equ	UDRE0	= 5	; USART Data Register Empty
+                 .equ	TXC0	= 6	; USART Transmitt Complete
+                 .equ	RXC0	= 7	; USART Receive Complete
+                 
+                 ; UCSR0B - USART Control and Status Register B
+                 .equ	TXB80	= 0	; Transmit Data Bit 8
+                 .equ	RXB80	= 1	; Receive Data Bit 8
+                 .equ	UCSZ02	= 2	; Character Size
+                 .equ	TXEN0	= 3	; Transmitter Enable
+                 .equ	RXEN0	= 4	; Receiver Enable
+                 .equ	UDRIE0	= 5	; USART Data register Empty Interrupt Enable
+                 .equ	TXCIE0	= 6	; TX Complete Interrupt Enable
+                 .equ	RXCIE0	= 7	; RX Complete Interrupt Enable
+                 
+                 ; UCSR0C - USART Control and Status Register C
+                 .equ	UCPOL0	= 0	; Clock Polarity
+                 .equ	UCSZ00	= 1	; Character Size
+                 .equ	UCPHA0	= UCSZ00	; For compatibility
+                 .equ	UCSZ01	= 2	; Character Size
+                 .equ	UDORD0	= UCSZ01	; For compatibility
+                 .equ	USBS0	= 3	; Stop Bit Select
+                 .equ	UPM00	= 4	; Parity Mode Bit 0
+                 .equ	UPM01	= 5	; Parity Mode Bit 1
+                 .equ	UMSEL00	= 6	; USART Mode Select
+                 .equ	UMSEL0	= UMSEL00	; For compatibility
+                 .equ	UMSEL01	= 7	; USART Mode Select
+                 .equ	UMSEL1	= UMSEL01	; For compatibility
+                 
+                 ; UBRR0H - USART Baud Rate Register High Byte
+                 .equ	UBRR8	= 0	; USART Baud Rate Register bit 8
+                 .equ	UBRR9	= 1	; USART Baud Rate Register bit 9
+                 .equ	UBRR10	= 2	; USART Baud Rate Register bit 10
+                 .equ	UBRR11	= 3	; USART Baud Rate Register bit 11
+                 
+                 ; UBRR0L - USART Baud Rate Register Low Byte
+                 .equ	_UBRR0	= 0	; USART Baud Rate Register bit 0
+                 .equ	_UBRR1	= 1	; USART Baud Rate Register bit 1
+                 .equ	UBRR2	= 2	; USART Baud Rate Register bit 2
+                 .equ	UBRR3	= 3	; USART Baud Rate Register bit 3
+                 .equ	UBRR4	= 4	; USART Baud Rate Register bit 4
+                 .equ	UBRR5	= 5	; USART Baud Rate Register bit 5
+                 .equ	UBRR6	= 6	; USART Baud Rate Register bit 6
+                 .equ	UBRR7	= 7	; USART Baud Rate Register bit 7
+                 
+                 
+                 ; ***** PORTA ************************
+                 ; PORTA - Port A Data Register
+                 .equ	PORTA0	= 0	; Port A Data Register bit 0
+                 .equ	PA0	= 0	; For compatibility
+                 .equ	PORTA1	= 1	; Port A Data Register bit 1
+                 .equ	PA1	= 1	; For compatibility
+                 .equ	PORTA2	= 2	; Port A Data Register bit 2
+                 .equ	PA2	= 2	; For compatibility
+                 .equ	PORTA3	= 3	; Port A Data Register bit 3
+                 .equ	PA3	= 3	; For compatibility
+                 .equ	PORTA4	= 4	; Port A Data Register bit 4
+                 .equ	PA4	= 4	; For compatibility
+                 .equ	PORTA5	= 5	; Port A Data Register bit 5
+                 .equ	PA5	= 5	; For compatibility
+                 .equ	PORTA6	= 6	; Port A Data Register bit 6
+                 .equ	PA6	= 6	; For compatibility
+                 .equ	PORTA7	= 7	; Port A Data Register bit 7
+                 .equ	PA7	= 7	; For compatibility
+                 
+                 ; DDRA - Port A Data Direction Register
+                 .equ	DDA0	= 0	; Data Direction Register, Port A, bit 0
+                 .equ	DDA1	= 1	; Data Direction Register, Port A, bit 1
+                 .equ	DDA2	= 2	; Data Direction Register, Port A, bit 2
+                 .equ	DDA3	= 3	; Data Direction Register, Port A, bit 3
+                 .equ	DDA4	= 4	; Data Direction Register, Port A, bit 4
+                 .equ	DDA5	= 5	; Data Direction Register, Port A, bit 5
+                 .equ	DDA6	= 6	; Data Direction Register, Port A, bit 6
+                 .equ	DDA7	= 7	; Data Direction Register, Port A, bit 7
+                 
+                 ; PINA - Port A Input Pins
+                 .equ	PINA0	= 0	; Input Pins, Port A bit 0
+                 .equ	PINA1	= 1	; Input Pins, Port A bit 1
+                 .equ	PINA2	= 2	; Input Pins, Port A bit 2
+                 .equ	PINA3	= 3	; Input Pins, Port A bit 3
+                 .equ	PINA4	= 4	; Input Pins, Port A bit 4
+                 .equ	PINA5	= 5	; Input Pins, Port A bit 5
+                 .equ	PINA6	= 6	; Input Pins, Port A bit 6
+                 .equ	PINA7	= 7	; Input Pins, Port A bit 7
+                 
+                 
+                 ; ***** PORTB ************************
+                 ; PORTB - Port B Data Register
+                 .equ	PORTB0	= 0	; Port B Data Register bit 0
+                 .equ	PB0	= 0	; For compatibility
+                 .equ	PORTB1	= 1	; Port B Data Register bit 1
+                 .equ	PB1	= 1	; For compatibility
+                 .equ	PORTB2	= 2	; Port B Data Register bit 2
+                 .equ	PB2	= 2	; For compatibility
+                 .equ	PORTB3	= 3	; Port B Data Register bit 3
+                 .equ	PB3	= 3	; For compatibility
+                 .equ	PORTB4	= 4	; Port B Data Register bit 4
+                 .equ	PB4	= 4	; For compatibility
+                 .equ	PORTB5	= 5	; Port B Data Register bit 5
+                 .equ	PB5	= 5	; For compatibility
+                 .equ	PORTB6	= 6	; Port B Data Register bit 6
+                 .equ	PB6	= 6	; For compatibility
+                 .equ	PORTB7	= 7	; Port B Data Register bit 7
+                 .equ	PB7	= 7	; For compatibility
+                 
+                 ; DDRB - Port B Data Direction Register
+                 .equ	DDB0	= 0	; Port B Data Direction Register bit 0
+                 .equ	DDB1	= 1	; Port B Data Direction Register bit 1
+                 .equ	DDB2	= 2	; Port B Data Direction Register bit 2
+                 .equ	DDB3	= 3	; Port B Data Direction Register bit 3
+                 .equ	DDB4	= 4	; Port B Data Direction Register bit 4
+                 .equ	DDB5	= 5	; Port B Data Direction Register bit 5
+                 .equ	DDB6	= 6	; Port B Data Direction Register bit 6
+                 .equ	DDB7	= 7	; Port B Data Direction Register bit 7
+                 
+                 ; PINB - Port B Input Pins
+                 .equ	PINB0	= 0	; Port B Input Pins bit 0
+                 .equ	PINB1	= 1	; Port B Input Pins bit 1
+                 .equ	PINB2	= 2	; Port B Input Pins bit 2
+                 .equ	PINB3	= 3	; Port B Input Pins bit 3
+                 .equ	PINB4	= 4	; Port B Input Pins bit 4
+                 .equ	PINB5	= 5	; Port B Input Pins bit 5
+                 .equ	PINB6	= 6	; Port B Input Pins bit 6
+                 .equ	PINB7	= 7	; Port B Input Pins bit 7
+                 
+                 
+                 ; ***** PORTC ************************
+                 ; PORTC - Port C Data Register
+                 .equ	PORTC0	= 0	; Port C Data Register bit 0
+                 .equ	PC0	= 0	; For compatibility
+                 .equ	PORTC1	= 1	; Port C Data Register bit 1
+                 .equ	PC1	= 1	; For compatibility
+                 .equ	PORTC2	= 2	; Port C Data Register bit 2
+                 .equ	PC2	= 2	; For compatibility
+                 .equ	PORTC3	= 3	; Port C Data Register bit 3
+                 .equ	PC3	= 3	; For compatibility
+                 .equ	PORTC4	= 4	; Port C Data Register bit 4
+                 .equ	PC4	= 4	; For compatibility
+                 .equ	PORTC5	= 5	; Port C Data Register bit 5
+                 .equ	PC5	= 5	; For compatibility
+                 .equ	PORTC6	= 6	; Port C Data Register bit 6
+                 .equ	PC6	= 6	; For compatibility
+                 .equ	PORTC7	= 7	; Port C Data Register bit 7
+                 .equ	PC7	= 7	; For compatibility
+                 
+                 ; DDRC - Port C Data Direction Register
+                 .equ	DDC0	= 0	; Port C Data Direction Register bit 0
+                 .equ	DDC1	= 1	; Port C Data Direction Register bit 1
+                 .equ	DDC2	= 2	; Port C Data Direction Register bit 2
+                 .equ	DDC3	= 3	; Port C Data Direction Register bit 3
+                 .equ	DDC4	= 4	; Port C Data Direction Register bit 4
+                 .equ	DDC5	= 5	; Port C Data Direction Register bit 5
+                 .equ	DDC6	= 6	; Port C Data Direction Register bit 6
+                 .equ	DDC7	= 7	; Port C Data Direction Register bit 7
+                 
+                 ; PINC - Port C Input Pins
+                 .equ	PINC0	= 0	; Port C Input Pins bit 0
+                 .equ	PINC1	= 1	; Port C Input Pins bit 1
+                 .equ	PINC2	= 2	; Port C Input Pins bit 2
+                 .equ	PINC3	= 3	; Port C Input Pins bit 3
+                 .equ	PINC4	= 4	; Port C Input Pins bit 4
+                 .equ	PINC5	= 5	; Port C Input Pins bit 5
+                 .equ	PINC6	= 6	; Port C Input Pins bit 6
+                 .equ	PINC7	= 7	; Port C Input Pins bit 7
+                 
+                 
+                 ; ***** PORTD ************************
+                 ; PORTD - Port D Data Register
+                 .equ	PORTD0	= 0	; Port D Data Register bit 0
+                 .equ	PD0	= 0	; For compatibility
+                 .equ	PORTD1	= 1	; Port D Data Register bit 1
+                 .equ	PD1	= 1	; For compatibility
+                 .equ	PORTD2	= 2	; Port D Data Register bit 2
+                 .equ	PD2	= 2	; For compatibility
+                 .equ	PORTD3	= 3	; Port D Data Register bit 3
+                 .equ	PD3	= 3	; For compatibility
+                 .equ	PORTD4	= 4	; Port D Data Register bit 4
+                 .equ	PD4	= 4	; For compatibility
+                 .equ	PORTD5	= 5	; Port D Data Register bit 5
+                 .equ	PD5	= 5	; For compatibility
+                 .equ	PORTD6	= 6	; Port D Data Register bit 6
+                 .equ	PD6	= 6	; For compatibility
+                 .equ	PORTD7	= 7	; Port D Data Register bit 7
+                 .equ	PD7	= 7	; For compatibility
+                 
+                 ; DDRD - Port D Data Direction Register
+                 .equ	DDD0	= 0	; Port D Data Direction Register bit 0
+                 .equ	DDD1	= 1	; Port D Data Direction Register bit 1
+                 .equ	DDD2	= 2	; Port D Data Direction Register bit 2
+                 .equ	DDD3	= 3	; Port D Data Direction Register bit 3
+                 .equ	DDD4	= 4	; Port D Data Direction Register bit 4
+                 .equ	DDD5	= 5	; Port D Data Direction Register bit 5
+                 .equ	DDD6	= 6	; Port D Data Direction Register bit 6
+                 .equ	DDD7	= 7	; Port D Data Direction Register bit 7
+                 
+                 ; PIND - Port D Input Pins
+                 .equ	PIND0	= 0	; Port D Input Pins bit 0
+                 .equ	PIND1	= 1	; Port D Input Pins bit 1
+                 .equ	PIND2	= 2	; Port D Input Pins bit 2
+                 .equ	PIND3	= 3	; Port D Input Pins bit 3
+                 .equ	PIND4	= 4	; Port D Input Pins bit 4
+                 .equ	PIND5	= 5	; Port D Input Pins bit 5
+                 .equ	PIND6	= 6	; Port D Input Pins bit 6
+                 .equ	PIND7	= 7	; Port D Input Pins bit 7
+                 
+                 
+                 ; ***** TIMER_COUNTER_0 **************
+                 ; TIMSK0 - Timer/Counter0 Interrupt Mask Register
+                 .equ	TOIE0	= 0	; Timer/Counter0 Overflow Interrupt Enable
+                 .equ	OCIE0A	= 1	; Timer/Counter0 Output Compare Match A Interrupt Enable
+                 .equ	OCIE0B	= 2	; Timer/Counter0 Output Compare Match B Interrupt Enable
+                 
+                 ; TIFR0 - Timer/Counter0 Interrupt Flag register
+                 .equ	TOV0	= 0	; Timer/Counter0 Overflow Flag
+                 .equ	OCF0A	= 1	; Timer/Counter0 Output Compare Flag 0A
+                 .equ	OCF0B	= 2	; Timer/Counter0 Output Compare Flag 0B
+                 
+                 ; TCCR0A - Timer/Counter  Control Register A
+                 .equ	WGM00	= 0	; Waveform Generation Mode
+                 .equ	WGM01	= 1	; Waveform Generation Mode
+                 .equ	COM0B0	= 4	; Compare Output Mode, Fast PWm
+                 .equ	COM0B1	= 5	; Compare Output Mode, Fast PWm
+                 .equ	COM0A0	= 6	; Compare Output Mode, Phase Correct PWM Mode
+                 .equ	COM0A1	= 7	; Compare Output Mode, Phase Correct PWM Mode
+                 
+                 ; TCCR0B - Timer/Counter Control Register B
+                 .equ	CS00	= 0	; Clock Select
+                 .equ	CS01	= 1	; Clock Select
+                 .equ	CS02	= 2	; Clock Select
+                 .equ	WGM02	= 3	; 
+                 .equ	FOC0B	= 6	; Force Output Compare B
+                 .equ	FOC0A	= 7	; Force Output Compare A
+                 
+                 ; TCNT0 - Timer/Counter0
+                 .equ	TCNT0_0	= 0	; 
+                 .equ	TCNT0_1	= 1	; 
+                 .equ	TCNT0_2	= 2	; 
+                 .equ	TCNT0_3	= 3	; 
+                 .equ	TCNT0_4	= 4	; 
+                 .equ	TCNT0_5	= 5	; 
+                 .equ	TCNT0_6	= 6	; 
+                 .equ	TCNT0_7	= 7	; 
+                 
+                 ; OCR0A - Timer/Counter0 Output Compare Register
+                 .equ	OCR0A_0	= 0	; 
+                 .equ	OCR0A_1	= 1	; 
+                 .equ	OCR0A_2	= 2	; 
+                 .equ	OCR0A_3	= 3	; 
+                 .equ	OCR0A_4	= 4	; 
+                 .equ	OCR0A_5	= 5	; 
+                 .equ	OCR0A_6	= 6	; 
+                 .equ	OCR0A_7	= 7	; 
+                 
+                 ; OCR0B - Timer/Counter0 Output Compare Register
+                 .equ	OCR0B_0	= 0	; 
+                 .equ	OCR0B_1	= 1	; 
+                 .equ	OCR0B_2	= 2	; 
+                 .equ	OCR0B_3	= 3	; 
+                 .equ	OCR0B_4	= 4	; 
+                 .equ	OCR0B_5	= 5	; 
+                 .equ	OCR0B_6	= 6	; 
+                 .equ	OCR0B_7	= 7	; 
+                 
+                 ; GTCCR - General Timer/Counter Control Register
+                 .equ	PSRSYNC	= 0	; Prescaler Reset Timer/Counter1 and Timer/Counter0
+                 .equ	PSR10	= PSRSYNC	; For compatibility
+                 .equ	TSM	= 7	; Timer/Counter Synchronization Mode
+                 
+                 
+                 ; ***** TIMER_COUNTER_2 **************
+                 ; TIMSK2 - Timer/Counter Interrupt Mask register
+                 .equ	TOIE2	= 0	; Timer/Counter2 Overflow Interrupt Enable
+                 .equ	TOIE2A	= TOIE2	; For compatibility
+                 .equ	OCIE2A	= 1	; Timer/Counter2 Output Compare Match A Interrupt Enable
+                 .equ	OCIE2B	= 2	; Timer/Counter2 Output Compare Match B Interrupt Enable
+                 
+                 ; TIFR2 - Timer/Counter Interrupt Flag Register
+                 .equ	TOV2	= 0	; Timer/Counter2 Overflow Flag
+                 .equ	OCF2A	= 1	; Output Compare Flag 2A
+                 .equ	OCF2B	= 2	; Output Compare Flag 2B
+                 
+                 ; TCCR2A - Timer/Counter2 Control Register A
+                 .equ	WGM20	= 0	; Waveform Genration Mode
+                 .equ	WGM21	= 1	; Waveform Genration Mode
+                 .equ	COM2B0	= 4	; Compare Output Mode bit 0
+                 .equ	COM2B1	= 5	; Compare Output Mode bit 1
+                 .equ	COM2A0	= 6	; Compare Output Mode bit 1
+                 .equ	COM2A1	= 7	; Compare Output Mode bit 1
+                 
+                 ; TCCR2B - Timer/Counter2 Control Register B
+                 .equ	CS20	= 0	; Clock Select bit 0
+                 .equ	CS21	= 1	; Clock Select bit 1
+                 .equ	CS22	= 2	; Clock Select bit 2
+                 .equ	WGM22	= 3	; Waveform Generation Mode
+                 .equ	FOC2B	= 6	; Force Output Compare B
+                 .equ	FOC2A	= 7	; Force Output Compare A
+                 
+                 ; TCNT2 - Timer/Counter2
+                 .equ	TCNT2_0	= 0	; Timer/Counter 2 bit 0
+                 .equ	TCNT2_1	= 1	; Timer/Counter 2 bit 1
+                 .equ	TCNT2_2	= 2	; Timer/Counter 2 bit 2
+                 .equ	TCNT2_3	= 3	; Timer/Counter 2 bit 3
+                 .equ	TCNT2_4	= 4	; Timer/Counter 2 bit 4
+                 .equ	TCNT2_5	= 5	; Timer/Counter 2 bit 5
+                 .equ	TCNT2_6	= 6	; Timer/Counter 2 bit 6
+                 .equ	TCNT2_7	= 7	; Timer/Counter 2 bit 7
+                 
+                 ; OCR2A - Timer/Counter2 Output Compare Register A
+                 .equ	OCR2A_0	= 0	; Timer/Counter2 Output Compare Register Bit 0
+                 .equ	OCR2A_1	= 1	; Timer/Counter2 Output Compare Register Bit 1
+                 .equ	OCR2A_2	= 2	; Timer/Counter2 Output Compare Register Bit 2
+                 .equ	OCR2A_3	= 3	; Timer/Counter2 Output Compare Register Bit 3
+                 .equ	OCR2A_4	= 4	; Timer/Counter2 Output Compare Register Bit 4
+                 .equ	OCR2A_5	= 5	; Timer/Counter2 Output Compare Register Bit 5
+                 .equ	OCR2A_6	= 6	; Timer/Counter2 Output Compare Register Bit 6
+                 .equ	OCR2A_7	= 7	; Timer/Counter2 Output Compare Register Bit 7
+                 
+                 ; OCR2B - Timer/Counter2 Output Compare Register B
+                 .equ	OCR2B_0	= 0	; Timer/Counter2 Output Compare Register Bit 0
+                 .equ	OCR2B_1	= 1	; Timer/Counter2 Output Compare Register Bit 1
+                 .equ	OCR2B_2	= 2	; Timer/Counter2 Output Compare Register Bit 2
+                 .equ	OCR2B_3	= 3	; Timer/Counter2 Output Compare Register Bit 3
+                 .equ	OCR2B_4	= 4	; Timer/Counter2 Output Compare Register Bit 4
+                 .equ	OCR2B_5	= 5	; Timer/Counter2 Output Compare Register Bit 5
+                 .equ	OCR2B_6	= 6	; Timer/Counter2 Output Compare Register Bit 6
+                 .equ	OCR2B_7	= 7	; Timer/Counter2 Output Compare Register Bit 7
+                 
+                 ; ASSR - Asynchronous Status Register
+                 .equ	TCR2BUB	= 0	; Timer/Counter Control Register2 Update Busy
+                 .equ	TCR2AUB	= 1	; Timer/Counter Control Register2 Update Busy
+                 .equ	OCR2BUB	= 2	; Output Compare Register 2 Update Busy
+                 .equ	OCR2AUB	= 3	; Output Compare Register2 Update Busy
+                 .equ	TCN2UB	= 4	; Timer/Counter2 Update Busy
+                 .equ	AS2	= 5	; Asynchronous Timer/Counter2
+                 .equ	EXCLK	= 6	; Enable External Clock Input
+                 
+                 ; GTCCR - General Timer Counter Control register
+                 .equ	PSRASY	= 1	; Prescaler Reset Timer/Counter2
+                 .equ	PSR2	= PSRASY	; For compatibility
+                 ;.equ	TSM	= 7	; Timer/Counter Synchronization Mode
+                 
+                 
+                 ; ***** WATCHDOG *********************
+                 ; WDTCSR - Watchdog Timer Control Register
+                 .equ	WDP0	= 0	; Watch Dog Timer Prescaler bit 0
+                 .equ	WDP1	= 1	; Watch Dog Timer Prescaler bit 1
+                 .equ	WDP2	= 2	; Watch Dog Timer Prescaler bit 2
+                 .equ	WDE	= 3	; Watch Dog Enable
+                 .equ	WDCE	= 4	; Watchdog Change Enable
+                 .equ	WDP3	= 5	; Watchdog Timer Prescaler Bit 3
+                 .equ	WDIE	= 6	; Watchdog Timeout Interrupt Enable
+                 .equ	WDIF	= 7	; Watchdog Timeout Interrupt Flag
+                 
+                 
+                 ; ***** JTAG *************************
+                 ; OCDR - On-Chip Debug Related Register in I/O Memory
+                 .equ	OCDR0	= 0	; On-Chip Debug Register Bit 0
+                 .equ	OCDR1	= 1	; On-Chip Debug Register Bit 1
+                 .equ	OCDR2	= 2	; On-Chip Debug Register Bit 2
+                 .equ	OCDR3	= 3	; On-Chip Debug Register Bit 3
+                 .equ	OCDR4	= 4	; On-Chip Debug Register Bit 4
+                 .equ	OCDR5	= 5	; On-Chip Debug Register Bit 5
+                 .equ	OCDR6	= 6	; On-Chip Debug Register Bit 6
+                 .equ	OCDR7	= 7	; On-Chip Debug Register Bit 7
+                 .equ	IDRD	= OCDR7	; For compatibility
+                 
+                 ; MCUCR - MCU Control Register
+                 .equ	JTD	= 7	; JTAG Interface Disable
+                 
+                 ; MCUSR - MCU Status Register
+                 .equ	JTRF	= 4	; JTAG Reset Flag
+                 
+                 
+                 ; ***** BOOT_LOAD ********************
+                 ; SPMCSR - Store Program Memory Control Register
+                 .equ	SPMEN	= 0	; Store Program Memory Enable
+                 .equ	PGERS	= 1	; Page Erase
+                 .equ	PGWRT	= 2	; Page Write
+                 .equ	BLBSET	= 3	; Boot Lock Bit Set
+                 .equ	RWWSRE	= 4	; Read While Write section read enable
+                 .equ	SIGRD	= 5	; Signature Row Read
+                 .equ	RWWSB	= 6	; Read While Write Section Busy
+                 .equ	SPMIE	= 7	; SPM Interrupt Enable
+                 
+                 
+                 ; ***** EXTERNAL_INTERRUPT ***********
+                 ; EICRA - External Interrupt Control Register A
+                 .equ	ISC00	= 0	; External Interrupt Sense Control Bit
+                 .equ	ISC01	= 1	; External Interrupt Sense Control Bit
+                 .equ	ISC10	= 2	; External Interrupt Sense Control Bit
+                 .equ	ISC11	= 3	; External Interrupt Sense Control Bit
+                 .equ	ISC20	= 4	; External Interrupt Sense Control Bit
+                 .equ	ISC21	= 5	; External Interrupt Sense Control Bit
+                 
+                 ; EIMSK - External Interrupt Mask Register
+                 .equ	INT0	= 0	; External Interrupt Request 0 Enable
+                 .equ	INT1	= 1	; External Interrupt Request 1 Enable
+                 .equ	INT2	= 2	; External Interrupt Request 2 Enable
+                 
+                 ; EIFR - External Interrupt Flag Register
+                 .equ	INTF0	= 0	; External Interrupt Flag 0
+                 .equ	INTF1	= 1	; External Interrupt Flag 1
+                 .equ	INTF2	= 2	; External Interrupt Flag 2
+                 
+                 ; PCICR - Pin Change Interrupt Control Register
+                 .equ	PCIE0	= 0	; Pin Change Interrupt Enable 0
+                 .equ	PCIE1	= 1	; Pin Change Interrupt Enable 1
+                 .equ	PCIE2	= 2	; Pin Change Interrupt Enable 2
+                 .equ	PCIE3	= 3	; Pin Change Interrupt Enable 3
+                 
+                 ; PCIFR - Pin Change Interrupt Flag Register
+                 .equ	PCIF0	= 0	; Pin Change Interrupt Flag 0
+                 .equ	PCIF1	= 1	; Pin Change Interrupt Flag 1
+                 .equ	PCIF2	= 2	; Pin Change Interrupt Flag 2
+                 .equ	PCIF3	= 3	; Pin Change Interrupt Flag 3
+                 
+                 ; PCMSK3 - Pin Change Mask Register 3
+                 .equ	PCINT24	= 0	; Pin Change Enable Mask 24
+                 .equ	PCINT25	= 1	; Pin Change Enable Mask 25
+                 .equ	PCINT26	= 2	; Pin Change Enable Mask 26
+                 .equ	PCINT27	= 3	; Pin Change Enable Mask 27
+                 .equ	PCINT28	= 4	; Pin Change Enable Mask 28
+                 .equ	PCINT29	= 5	; Pin Change Enable Mask 29
+                 .equ	PCINT30	= 6	; Pin Change Enable Mask 30
+                 .equ	PCINT31	= 7	; Pin Change Enable Mask 31
+                 
+                 ; PCMSK2 - Pin Change Mask Register 2
+                 .equ	PCINT16	= 0	; Pin Change Enable Mask 16
+                 .equ	PCINT17	= 1	; Pin Change Enable Mask 17
+                 .equ	PCINT18	= 2	; Pin Change Enable Mask 18
+                 .equ	PCINT19	= 3	; Pin Change Enable Mask 19
+                 .equ	PCINT20	= 4	; Pin Change Enable Mask 20
+                 .equ	PCINT21	= 5	; Pin Change Enable Mask 21
+                 .equ	PCINT22	= 6	; Pin Change Enable Mask 22
+                 .equ	PCINT23	= 7	; Pin Change Enable Mask 23
+                 
+                 ; PCMSK1 - Pin Change Mask Register 1
+                 .equ	PCINT8	= 0	; Pin Change Enable Mask 8
+                 .equ	PCINT9	= 1	; Pin Change Enable Mask 9
+                 .equ	PCINT10	= 2	; Pin Change Enable Mask 10
+                 .equ	PCINT11	= 3	; Pin Change Enable Mask 11
+                 .equ	PCINT12	= 4	; Pin Change Enable Mask 12
+                 .equ	PCINT13	= 5	; Pin Change Enable Mask 13
+                 .equ	PCINT14	= 6	; Pin Change Enable Mask 14
+                 .equ	PCINT15	= 7	; Pin Change Enable Mask 15
+                 
+                 ; PCMSK0 - Pin Change Mask Register 0
+                 .equ	PCINT0	= 0	; Pin Change Enable Mask 0
+                 .equ	PCINT1	= 1	; Pin Change Enable Mask 1
+                 .equ	PCINT2	= 2	; Pin Change Enable Mask 2
+                 .equ	PCINT3	= 3	; Pin Change Enable Mask 3
+                 .equ	PCINT4	= 4	; Pin Change Enable Mask 4
+                 .equ	PCINT5	= 5	; Pin Change Enable Mask 5
+                 .equ	PCINT6	= 6	; Pin Change Enable Mask 6
+                 .equ	PCINT7	= 7	; Pin Change Enable Mask 7
+                 
+                 
+                 ; ***** AD_CONVERTER *****************
+                 ; ADMUX - The ADC multiplexer Selection Register
+                 .equ	MUX0	= 0	; Analog Channel and Gain Selection Bits
+                 .equ	MUX1	= 1	; Analog Channel and Gain Selection Bits
+                 .equ	MUX2	= 2	; Analog Channel and Gain Selection Bits
+                 .equ	MUX3	= 3	; Analog Channel and Gain Selection Bits
+                 .equ	MUX4	= 4	; Analog Channel and Gain Selection Bits
+                 .equ	ADLAR	= 5	; Left Adjust Result
+                 .equ	REFS0	= 6	; Reference Selection Bit 0
+                 .equ	REFS1	= 7	; Reference Selection Bit 1
+                 
+                 ; ADCSRA - The ADC Control and Status register A
+                 .equ	ADPS0	= 0	; ADC  Prescaler Select Bits
+                 .equ	ADPS1	= 1	; ADC  Prescaler Select Bits
+                 .equ	ADPS2	= 2	; ADC  Prescaler Select Bits
+                 .equ	ADIE	= 3	; ADC Interrupt Enable
+                 .equ	ADIF	= 4	; ADC Interrupt Flag
+                 .equ	ADATE	= 5	; ADC  Auto Trigger Enable
+                 .equ	ADSC	= 6	; ADC Start Conversion
+                 .equ	ADEN	= 7	; ADC Enable
+                 
+                 ; ADCSRB - The ADC Control and Status register B
+                 .equ	ADTS0	= 0	; ADC Auto Trigger Source bit 0
+                 .equ	ADTS1	= 1	; ADC Auto Trigger Source bit 1
+                 .equ	ADTS2	= 2	; ADC Auto Trigger Source bit 2
+                 ;.equ	ACME	= 6	; 
+                 
+                 ; ADCH - ADC Data Register High Byte
+                 .equ	ADCH0	= 0	; ADC Data Register High Byte Bit 0
+                 .equ	ADCH1	= 1	; ADC Data Register High Byte Bit 1
+                 .equ	ADCH2	= 2	; ADC Data Register High Byte Bit 2
+                 .equ	ADCH3	= 3	; ADC Data Register High Byte Bit 3
+                 .equ	ADCH4	= 4	; ADC Data Register High Byte Bit 4
+                 .equ	ADCH5	= 5	; ADC Data Register High Byte Bit 5
+                 .equ	ADCH6	= 6	; ADC Data Register High Byte Bit 6
+                 .equ	ADCH7	= 7	; ADC Data Register High Byte Bit 7
+                 
+                 ; ADCL - ADC Data Register Low Byte
+                 .equ	ADCL0	= 0	; ADC Data Register Low Byte Bit 0
+                 .equ	ADCL1	= 1	; ADC Data Register Low Byte Bit 1
+                 .equ	ADCL2	= 2	; ADC Data Register Low Byte Bit 2
+                 .equ	ADCL3	= 3	; ADC Data Register Low Byte Bit 3
+                 .equ	ADCL4	= 4	; ADC Data Register Low Byte Bit 4
+                 .equ	ADCL5	= 5	; ADC Data Register Low Byte Bit 5
+                 .equ	ADCL6	= 6	; ADC Data Register Low Byte Bit 6
+                 .equ	ADCL7	= 7	; ADC Data Register Low Byte Bit 7
+                 
+                 ; DIDR0 - Digital Input Disable Register
+                 .equ	ADC0D	= 0	; 
+                 .equ	ADC1D	= 1	; 
+                 .equ	ADC2D	= 2	; 
+                 .equ	ADC3D	= 3	; 
+                 .equ	ADC4D	= 4	; 
+                 .equ	ADC5D	= 5	; 
+                 .equ	ADC6D	= 6	; 
+                 .equ	ADC7D	= 7	; 
+                 
+                 
+                 ; ***** TIMER_COUNTER_1 **************
+                 ; TIMSK1 - Timer/Counter1 Interrupt Mask Register
+                 .equ	TOIE1	= 0	; Timer/Counter1 Overflow Interrupt Enable
+                 .equ	OCIE1A	= 1	; Timer/Counter1 Output Compare A Match Interrupt Enable
+                 .equ	OCIE1B	= 2	; Timer/Counter1 Output Compare B Match Interrupt Enable
+                 .equ	ICIE1	= 5	; Timer/Counter1 Input Capture Interrupt Enable
+                 
+                 ; TIFR1 - Timer/Counter Interrupt Flag register
+                 .equ	TOV1	= 0	; Timer/Counter1 Overflow Flag
+                 .equ	OCF1A	= 1	; Timer/Counter1 Output Compare A Match Flag
+                 .equ	OCF1B	= 2	; Timer/Counter1 Output Compare B Match Flag
+                 .equ	ICF1	= 5	; Timer/Counter1 Input Capture Flag
+                 
+                 ; TCCR1A - Timer/Counter1 Control Register A
+                 .equ	WGM10	= 0	; Pulse Width Modulator Select Bit 0
+                 .equ	PWM10	= WGM10	; For compatibility
+                 .equ	WGM11	= 1	; Pulse Width Modulator Select Bit 1
+                 .equ	PWM11	= WGM11	; For compatibility
+                 .equ	COM1B0	= 4	; Comparet Ouput Mode 1B, bit 0
+                 .equ	COM1B1	= 5	; Compare Output Mode 1B, bit 1
+                 .equ	COM1A0	= 6	; Comparet Ouput Mode 1A, bit 0
+                 .equ	COM1A1	= 7	; Compare Output Mode 1A, bit 1
+                 
+                 ; TCCR1B - Timer/Counter1 Control Register B
+                 .equ	CS10	= 0	; Clock Select bit 0
+                 .equ	CS11	= 1	; Clock Select 1 bit 1
+                 .equ	CS12	= 2	; Clock Select1 bit 2
+                 .equ	WGM12	= 3	; Waveform Generation Mode Bit 2
+                 .equ	CTC1	= WGM12	; For compatibility
+                 .equ	WGM13	= 4	; Waveform Generation Mode Bit 3
+                 .equ	ICES1	= 6	; Input Capture 1 Edge Select
+                 .equ	ICNC1	= 7	; Input Capture 1 Noise Canceler
+                 
+                 ; TCCR1C - Timer/Counter1 Control Register C
+                 .equ	FOC1B	= 6	; Force Output Compare for Channel B
+                 .equ	FOC1A	= 7	; Force Output Compare for Channel A
+                 
+                 
+                 ; ***** EEPROM ***********************
+                 ; EEARH - EEPROM Address Register Low Byte
+                 .equ	EEAR8	= 0	; EEPROM Read/Write Access Bit 8
+                 .equ	EEAR9	= 1	; EEPROM Read/Write Access Bit 9
+                 .equ	EEAR10	= 2	; EEPROM Read/Write Access Bit 10
+                 .equ	EEAR11	= 3	; EEPROM Read/Write Access Bit 11
+                 
+                 ; EEARL - EEPROM Address Register Low Byte
+                 .equ	EEAR0	= 0	; EEPROM Read/Write Access Bit 0
+                 .equ	EEAR1	= 1	; EEPROM Read/Write Access Bit 1
+                 .equ	EEAR2	= 2	; EEPROM Read/Write Access Bit 2
+                 .equ	EEAR3	= 3	; EEPROM Read/Write Access Bit 3
+                 .equ	EEAR4	= 4	; EEPROM Read/Write Access Bit 4
+                 .equ	EEAR5	= 5	; EEPROM Read/Write Access Bit 5
+                 .equ	EEAR6	= 6	; EEPROM Read/Write Access Bit 6
+                 .equ	EEAR7	= 7	; EEPROM Read/Write Access Bit 7
+                 
+                 ; EEDR - EEPROM Data Register
+                 .equ	EEDR0	= 0	; EEPROM Data Register bit 0
+                 .equ	EEDR1	= 1	; EEPROM Data Register bit 1
+                 .equ	EEDR2	= 2	; EEPROM Data Register bit 2
+                 .equ	EEDR3	= 3	; EEPROM Data Register bit 3
+                 .equ	EEDR4	= 4	; EEPROM Data Register bit 4
+                 .equ	EEDR5	= 5	; EEPROM Data Register bit 5
+                 .equ	EEDR6	= 6	; EEPROM Data Register bit 6
+                 .equ	EEDR7	= 7	; EEPROM Data Register bit 7
+                 
+                 ; EECR - EEPROM Control Register
+                 .equ	EERE	= 0	; EEPROM Read Enable
+                 .equ	EEPE	= 1	; EEPROM Write Enable
+                 .equ	EEMPE	= 2	; EEPROM Master Write Enable
+                 .equ	EERIE	= 3	; EEPROM Ready Interrupt Enable
+                 .equ	EEPM0	= 4	; EEPROM Programming Mode Bit 0
+                 .equ	EEPM1	= 5	; EEPROM Programming Mode Bit 1
+                 
+                 
+                 ; ***** TWI **************************
+                 ; TWAMR - TWI (Slave) Address Mask Register
+                 .equ	TWAM0	= 1	; 
+                 .equ	TWAMR0	= TWAM0	; For compatibility
+                 .equ	TWAM1	= 2	; 
+                 .equ	TWAMR1	= TWAM1	; For compatibility
+                 .equ	TWAM2	= 3	; 
+                 .equ	TWAMR2	= TWAM2	; For compatibility
+                 .equ	TWAM3	= 4	; 
+                 .equ	TWAMR3	= TWAM3	; For compatibility
+                 .equ	TWAM4	= 5	; 
+                 .equ	TWAMR4	= TWAM4	; For compatibility
+                 .equ	TWAM5	= 6	; 
+                 .equ	TWAMR5	= TWAM5	; For compatibility
+                 .equ	TWAM6	= 7	; 
+                 .equ	TWAMR6	= TWAM6	; For compatibility
+                 
+                 ; TWBR - TWI Bit Rate register
+                 .equ	TWBR0	= 0	; 
+                 .equ	TWBR1	= 1	; 
+                 .equ	TWBR2	= 2	; 
+                 .equ	TWBR3	= 3	; 
+                 .equ	TWBR4	= 4	; 
+                 .equ	TWBR5	= 5	; 
+                 .equ	TWBR6	= 6	; 
+                 .equ	TWBR7	= 7	; 
+                 
+                 ; TWCR - TWI Control Register
+                 .equ	TWIE	= 0	; TWI Interrupt Enable
+                 .equ	TWEN	= 2	; TWI Enable Bit
+                 .equ	TWWC	= 3	; TWI Write Collition Flag
+                 .equ	TWSTO	= 4	; TWI Stop Condition Bit
+                 .equ	TWSTA	= 5	; TWI Start Condition Bit
+                 .equ	TWEA	= 6	; TWI Enable Acknowledge Bit
+                 .equ	TWINT	= 7	; TWI Interrupt Flag
+                 
+                 ; TWSR - TWI Status Register
+                 .equ	TWPS0	= 0	; TWI Prescaler
+                 .equ	TWPS1	= 1	; TWI Prescaler
+                 .equ	TWS3	= 3	; TWI Status
+                 .equ	TWS4	= 4	; TWI Status
+                 .equ	TWS5	= 5	; TWI Status
+                 .equ	TWS6	= 6	; TWI Status
+                 .equ	TWS7	= 7	; TWI Status
+                 
+                 ; TWDR - TWI Data register
+                 .equ	TWD0	= 0	; TWI Data Register Bit 0
+                 .equ	TWD1	= 1	; TWI Data Register Bit 1
+                 .equ	TWD2	= 2	; TWI Data Register Bit 2
+                 .equ	TWD3	= 3	; TWI Data Register Bit 3
+                 .equ	TWD4	= 4	; TWI Data Register Bit 4
+                 .equ	TWD5	= 5	; TWI Data Register Bit 5
+                 .equ	TWD6	= 6	; TWI Data Register Bit 6
+                 .equ	TWD7	= 7	; TWI Data Register Bit 7
+                 
+                 ; TWAR - TWI (Slave) Address register
+                 .equ	TWGCE	= 0	; TWI General Call Recognition Enable Bit
+                 .equ	TWA0	= 1	; TWI (Slave) Address register Bit 0
+                 .equ	TWA1	= 2	; TWI (Slave) Address register Bit 1
+                 .equ	TWA2	= 3	; TWI (Slave) Address register Bit 2
+                 .equ	TWA3	= 4	; TWI (Slave) Address register Bit 3
+                 .equ	TWA4	= 5	; TWI (Slave) Address register Bit 4
+                 .equ	TWA5	= 6	; TWI (Slave) Address register Bit 5
+                 .equ	TWA6	= 7	; TWI (Slave) Address register Bit 6
+                 
+                 
+                 ; ***** USART1 ***********************
+                 ; UDR1 - USART I/O Data Register
+                 .equ	UDR1_0	= 0	; USART I/O Data Register bit 0
+                 .equ	UDR1_1	= 1	; USART I/O Data Register bit 1
+                 .equ	UDR1_2	= 2	; USART I/O Data Register bit 2
+                 .equ	UDR1_3	= 3	; USART I/O Data Register bit 3
+                 .equ	UDR1_4	= 4	; USART I/O Data Register bit 4
+                 .equ	UDR1_5	= 5	; USART I/O Data Register bit 5
+                 .equ	UDR1_6	= 6	; USART I/O Data Register bit 6
+                 .equ	UDR1_7	= 7	; USART I/O Data Register bit 7
+                 
+                 ; UCSR1A - USART Control and Status Register A
+                 .equ	MPCM1	= 0	; Multi-processor Communication Mode
+                 .equ	U2X1	= 1	; Double the USART transmission speed
+                 .equ	UPE1	= 2	; Parity Error
+                 .equ	DOR1	= 3	; Data overRun
+                 .equ	FE1	= 4	; Framing Error
+                 .equ	UDRE1	= 5	; USART Data Register Empty
+                 .equ	TXC1	= 6	; USART Transmitt Complete
+                 .equ	RXC1	= 7	; USART Receive Complete
+                 
+                 ; UCSR1B - USART Control and Status Register B
+                 .equ	TXB81	= 0	; Transmit Data Bit 8
+                 .equ	RXB81	= 1	; Receive Data Bit 8
+                 .equ	UCSZ12	= 2	; Character Size
+                 .equ	TXEN1	= 3	; Transmitter Enable
+                 .equ	RXEN1	= 4	; Receiver Enable
+                 .equ	UDRIE1	= 5	; USART Data register Empty Interrupt Enable
+                 .equ	TXCIE1	= 6	; TX Complete Interrupt Enable
+                 .equ	RXCIE1	= 7	; RX Complete Interrupt Enable
+                 
+                 ; UCSR1C - USART Control and Status Register C
+                 .equ	UCPOL1	= 0	; Clock Polarity
+                 .equ	UCSZ10	= 1	; Character Size
+                 .equ	UCPHA1	= UCSZ10	; For compatibility
+                 .equ	UCSZ11	= 2	; Character Size
+                 .equ	UDORD1	= UCSZ11	; For compatibility
+                 .equ	USBS1	= 3	; Stop Bit Select
+                 .equ	UPM10	= 4	; Parity Mode Bit 0
+                 .equ	UPM11	= 5	; Parity Mode Bit 1
+                 .equ	UMSEL10	= 6	; USART Mode Select
+                 .equ	UMSEL11	= 7	; USART Mode Select
+                 
+                 ; UBRR1H - USART Baud Rate Register High Byte
+                 .equ	UBRR_8	= 0	; USART Baud Rate Register bit 8
+                 .equ	UBRR_9	= 1	; USART Baud Rate Register bit 9
+                 .equ	UBRR_10	= 2	; USART Baud Rate Register bit 10
+                 .equ	UBRR_11	= 3	; USART Baud Rate Register bit 11
+                 
+                 ; UBRR1L - USART Baud Rate Register Low Byte
+                 .equ	UBRR_0	= 0	; USART Baud Rate Register bit 0
+                 .equ	UBRR_1	= 1	; USART Baud Rate Register bit 1
+                 .equ	UBRR_2	= 2	; USART Baud Rate Register bit 2
+                 .equ	UBRR_3	= 3	; USART Baud Rate Register bit 3
+                 .equ	UBRR_4	= 4	; USART Baud Rate Register bit 4
+                 .equ	UBRR_5	= 5	; USART Baud Rate Register bit 5
+                 .equ	UBRR_6	= 6	; USART Baud Rate Register bit 6
+                 .equ	UBRR_7	= 7	; USART Baud Rate Register bit 7
+                 
+                 
+                 ; ***** CPU **************************
+                 ; SREG - Status Register
+                 .equ	SREG_C	= 0	; Carry Flag
+                 .equ	SREG_Z	= 1	; Zero Flag
+                 .equ	SREG_N	= 2	; Negative Flag
+                 .equ	SREG_V	= 3	; Two's Complement Overflow Flag
+                 .equ	SREG_S	= 4	; Sign Bit
+                 .equ	SREG_H	= 5	; Half Carry Flag
+                 .equ	SREG_T	= 6	; Bit Copy Storage
+                 .equ	SREG_I	= 7	; Global Interrupt Enable
+                 
+                 ; MCUCR - MCU Control Register
+                 .equ	IVCE	= 0	; Interrupt Vector Change Enable
+                 .equ	IVSEL	= 1	; Interrupt Vector Select
+                 .equ	PUD	= 4	; Pull-up disable
+                 .equ	BODSE	= 5	; BOD Power Down in Sleep Enable
+                 .equ	BODS	= 6	; BOD Power Down in Sleep
+                 ;.equ	JTD	= 7	; JTAG Interface Disable
+                 
+                 ; MCUSR - MCU Status Register
+                 .equ	PORF	= 0	; Power-on reset flag
+                 .equ	EXTRF	= 1	; External Reset Flag
+                 .equ	BORF	= 2	; Brown-out Reset Flag
+                 .equ	WDRF	= 3	; Watchdog Reset Flag
+                 ;.equ	JTRF	= 4	; JTAG Reset Flag
+                 
+                 ; OSCCAL - Oscillator Calibration Value
+                 .equ	CAL0	= 0	; Oscillator Calibration Value Bit0
+                 .equ	CAL1	= 1	; Oscillator Calibration Value Bit1
+                 .equ	CAL2	= 2	; Oscillator Calibration Value Bit2
+                 .equ	CAL3	= 3	; Oscillator Calibration Value Bit3
+                 .equ	CAL4	= 4	; Oscillator Calibration Value Bit4
+                 .equ	CAL5	= 5	; Oscillator Calibration Value Bit5
+                 .equ	CAL6	= 6	; Oscillator Calibration Value Bit6
+                 .equ	CAL7	= 7	; Oscillator Calibration Value Bit7
+                 
+                 ; CLKPR - 
+                 .equ	CLKPS0	= 0	; 
+                 .equ	CLKPS1	= 1	; 
+                 .equ	CLKPS2	= 2	; 
+                 .equ	CLKPS3	= 3	; 
+                 .equ	CLKPCE	= 7	; 
+                 
+                 ; SMCR - Sleep Mode Control Register
+                 .equ	SE	= 0	; Sleep Enable
+                 .equ	SM0	= 1	; Sleep Mode Select bit 0
+                 .equ	SM1	= 2	; Sleep Mode Select bit 1
+                 .equ	SM2	= 3	; Sleep Mode Select bit 2
+                 
+                 ; GPIOR2 - General Purpose IO Register 2
+                 .equ	GPIOR20	= 0	; General Purpose IO Register 2 bit 0
+                 .equ	GPIOR21	= 1	; General Purpose IO Register 2 bit 1
+                 .equ	GPIOR22	= 2	; General Purpose IO Register 2 bit 2
+                 .equ	GPIOR23	= 3	; General Purpose IO Register 2 bit 3
+                 .equ	GPIOR24	= 4	; General Purpose IO Register 2 bit 4
+                 .equ	GPIOR25	= 5	; General Purpose IO Register 2 bit 5
+                 .equ	GPIOR26	= 6	; General Purpose IO Register 2 bit 6
+                 .equ	GPIOR27	= 7	; General Purpose IO Register 2 bit 7
+                 
+                 ; GPIOR1 - General Purpose IO Register 1
+                 .equ	GPIOR10	= 0	; General Purpose IO Register 1 bit 0
+                 .equ	GPIOR11	= 1	; General Purpose IO Register 1 bit 1
+                 .equ	GPIOR12	= 2	; General Purpose IO Register 1 bit 2
+                 .equ	GPIOR13	= 3	; General Purpose IO Register 1 bit 3
+                 .equ	GPIOR14	= 4	; General Purpose IO Register 1 bit 4
+                 .equ	GPIOR15	= 5	; General Purpose IO Register 1 bit 5
+                 .equ	GPIOR16	= 6	; General Purpose IO Register 1 bit 6
+                 .equ	GPIOR17	= 7	; General Purpose IO Register 1 bit 7
+                 
+                 ; GPIOR0 - General Purpose IO Register 0
+                 .equ	GPIOR00	= 0	; General Purpose IO Register 0 bit 0
+                 .equ	GPIOR01	= 1	; General Purpose IO Register 0 bit 1
+                 .equ	GPIOR02	= 2	; General Purpose IO Register 0 bit 2
+                 .equ	GPIOR03	= 3	; General Purpose IO Register 0 bit 3
+                 .equ	GPIOR04	= 4	; General Purpose IO Register 0 bit 4
+                 .equ	GPIOR05	= 5	; General Purpose IO Register 0 bit 5
+                 .equ	GPIOR06	= 6	; General Purpose IO Register 0 bit 6
+                 .equ	GPIOR07	= 7	; General Purpose IO Register 0 bit 7
+                 
+                 ; PRR0 - Power Reduction Register0
+                 .equ	PRADC	= 0	; Power Reduction ADC
+                 .equ	PRUSART0	= 1	; Power Reduction USART 0
+                 .equ	PRSPI	= 2	; Power Reduction Serial Peripheral Interface
+                 .equ	PRTIM1	= 3	; Power Reduction Timer/Counter1
+                 .equ	PRUSART1	= 4	; Power Reduction USART 1
+                 .equ	PRTIM0	= 5	; Power Reduction Timer/Counter0
+                 .equ	PRTIM2	= 6	; Power Reduction Timer/Counter2
+                 .equ	PRTWI	= 7	; Power Reduction TWI
+                 
+                 
+                 ; ***** SPI **************************
+                 ; SPDR - SPI Data Register
+                 .equ	SPDR0	= 0	; SPI Data Register bit 0
+                 .equ	SPDR1	= 1	; SPI Data Register bit 1
+                 .equ	SPDR2	= 2	; SPI Data Register bit 2
+                 .equ	SPDR3	= 3	; SPI Data Register bit 3
+                 .equ	SPDR4	= 4	; SPI Data Register bit 4
+                 .equ	SPDR5	= 5	; SPI Data Register bit 5
+                 .equ	SPDR6	= 6	; SPI Data Register bit 6
+                 .equ	SPDR7	= 7	; SPI Data Register bit 7
+                 
+                 ; SPSR - SPI Status Register
+                 .equ	SPI2X	= 0	; Double SPI Speed Bit
+                 .equ	WCOL	= 6	; Write Collision Flag
+                 .equ	SPIF	= 7	; SPI Interrupt Flag
+                 
+                 ; SPCR - SPI Control Register
+                 .equ	SPR0	= 0	; SPI Clock Rate Select 0
+                 .equ	SPR1	= 1	; SPI Clock Rate Select 1
+                 .equ	CPHA	= 2	; Clock Phase
+                 .equ	CPOL	= 3	; Clock polarity
+                 .equ	MSTR	= 4	; Master/Slave Select
+                 .equ	DORD	= 5	; Data Order
+                 .equ	SPE	= 6	; SPI Enable
+                 .equ	SPIE	= 7	; SPI Interrupt Enable
+                 
+                 
+                 
+                 ; ***** LOCKSBITS ********************************************************
+                 .equ	LB1	= 0	; Lock bit
+                 .equ	LB2	= 1	; Lock bit
+                 .equ	BLB01	= 2	; Boot Lock bit
+                 .equ	BLB02	= 3	; Boot Lock bit
+                 .equ	BLB11	= 4	; Boot lock bit
+                 .equ	BLB12	= 5	; Boot lock bit
+                 
+                 
+                 ; ***** FUSES ************************************************************
+                 ; LOW fuse bits
+                 .equ	CKSEL0	= 0	; Select Clock Source
+                 .equ	CKSEL1	= 1	; Select Clock Source
+                 .equ	CKSEL2	= 2	; Select Clock Source
+                 .equ	CKSEL3	= 3	; Select Clock Source
+                 .equ	SUT0	= 4	; Select start-up time
+                 .equ	SUT1	= 5	; Select start-up time
+                 .equ	CKOUT	= 6	; Clock output
+                 .equ	CKDIV8	= 7	; Divide clock by 8
+                 
+                 ; HIGH fuse bits
+                 .equ	BOOTRST	= 0	; Select Reset Vector
+                 .equ	BOOTSZ0	= 1	; Select Boot Size
+                 .equ	BOOTSZ1	= 2	; Select Boot Size
+                 .equ	EESAVE	= 3	; EEPROM memory is preserved through chip erase
+                 .equ	WDTON	= 4	; Watchdog timer always on
+                 .equ	SPIEN	= 5	; Enable Serial programming and Data Downloading
+                 .equ	JTAGEN	= 6	; Enable JTAG
+                 .equ	OCDEN	= 7	; Enable OCD
+                 
+                 ; EXTENDED fuse bits
+                 .equ	BODLEVEL0	= 0	; Brown-out Detector trigger level
+                 .equ	BODLEVEL1	= 1	; Brown-out Detector trigger level
+                 .equ	BODLEVEL2	= 2	; Brown-out Detector trigger level
+                 
+                 
+                 
+                 ; ***** CPU REGISTER DEFINITIONS *****************************************
+                 .def	XH	= r27
+                 .def	XL	= r26
+                 .def	YH	= r29
+                 .def	YL	= r28
+                 .def	ZH	= r31
+                 .def	ZL	= r30
+                 
+                 
+                 
+                 ; ***** DATA MEMORY DECLARATIONS *****************************************
+                 .equ	FLASHEND	= 0x7fff	; Note: Word address
+                 .equ	IOEND	= 0x00ff
+                 .equ	SRAM_START	= 0x0100
+                 .equ	SRAM_SIZE	= 4096
+                 .equ	RAMEND	= 0x10ff
+                 .equ	XRAMEND	= 0x0000
+                 .equ	E2END	= 0x07ff
+                 .equ	EEPROMEND	= 0x07ff
+                 .equ	EEADRBITS	= 11
+                 #pragma AVRPART MEMORY PROG_FLASH 65536
+                 #pragma AVRPART MEMORY EEPROM 2048
+                 #pragma AVRPART MEMORY INT_SRAM SIZE 4096
+                 #pragma AVRPART MEMORY INT_SRAM START_ADDR 0x100
+                 
+                 
+                 
+                 ; ***** BOOTLOADER DECLARATIONS ******************************************
+                 .equ	NRWW_START_ADDR	= 0x7000
+                 .equ	NRWW_STOP_ADDR	= 0x7fff
+                 .equ	RWW_START_ADDR	= 0x0
+                 .equ	RWW_STOP_ADDR	= 0x6fff
+                 .equ	PAGESIZE	= 128
+                 .equ	FIRSTBOOTSTART	= 0x7e00
+                 .equ	SECONDBOOTSTART	= 0x7c00
+                 .equ	THIRDBOOTSTART	= 0x7800
+                 .equ	FOURTHBOOTSTART	= 0x7000
+                 .equ	SMALLBOOTSTART	= FIRSTBOOTSTART
+                 .equ	LARGEBOOTSTART	= FOURTHBOOTSTART
+                 
+                 
+                 
+                 ; ***** INTERRUPT VECTORS ************************************************
+                 .equ	INT0addr	= 0x0002	; External Interrupt Request 0
+                 .equ	INT1addr	= 0x0004	; External Interrupt Request 1
+                 .equ	INT2addr	= 0x0006	; External Interrupt Request 2
+                 .equ	PCI0addr	= 0x0008	; Pin Change Interrupt Request 0
+                 .equ	PCI1addr	= 0x000a	; Pin Change Interrupt Request 1
+                 .equ	PCI2addr	= 0x000c	; Pin Change Interrupt Request 2
+                 .equ	PCI3addr	= 0x000e	; Pin Change Interrupt Request 3
+                 .equ	WDTaddr	= 0x0010	; Watchdog Time-out Interrupt
+                 .equ	OC2Aaddr	= 0x0012	; Timer/Counter2 Compare Match A
+                 .equ	OC2Baddr	= 0x0014	; Timer/Counter2 Compare Match B
+                 .equ	OVF2addr	= 0x0016	; Timer/Counter2 Overflow
+                 .equ	ICP1addr	= 0x0018	; Timer/Counter1 Capture Event
+                 .equ	OC1Aaddr	= 0x001a	; Timer/Counter1 Compare Match A
+                 .equ	OC1Baddr	= 0x001c	; Timer/Counter1 Compare Match B
+                 .equ	OVF1addr	= 0x001e	; Timer/Counter1 Overflow
+                 .equ	OC0Aaddr	= 0x0020	; Timer/Counter0 Compare Match A
+                 .equ	OC0Baddr	= 0x0022	; Timer/Counter0 Compare Match B
+                 .equ	OVF0addr	= 0x0024	; Timer/Counter0 Overflow
+                 .equ	SPIaddr	= 0x0026	; SPI Serial Transfer Complete
+                 .equ	URXC0addr	= 0x0028	; USART0, Rx Complete
+                 .equ	UDRE0addr	= 0x002a	; USART0 Data register Empty
+                 .equ	UTXC0addr	= 0x002c	; USART0, Tx Complete
+                 .equ	ACIaddr	= 0x002e	; Analog Comparator
+                 .equ	ADCCaddr	= 0x0030	; ADC Conversion Complete
+                 .equ	ERDYaddr	= 0x0032	; EEPROM Ready
+                 .equ	TWIaddr	= 0x0034	; 2-wire Serial Interface
+                 .equ	SPMRaddr	= 0x0036	; Store Program Memory Read
+                 .equ	URXC1addr	= 0x0038	; USART1 RX complete
+                 .equ	UDRE1addr	= 0x003a	; USART1 Data Register Empty
+                 .equ	UTXC1addr	= 0x003c	; USART1 TX complete
+                 
+                 .equ	INT_VECTORS_SIZE	= 62	; size in words
+                 
+                 #endif  /* _M644PADEF_INC_ */
+                 
+                 ; ***** END OF FILE ******************************************************
+                 
+                 
+                 ;***** Created: 2011-02-09 12:03 ******* Source: ATmega644PA.xml *********
+                 ;*************************************************************************
+                 ;* A P P L I C A T I O N   N O T E   F O R   T H E   A V R   F A M I L Y
+                 ;* 
+                 ;* Number            : AVR000
+                 ;* File Name         : "m644PAdef.inc"
+                 ;* Title             : Register/Bit Definitions for the ATmega644PA
+                 ;* Date              : 2011-02-09
+                 ;* Version           : 2.35
+                 ;* Support E-mail    : avr@atmel.com
+                 ;* Target MCU        : ATmega644PA
+                 ;* 
+                 ;* DESCRIPTION
+                 ;* When including this file in the assembly program file, all I/O register 
+                 ;* names and I/O register bit names appearing in the data book can be used.
+                 ;* In addition, the six registers forming the three data pointers X, Y and 
+                 ;* Z have been assigned names XL - ZH. Highest RAM address for Internal 
+                 ;* SRAM is also defined 
+                 ;* 
+                 ;* The Register names are represented by their hexadecimal address.
+                 ;* 
+                 ;* The Register Bit names are represented by their bit number (0-7).
+                 ;* 
+                 ;* Please observe the difference in using the bit names with instructions
+                 ;* such as "sbr"/"cbr" (set/clear bit in register) and "sbrs"/"sbrc"
+                 ;* (skip if bit in register set/cleared). The following example illustrates
+                 ;* this:
+                 ;* 
+                 ;* in    r16,PORTB             ;read PORTB latch
+                 ;* sbr   r16,(1<<PB6)+(1<<PB5) ;set PB6 and PB5 (use masks, not bit#)
+                 ;* out   PORTB,r16             ;output to PORTB
+                 ;* 
+                 ;* in    r16,TIFR              ;read the Timer Interrupt Flag Register
+                 ;* sbrc  r16,TOV0              ;test the overflow flag (use bit#)
+                 ;* rjmp  TOV0_is_set           ;jump if set
+                 ;* ...                         ;otherwise do something else
+                 ;*************************************************************************
+                 
+                 #ifndef _M644PADEF_INC_
+                 #endif  /* _M644PADEF_INC_ */
+                 
+                 ; ***** END OF FILE ******************************************************
+                 
+                 /*==============================================================
+                 === Register definitions ===
+                 === Constant definitions ===
+                 ================================================================*/
+                 .equ LEDS_OUT	 = PORTB
+                 .equ LEDS_IN	 = PINB
+                 .equ SWITCHES_IN = PINA
+                 
+                 .def rsreg = r16	;Register usage - Inside ISRs
+                 .def itemp0= r17	;
+                 .def itemp1= r18	;
+                 .def itemp2= r19	;
+                 .def temp0 = r20	;Register usage - Inside main thread
+                 .def temp1 = r21	;
+                 .def temp2 = r22	;
+                 
+                 .def lineCount = r3
+                 
+                 /*==============================================================
+                 === inclusion of Source Files === 
+                 === !!! >> Vectors.asm should be included first of ALL << !!!
+                 ================================================================*/
+                 .include "Vectors.asm"
+                 
+                 =====================
+                 = Interrupt Vectors =
+                 =====================
+                 */
+                 
+                 .cseg
+                 //.org 0x0000
+                 .org LARGEBOOTSTART
+                 
+007000 940c 7ed4 	jmp Reset
+007002 9518      	reti			; External Interrupt Request 0
+007003 0000      	nop
+007004 9518      	reti			; External Interrupt Request 1
+007005 0000      	nop
+007006 9518      	reti			; External Interrupt Request 2
+007007 0000      	nop
+007008 940c 7f34 	jmp PCI0_ISR	; Pin Change Interrupt Request 0
+                 	
+00700a 9518      	reti			; Pin Change Interrupt Request 1
+00700b 0000      	nop
+00700c 9518      	reti			; Pin Change Interrupt Request 2
+00700d 0000      	nop
+00700e 9518      	reti			; Pin Change Interrupt Request 3
+00700f 0000      	nop
+007010 9518      	reti			; Watchdog Time-out Interrupt
+007011 0000      	nop
+007012 9518      	reti			; Timer/Counter2 Compare Match A
+007013 0000      	nop
+007014 9518      	reti			; Timer/Counter2 Compare Match B
+007015 0000      	nop
+007016 9518      	reti			; Timer/Counter2 Overflow
+007017 0000      	nop
+007018 9518      	reti			; Timer/Counter1 Capture Event
+007019 0000      	nop
+00701a 9518      	reti			; Timer/Counter1 Compare Match A
+00701b 0000      	nop
+00701c 9518      	reti			; Timer/Counter1 Compare Match B
+00701d 0000      	nop
+00701e 9518      	reti			; Timer/Counter1 Overflow
+00701f 0000      	nop
+007020 9518      	reti			; Timer/Counter0 Compare Match A
+007021 0000      	nop
+007022 9518      	reti			; Timer/Counter0 Compare Match B
+007023 0000      	nop
+007024 9518      	reti			; Timer/Counter0 Overflow
+007025 0000      	nop
+007026 9518      	reti			; SPI Serial Transfer Complete
+007027 0000      	nop
+007028 940c 7e51 	jmp URXC0_ISR	; USART0, Rx Complete
+                 	
+00702a 940c 7e6a 	jmp US0TKN_TX_ISR ; USART0 Data register Empty
+                 
+00702c 9518      	reti			; USART0, Tx Complete
+00702d 0000      	nop
+00702e 9518      	reti			; Analog Comparator
+00702f 0000      	nop
+007030 9518      	reti			; ADC Conversion Complete
+007031 0000      	nop
+007032 9518      	reti			; EEPROM Ready
+007033 0000      	nop
+007034 9518      	reti			; 2-wire Serial Interface
+007035 0000      	nop
+007036 9518      	reti			; Store Program Memory Read
+007037 0000      	nop
+007038 9518      	reti			; USART1 RX complete
+007039 0000      	nop
+00703a 9518      	reti			; USART1 Data Register Empty
+00703b 0000      	nop
+00703c 9518      	reti			; USART1 TX complete
+00703d 0000      	nop
+                 .include "TKN.asm"
+                 
+                 .equ TKN_OFFS_HEADER 		= 0
+                 .equ TKN_OFFS_TYPE			= 1
+                 .equ TKN_OFFS_RECEIVER 		= 2
+                 .equ TKN_OFFS_SENDER		= 3
+                 .equ TKN_OFFS_TOKEN_EOF		= 4
+                 .equ TKN_OFFS_PACKET_ID		= 4
+                 .equ TKN_OFFS_CONTROL		= 5
+                 .equ TKN_OFFS_ACK_EOF		= 5
+                 .equ TKN_OFFS_DATA_START	= 6
+                 .equ TKN_OFFS_DATA_STOP		= 21
+                 .equ TKN_OFFS_DATA_EOF		= 22
+                 
+                 .equ TKN_HEADER_BYTE		= $00
+                 .equ TKN_EOF_BYTE			= $FF
+                 
+                 .equ TKN_TYPE_DATA			= $AA
+                 .equ TKN_TYPE_ACK 			= $BB
+                 .equ TKN_TYPE_TOKEN			= $CC
+                 
+                 .equ TKN_MODE_DATA			= $01
+                 .equ TKN_MODE_ACK 			= $02
+                 .equ TKN_MODE_TOKEN			= $03
+                 
+                 /* Packet Sizes */
+                 .equ TKN_PACKET_SIZE		= 16
+                 .equ TKN_QUEUE_LEN			= 8
+                 .equ TKN_QUEUE_SIZE			= TKN_PACKET_SIZE * TKN_QUEUE_LEN
+                 .equ TKN_MAX_PACKET_SIZE	= TKN_OFFS_DATA_EOF + 1
+                 
+                 /* Register usage */
+                 /* Transmitter */
+                 .def TKN_TX_QUEUE_INDEX_IN  = r15
+                 .def TKN_TX_QUEUE_INDEX_OUT = r14
+                 .def TKN_TX_PENDING		    = r13
+                 .def TKN_TX_PACKET_ID       = r12
+                 .def TKN_TX_STATUS          = r11
+                 .def TKN_TX_BYTE            = r10
+                 
+                 /* Receiver */
+                 .def TKN_RX_QUEUE_INDEX_IN  = r9
+                 .def TKN_RX_QUEUE_INDEX_OUT = r8
+                 .def TKN_RX_PENDING		    = r7
+                 .def TKN_RX_BYTE            = r6
+                 .def TKN_RX_STATUS          = r5
+                 
+                 /*Node*/
+                 .def TKN_ID					= r4
+                 
+                 .dseg
+                 .org SRAM_START
+                 
+                 /* The RX/TX Queues should be 0x80 aligned */
+                 TKN_RX_QUEUE:
+000100           	.byte TKN_QUEUE_SIZE
+                 
+                 TKN_TX_QUEUE:
+000180           	.byte TKN_QUEUE_SIZE
+                 
+                 TKN_TX_QUEUE_ADDR:
+000200           	.byte TKN_QUEUE_LEN
+                 
+                 TKN_RX_QUEUE_ADDR:
+000208           	.byte TKN_QUEUE_LEN
+                 
+                 TKN_TX_BUFFER:
+000210           	.byte TKN_MAX_PACKET_SIZE
+                 
+                 TKN_RX_BUFFER:
+000227           	.byte TKN_MAX_PACKET_SIZE
+                 
+                 .cseg
+                 TOKEN_PACKET:
+00703e cc00
+00703f 0000
+C:\Users\laptop\Documents\GitHub\TKN\AVR\TKN.asm(74): warning: .cseg .db misalignment - padding zero byte
+C:\Users\laptop\Documents\GitHub\TKN\AVR\Main.asm(26): 'C:\Users\laptop\Documents\GitHub\TKN\AVR\TKN.asm' included form here
+007040 00ff      	.db $00, TKN_TYPE_TOKEN, $00, $00, $FF
+                 
+                 /*==============================================================
+                 === Routine: token_init
+                 ===     Initialize the data structures used by the network
+                 ================================================================*/
+                 TKN_init:
+007041 24ff      	clr TKN_TX_QUEUE_INDEX_IN
+007042 24ee      	clr TKN_TX_QUEUE_INDEX_OUT
+007043 24dd      	clr TKN_TX_PENDING
+007044 24bb      	clr TKN_TX_STATUS
+007045 24aa      	clr TKN_TX_BYTE
+007046 24cc      	clr TKN_TX_PACKET_ID
+                 
+007047 2499      	clr TKN_RX_QUEUE_INDEX_IN
+007048 2488      	clr TKN_RX_QUEUE_INDEX_OUT
+007049 2477      	clr TKN_RX_PENDING
+00704a 2466      	clr TKN_RX_BYTE
+                 
+00704b e050      	ldi temp1, 0
+00704c e060      	ldi temp2, 0
+00704d 940e 7ec9 	call EEPROM_read
+00704f 2e44      	mov TKN_ID, temp0
+                 
+007050 940e 7e36 	call USART_Init
+                 
+007052 9508      	ret
+                 
+                 /*******************************************
+                  *** T R A N S M I T T E R               ***
+                  *******************************************/
+                 /*==============================================================
+                 === Routine: TKN_pushPacket
+                 ===     Push a packet into the Tx queue
+                 ===
+                 === @param: Y The Address of the packet to be pushed in the TX_QUEUE
+                 ===	@param: temp0 The Receiver of the packet
+                 === 
+                 === @return: In success -> temp0 = 0;
+                 ===          In failure -> temp0 remains as is.
+                 ================================================================*/
+                 TKN_pushPacket:
+                 	;Keep a mask with interrupt flag bit
+                 	;in order to restore its value later.
+007053 b76f      	in temp2, SREG
+007054 94f8      	cli
+007055 93af      	push XL
+007056 93bf      	push XH
+007057 93cf      	push YL
+007058 93df      	push YH
+                 
+                 	;If there is NOT an empty slot discard the new packet and return;
+007059 2d5d      	mov temp1, TKN_TX_PENDING
+00705a 3058      	cpi temp1, TKN_QUEUE_LEN
+00705b b75f      	in temp1, SREG
+00705c fd51      	sbrc temp1, SREG_Z
+00705d c01a      	rjmp TKN_pushPacketRet
+                 	
+00705e e0a0      	ldi XL, LOW(TKN_TX_QUEUE_ADDR)
+00705f e0b2      	ldi XH, HIGH(TKN_TX_QUEUE_ADDR)
+007060 0daf      	add XL, TKN_TX_QUEUE_INDEX_IN
+                 
+                 	;Store the ADDRESS
+007061 934c      	st X, temp0 
+                 	
+                 	;Perform lg(PACKET_SIZE) = lg(16) = [4 Left Shifts]
+007062 0cff      	lsl TKN_TX_QUEUE_INDEX_IN
+007063 0cff      	lsl TKN_TX_QUEUE_INDEX_IN
+007064 0cff      	lsl TKN_TX_QUEUE_INDEX_IN
+007065 0cff      	lsl TKN_TX_QUEUE_INDEX_IN
+                 
+                 	; Copy the packet pointed by Y to the first available queue slot
+007066 e8a0      	ldi XL, LOW(TKN_TX_QUEUE)
+007067 e0b1      	ldi XH, HIGH(TKN_TX_QUEUE)
+007068 0daf      	add XL, TKN_TX_QUEUE_INDEX_IN
+                 
+007069 e150      	ldi temp1, TKN_PACKET_SIZE
+                 	copyPacket:
+00706a 9149      	ld temp0, Y+
+00706b 934d      	st X+, temp0
+00706c 955a      	dec temp1
+00706d f7e1      	brne copyPacket
+                 
+                 	;Update TKN_TX_PENDING/POINTER_IN
+00706e 94d3      	inc TKN_TX_PENDING
+                 
+00706f 94f6      	lsr TKN_TX_QUEUE_INDEX_IN
+007070 94f6      	lsr TKN_TX_QUEUE_INDEX_IN
+007071 94f6      	lsr TKN_TX_QUEUE_INDEX_IN
+007072 94f6      	lsr TKN_TX_QUEUE_INDEX_IN
+                 
+                 	;TKN_TX_QUEUE_INDEX_IN = (TKN_TX_QUEUE_INDEX_IN+PACKET_SIZE)%BUFFER_SIZE
+007073 94f3      	inc TKN_TX_QUEUE_INDEX_IN
+007074 2d4f      	mov temp0, TKN_TX_QUEUE_INDEX_IN
+007075 7f47      	cbr temp0, TKN_QUEUE_LEN
+007076 2ef4      	mov TKN_TX_QUEUE_INDEX_IN, temp0
+007077 2744      	clr temp0
+                 
+                 	TKN_pushPacketRet:
+                 	;Restore Interrupt Flag in its previous state
+007078 91df      	pop YH
+007079 91cf      	pop YL
+00707a 91bf      	pop XH
+00707b 91af      	pop XL
+00707c bf6f      	out SREG, temp2
+00707d 9508      	ret
+                 
+                 /*==============================================================
+                 === Routine: TKN_tokenArrived
+                 ===     1. Set the bit that indicates that we own the token.
+                 ===     2. Enable the interrupt that will wake up the transmitter
+                 ===        as long as this call returns.
+                 ================================================================*/
+                 TKN_TokenArrived:
+                 	;if ( TokenOwner ) return
+00707e fcb7      	sbrc TKN_TX_STATUS, 7
+00707f 9508      	ret
+                 
+                 	;Set TOKEN bit | TX_ACTIVE bit
+007080 2d4b      	mov temp0, TKN_TX_STATUS
+007081 6c40      	sbr temp0, (1<<7) | (1<<6)
+007082 2eb4      	mov TKN_TX_STATUS, temp0
+007083 940e 7e93 	call setLeds0
+                 	
+                 	;Enable DATA REGISTER READY INTERRUPT on the USART
+007085 9140 00c1 	lds temp0, UCSR0B
+007087 6240      	sbr temp0, (1<<UDRIE0)
+007088 9340 00c1 	sts UCSR0B, temp0
+                 
+00708a 9508      	ret
+                 
+                 /*==============================================================
+                 === Routine: TKN_byteTransmit
+                 ===     If there are pending packets in the transmission queue
+                 ===     send the next one.
+                 ================================================================*/
+                 TKN_Transmitter:
+00708b feb6      	sbrs TKN_TX_STATUS, 6 ; return if inactive
+00708c 9508      	ret
+00708d fcb5      	sbrc TKN_TX_STATUS, 5 ; return if waiting for ACK
+00708e 9508      	ret
+                 
+00708f 2d5b      	mov temp1, TKN_TX_STATUS
+007090 7053      	cbr temp1, 0xFC ; Keep only the MODE bits
+                 
+007091 e7f0          ldi ZH,HIGH(TKN_Transmitter_Modes)
+007092 e9e7          ldi ZL,LOW(TKN_Transmitter_Modes)
+007093 0fe5          add ZL, temp1
+007094 f408          brcc TKN_Transmitter_Switch_NoOverflow
+007095 95f3          inc ZH
+                 	TKN_Transmitter_Switch_NoOverflow:	
+007096 9409          ijmp
+                 	
+                 	TKN_Transmitter_Modes:
+007097 c003          rjmp TKN_Transmitter_Activate	;MODE 0
+007098 c04c      	rjmp TKN_Transmitter_DATA		;MODE 1
+007099 c072      	rjmp TKN_Transmitter_ACK		;MODE 2
+00709a c032      	rjmp TKN_Transmitter_TOKEN		;MODE 3
+                 
+                 TKN_Transmitter_Activate:
+00709b 20dd      	and TKN_TX_PENDING, TKN_TX_PENDING
+00709c f439      	brne TKN_Transmitter_FetchPacket
+                 
+                 	;Set TOKEN_MODE
+00709d 2d4b      	mov temp0, TKN_TX_STATUS
+00709e 6043      	sbr temp0, TKN_MODE_TOKEN 
+00709f 7f4f      	cbr temp0, (~$FC & ~TKN_MODE_TOKEN)
+0070a0 2eb4      	mov TKN_TX_STATUS, temp0
+0070a1 940e 7e93 	call setLeds0
+                 
+0070a3 9508      	ret
+                 
+                 	TKN_Transmitter_FetchPacket:
+0070a4 e1a0      	ldi XL, LOW(TKN_TX_BUFFER)
+0070a5 e0b2      	ldi XH, HIGH(TKN_TX_BUFFER)
+                 	
+                 	; BYTE#0 header
+0070a6 e040      	ldi temp0, TKN_HEADER_BYTE
+0070a7 934d      	st X+, temp0
+                 	; BYTE#1 type
+0070a8 ea4a      	ldi temp0, TKN_TYPE_DATA
+0070a9 934d      	st X+, temp0
+                 	; BYTE#2 receiver
+0070aa e0c0      	ldi YL, LOW(TKN_TX_QUEUE_ADDR)
+0070ab e0d2      	ldi YH, HIGH(TKN_TX_QUEUE_ADDR)
+0070ac 0dce      	add YL, TKN_TX_QUEUE_INDEX_OUT
+0070ad 8148      	ld temp0, Y
+0070ae 934d      	st X+, temp0
+                 	; BYTE# 3 sender
+0070af 924d      	st X+, TKN_ID
+                 	; BYTE#4 packet_id
+0070b0 92cd      	st X+, TKN_TX_PACKET_ID
+0070b1 94c3      	inc TKN_TX_PACKET_ID
+                 	; BYTE#5 check-byte
+0070b2 2744      	clr temp0
+0070b3 934d      	st X+, temp0
+                 	; BYTE#6..21
+0070b4 0cee      	lsl TKN_TX_QUEUE_INDEX_OUT
+0070b5 0cee      	lsl TKN_TX_QUEUE_INDEX_OUT
+0070b6 0cee      	lsl TKN_TX_QUEUE_INDEX_OUT
+0070b7 0cee      	lsl TKN_TX_QUEUE_INDEX_OUT
+0070b8 e8c0      	ldi YL, LOW(TKN_TX_QUEUE)
+0070b9 e0d1      	ldi YH, HIGH(TKN_TX_QUEUE)
+0070ba 0dce      	add YL, TKN_TX_QUEUE_INDEX_OUT
+0070bb 94e6      	lsr TKN_TX_QUEUE_INDEX_OUT
+0070bc 94e6      	lsr TKN_TX_QUEUE_INDEX_OUT
+0070bd 94e6      	lsr TKN_TX_QUEUE_INDEX_OUT
+0070be 94e6      	lsr TKN_TX_QUEUE_INDEX_OUT
+0070bf e150      	ldi temp1, TKN_PACKET_SIZE
+                 	TKN_Push_fetchPacketLoop:
+0070c0 9149      	ld temp0, Y+
+0070c1 934d      	st X+, temp0
+0070c2 955a      	dec temp1
+0070c3 f7e1      	brne TKN_Push_fetchPacketLoop
+                 	; BYTE#22 EOF
+0070c4 ef4f      	ldi temp0, TKN_EOF_BYTE
+0070c5 934d      	st X+, temp0
+                 
+                 	;Set (DATA MODE)
+0070c6 2d4b      	mov temp0, TKN_TX_STATUS
+0070c7 6041      	sbr temp0, TKN_MODE_DATA
+0070c8 7f4d      	cbr temp0, (~$FC & ~TKN_MODE_DATA)
+0070c9 2eb4      	mov TKN_TX_STATUS, temp0
+0070ca 940e 7e93 	call setLeds0
+                 
+0070cc 9508      	ret
+                 
+                 TKN_Transmitter_TOKEN:
+0070cd e7ec      	ldi ZL, LOW(TOKEN_PACKET<<1)
+0070ce eef0      	ldi ZH, HIGH(TOKEN_PACKET<<1)
+0070cf 2744      	clr temp0
+0070d0 0dea      	add ZL, TKN_TX_BYTE
+0070d1 1ff4      	adc ZH, temp0
+                 	
+0070d2 9144      	lpm temp0, Z
+0070d3 940e 7e43 	call USART_Transmit
+                 
+0070d5 94a3      	inc TKN_TX_BYTE
+0070d6 2d6a      	mov temp2, TKN_TX_BYTE
+0070d7 3065      	cpi temp2, TKN_OFFS_TOKEN_EOF + 1
+0070d8 f009      	breq TKN_Transmitter_TOKEN_Passed
+                 
+0070d9 9508      	ret
+                 
+                 	TKN_Transmitter_TOKEN_Passed:
+                 	; MODE=idle / TxActive=0 / Token=0
+0070da 24aa      	clr TKN_TX_BYTE
+0070db 24bb      	clr TKN_TX_STATUS
+0070dc 2d4b      	mov temp0, TKN_TX_STATUS
+0070dd 940e 7e93 	call setLeds0
+                 
+                 	;Disable DATA REGISTER READY INTERRUPT on the USART
+0070df 9140 00c1 	lds temp0, UCSR0B
+0070e1 7d4f      	cbr temp0, (1<<UDRIE0)
+0070e2 9340 00c1 	sts UCSR0B, temp0
+                 
+0070e4 9508      	ret
+                 
+                 TKN_Transmitter_DATA:
+0070e5 e167      	ldi temp2, TKN_OFFS_DATA_EOF + 1
+0070e6 156a      	cp temp2, TKN_TX_BYTE
+0070e7 f041      	breq TKN_Transmitter_DATA_PacketSent
+                 
+0070e8 e1a0      	ldi XL, LOW(TKN_TX_BUFFER)
+0070e9 e0b2      	ldi XH, HIGH(TKN_TX_BUFFER)
+0070ea 0daa      	add XL, TKN_TX_BYTE
+0070eb 914c      	ld temp0, X
+0070ec 940e 7e43 	call USART_Transmit
+0070ee 94a3      	inc TKN_TX_BYTE
+0070ef 9508      	ret
+                 
+                 	TKN_Transmitter_DATA_PacketSent:
+0070f0 feb4      	sbrs TKN_TX_STATUS, 4
+0070f1 c006      	rjmp TKN_Transmitter_DATA_PacketSent_Normal
+                 
+                 	TKN_Transmitter_DATA_PacketSent_Forward:
+                 	; MODE=idle / TxActive=0 / Token=0
+0070f2 24aa      	clr TKN_TX_BYTE
+0070f3 24bb      	clr TKN_TX_STATUS
+0070f4 2d4b      	mov temp0, TKN_TX_STATUS
+0070f5 940e 7e93 	call setLeds0
+                 	
+0070f7 9508      	ret
+                 	
+                 	TKN_Transmitter_DATA_PacketSent_Normal:
+                 	;Clear TX_ACTIVE / Set waiting for ACK
+0070f8 2d4b      	mov temp0, TKN_TX_STATUS
+0070f9 7b4f      	cbr temp0, (1<<6)
+0070fa 6240      	sbr temp0, (1<<5)
+0070fb 2eb4      	mov TKN_TX_STATUS, temp0
+0070fc 940e 7e93 	call setLeds0
+                 
+0070fe 9508      	ret
+                 
+                 TKN_AckArrived:
+                 	;TKN_TX_QUEUE_INDEX_OUT = (TKN_TX_QUEUE_INDEX_OUT+PACKET_SIZE)%BUFFER_SIZE
+0070ff 94e3      	inc TKN_TX_QUEUE_INDEX_OUT
+007100 2d4e      	mov temp0, TKN_TX_QUEUE_INDEX_OUT
+007101 7f47      	cbr temp0, TKN_QUEUE_LEN
+007102 2ee4      	mov TKN_TX_QUEUE_INDEX_OUT, temp0
+                 
+007103 24aa      	clr TKN_TX_BYTE
+007104 94da      	dec TKN_TX_PENDING
+                 
+                 	;Set TOKEN_MODE / TX_ACTIVE , Clear waiting for ACK
+007105 2d4b      	mov temp0, TKN_TX_STATUS
+007106 6443      	sbr temp0, TKN_MODE_TOKEN | (1<<6) 
+007107 7d4f      	cbr temp0, (~$FC & ~TKN_MODE_TOKEN) | (1<<5)
+007108 2eb4      	mov TKN_TX_STATUS, temp0
+007109 940e 7e93 	call setLeds0
+                 
+00710b 9508      	ret
+                 
+                 TKN_Transmitter_ACK:
+00710c e066      	ldi temp2, TKN_OFFS_ACK_EOF + 1
+00710d 156a      	cp temp2, TKN_TX_BYTE
+00710e f041      	breq TKN_Transmitter_ACK_PacketSent
+                 
+00710f e1a0      	ldi XL, LOW(TKN_TX_BUFFER)
+007110 e0b2      	ldi XH, HIGH(TKN_TX_BUFFER)
+007111 0daa      	add XL, TKN_TX_BYTE
+007112 914c      	ld temp0, X
+007113 940e 7e43 	call USART_Transmit
+007115 94a3      	inc TKN_TX_BYTE
+007116 9508      	ret
+                 
+                 	TKN_Transmitter_ACK_PacketSent:
+                 	; MODE=idle / TxActive=0 / Token=0
+007117 24aa      	clr TKN_TX_BYTE
+007118 24bb      	clr TKN_TX_STATUS
+007119 2d4b      	mov temp0, TKN_TX_STATUS
+00711a 940e 7e93 	call setLeds0
+00711c 9508      	ret
+                 
+                 /*******************************************
+                  *** R E C E I V E R                     ***
+                  *******************************************/
+                 /*==============================================================
+                 === Routine: token_byteReceive
+                 ===	    Receive a byte from temp0 register,
+                 ===     and handle it according to the state in which we are.
+                 ================================================================*/
+                 TKN_Receiver:
+00711d 2d55      	mov temp1, TKN_RX_STATUS
+00711e 7053      	cbr temp1, 0xFC ; Keep only the MODE bits
+                 
+00711f e7f1          ldi ZH,HIGH(TKN_Receiver_Modes)
+007120 e2e5          ldi ZL,LOW(TKN_Receiver_Modes)
+007121 0fe5          add ZL, temp1
+007122 f408          brcc TKN_Receiver_Switch_NoOverflow
+007123 95f3          inc ZH
+                 	TKN_Receiver_Switch_NoOverflow:	
+007124 9409          ijmp
+                 	
+                 	TKN_Receiver_Modes:
+007125 c003          rjmp TKN_Receiver_DetectPacket		;MODE 0
+007126 c02a      	rjmp TKN_Receiver_DATA				;MODE 1
+007127 c09d      	rjmp TKN_Receiver_ACK				;MODE 2
+007128 c093      	rjmp TKN_Receiver_TOKEN				;MODE 3
+                 	
+                 TKN_Receiver_DetectPacket:
+007129 fc60      	sbrc TKN_RX_BYTE, 0
+00712a c009      	rjmp TKN_Receiver_TypeByte
+                 
+                 	TKN_Receiver_HeaderByte:
+00712b e050      		ldi temp1, TKN_HEADER_BYTE
+00712c 1345      		cpse temp0, temp1
+00712d c005      		rjmp TKN_Receiver_HeaderByte_Incorrect
+                 
+                 		TKN_Receiver_HeaderByte_Correct:
+00712e e2a7      		ldi XL, LOW(TKN_RX_BUFFER)
+00712f e0b2      		ldi XH, HIGH(TKN_RX_BUFFER)
+007130 934c      		st X, temp0
+007131 9463      		inc TKN_RX_BYTE
+007132 9508      		ret
+                 
+                 		TKN_Receiver_HeaderByte_Incorrect:
+007133 9508      		ret
+                 
+                 	TKN_Receiver_TypeByte:
+007134 3a4a      		cpi temp0, TKN_TYPE_DATA
+007135 f041      		breq TKN_Receiver_TypeByte_DATA
+007136 3b4b      		cpi temp0, TKN_TYPE_ACK
+007137 f059      		breq TKN_Receiver_TypeByte_ACK
+007138 3c4c      		cpi temp0, TKN_TYPE_TOKEN
+007139 f071      		breq TKN_Receiver_TypeByte_TOKEN
+                 
+                 		;Ok, the byte was not actually a valid type but it may be the header.
+00713a e050      		ldi temp1, TKN_HEADER_BYTE
+00713b 1345      		cpse temp0, temp1
+00713c 946a      		dec TKN_RX_BYTE
+00713d 9508      		ret
+                 
+                 			TKN_Receiver_TypeByte_DATA:
+                 			;Set DATA_MODE
+00713e 2d55      			mov temp1, TKN_RX_STATUS
+00713f 6051      			sbr temp1, TKN_MODE_DATA
+007140 7f5d      			cbr temp1, (~$FC & ~TKN_MODE_DATA)
+007141 2e55      			mov TKN_RX_STATUS, temp1
+007142 c009      			rjmp TKN_Receiver_TypeByte_Valid
+                 
+                 			TKN_Receiver_TypeByte_ACK:
+                 			;Set  ACK_MODE
+007143 2d55      			mov temp1, TKN_RX_STATUS
+007144 6052      			sbr temp1, TKN_MODE_ACK 
+007145 7f5e      			cbr temp1, (~$FC & ~TKN_MODE_ACK)
+007146 2e55      			mov TKN_RX_STATUS, temp1
+007147 c004      			rjmp TKN_Receiver_TypeByte_Valid
+                 
+                 			TKN_Receiver_TypeByte_TOKEN:
+                 			;Set TOKEN_MODE
+007148 2d55      			mov temp1, TKN_RX_STATUS
+007149 6053      			sbr temp1, TKN_MODE_TOKEN 
+00714a 7f5f      			cbr temp1, (~$FC & ~TKN_MODE_TOKEN)
+00714b 2e55      			mov TKN_RX_STATUS, temp1
+                 			
+                 			TKN_Receiver_TypeByte_Valid:
+00714c e2c7      			ldi YL, LOW(TKN_RX_BUFFER)
+00714d e0d2      			ldi YH, HIGH(TKN_RX_BUFFER)
+00714e 8349      			std Y+1, temp0
+00714f 9463      			inc TKN_RX_BYTE
+007150 9508      			ret
+                 
+                 /** END OF DETECT_PACKET **/
+                 
+                 TKN_Receiver_DATA:
+                 	;Store The DATA PACKET
+007151 e2c7      	ldi YL, LOW(TKN_RX_BUFFER)
+007152 e0d2      	ldi YH, HIGH(TKN_RX_BUFFER)
+007153 0dc6      	add YL, TKN_RX_BYTE
+007154 8348      	st Y, temp0
+007155 9463      	inc TKN_RX_BYTE
+007156 e147      	ldi temp0, TKN_OFFS_DATA_EOF + 1
+007157 1146      	cpse temp0, TKN_RX_BYTE
+007158 9508      	ret
+                 
+                 	TKN_Receiver_DATA_Received:
+                 		;For now only the mode bits are held in the RX_STATUS, so its safe to clear it.
+007159 2466      		clr TKN_RX_BYTE	
+00715a 2455      		clr TKN_RX_STATUS
+                 	
+00715b e2c7      		ldi YL, LOW(TKN_RX_BUFFER)
+00715c 814b      		ldd temp0, Y + TKN_OFFS_SENDER
+                 		;Compare the packet's sender with myself...
+00715d 1544      		cp temp0, TKN_ID 
+                 		;The packet was sent by ME... So the actual receiver did NOT receive it.
+                 		;Discard the packet :(
+00715e f0d1      		breq TKN_Receiver_DATA_FromMe
+00715f 814a      		ldd temp0, Y + TKN_OFFS_RECEIVER
+007160 1544      		cp temp0, TKN_ID 
+                 		;The packet is for me!
+007161 f0d1      		breq TKN_Receiver_DATA_ForMe
+                 
+                 		TKN_Receiver_DATA_Forward:
+                 		//ret // DEBUG
+                 			; The packet is not either FROM me either FOR me.
+                 			; So I have to forward it.
+007162 e2c7      			ldi YL, LOW(TKN_RX_BUFFER)
+007163 e0d2      			ldi YH, HIGH(TKN_RX_BUFFER)
+                 	
+007164 e1a0      			ldi XL, LOW(TKN_TX_BUFFER)
+007165 e0b2      			ldi XH, HIGH(TKN_TX_BUFFER)
+                 
+007166 e157      			ldi temp1, TKN_OFFS_DATA_EOF + 1
+                 			TKN_Receiver_DATA_Forward_cpy:
+007167 9149      			ld temp0, Y+
+007168 934d      			st X+, temp0
+007169 955a      			dec temp1
+00716a f7e1      			brne TKN_Receiver_DATA_Forward_cpy // >>> Exw allaxei to brne se breq gia DEBUG !!!!!!
+                 
+00716b 24aa      			clr TKN_TX_BYTE
+                 			;Set (DATA MODE / TX_Forward / TX_ACTIVE)
+00716c 2d4b      			mov temp0, TKN_TX_STATUS			// ___/ This should become a routine call..! \__
+00716d 6540      			sbr temp0, (1<<4)|(1<<6)			// Set TX_ACTIVE, TX_Forward
+00716e 6041      			sbr temp0, TKN_MODE_DATA			// Set the '1' bits of MODE
+00716f 7f4d      			cbr temp0, (~$FC & ~TKN_MODE_DATA)	// Set the '0' bits of MODE
+007170 2eb4      			mov TKN_TX_STATUS, temp0			// ...
+007171 940e 7e93 			call setLeds0						// ...
+                 
+                 			;Enable DATA REGISTER READY INTERRUPT on the USART
+007173 9140 00c1 			lds temp0, UCSR0B
+007175 6240      			sbr temp0, (1<<UDRIE0)
+007176 9340 00c1 			sts UCSR0B, temp0
+007178 9508      			ret
+                 
+                 		TKN_Receiver_DATA_FromMe:
+007179 940e 70ff 			call TKN_AckArrived
+00717b 9508      			ret
+                 
+                 		TKN_Receiver_DATA_ForMe:
+                 			/* Store tha packet in the RX_QUEUE */
+                 
+                 			;If there is NOT an empty slot discard this packet.
+00717c 2d57      			mov temp1, TKN_RX_PENDING
+00717d 3058      			cpi temp1, TKN_QUEUE_LEN
+00717e b75f      			in temp1, SREG
+00717f fd51      			sbrc temp1, SREG_Z
+007180 c01e      			rjmp TKN_Receiver_DATA_SendACK
+                 
+007181 e2c7      			ldi YL, LOW(TKN_RX_BUFFER)
+007182 e0d2      			ldi YH, HIGH(TKN_RX_BUFFER)
+                 	
+007183 e0a8      			ldi XL, LOW(TKN_RX_QUEUE_ADDR)
+007184 e0b2      			ldi XH, HIGH(TKN_RX_QUEUE_ADDR)
+007185 0da9      			add XL, TKN_RX_QUEUE_INDEX_IN
+                 
+                 			;Store the Sender of the packet
+007186 814b      			ldd temp0, Y + TKN_OFFS_SENDER
+007187 934c      			st X, temp0 
+                 
+                 			;Perform lg(PACKET_SIZE) = lg(16) = [4 Left Shifts]
+007188 0c99      			lsl TKN_RX_QUEUE_INDEX_IN
+007189 0c99      			lsl TKN_RX_QUEUE_INDEX_IN
+00718a 0c99      			lsl TKN_RX_QUEUE_INDEX_IN
+00718b 0c99      			lsl TKN_RX_QUEUE_INDEX_IN
+                 
+                 			; Store the packet inside RX_BUFFER to the first available RX Queue slot
+00718c e0a0      			ldi XL, LOW(TKN_RX_QUEUE)
+00718d e0b1      			ldi XH, HIGH(TKN_RX_QUEUE)
+00718e 0da9      			add XL, TKN_RX_QUEUE_INDEX_IN
+                 
+00718f e056      			ldi temp1, TKN_OFFS_DATA_START
+007190 0fc5      			add YL, temp1
+007191 e150      			ldi temp1, TKN_PACKET_SIZE
+                 			TKN_StorePacket:
+007192 9149      			ld temp0, Y+
+007193 934d      			st X+, temp0
+007194 955a      			dec temp1
+007195 f7e1      			brne TKN_StorePacket
+                 
+                 			;Update TKN_TX_PENDING/POINTER_IN
+007196 9473      			inc TKN_RX_PENDING
+                 
+007197 9496      			lsr TKN_RX_QUEUE_INDEX_IN
+007198 9496      			lsr TKN_RX_QUEUE_INDEX_IN
+007199 9496      			lsr TKN_RX_QUEUE_INDEX_IN
+00719a 9496      			lsr TKN_RX_QUEUE_INDEX_IN
+                 
+                 			;TKN_RX_QUEUE_INDEX_IN = (TKN_RX_QUEUE_INDEX_IN+PACKET_SIZE)%BUFFER_SIZE
+00719b 9493      			inc TKN_RX_QUEUE_INDEX_IN
+00719c 2d49      			mov temp0, TKN_RX_QUEUE_INDEX_IN
+00719d 7f47      			cbr temp0, TKN_QUEUE_LEN
+00719e 2e94      			mov TKN_RX_QUEUE_INDEX_IN, temp0
+                 
+                 			TKN_Receiver_DATA_SendACK:
+                 			/* Create the ACK Packet */
+00719f e2c7      			ldi YL, LOW(TKN_RX_BUFFER)
+0071a0 e0d2      			ldi YH, HIGH(TKN_RX_BUFFER)
+                 
+0071a1 e1a0      			ldi XL, LOW(TKN_TX_BUFFER)
+0071a2 e0b2      			ldi XH, HIGH(TKN_TX_BUFFER)
+                 	
+                 			; BYTE#0 header
+0071a3 e040      			ldi temp0, TKN_HEADER_BYTE
+0071a4 934d      			st X+, temp0
+                 			; BYTE#1 type
+0071a5 eb4b      			ldi temp0, TKN_TYPE_ACK
+0071a6 934d      			st X+, temp0
+                 			; BYTE#2 receiver
+0071a7 814b      			ldd temp0, Y + TKN_OFFS_SENDER
+0071a8 934d      			st X+, temp0
+                 			; BYTE# 3 sender
+0071a9 924d      			st X+, TKN_ID
+                 			; BYTE#4 packet_id
+0071aa 814c      			ldd temp0, Y + TKN_OFFS_PACKET_ID
+0071ab 934d      			st X+, temp0
+                 			; BYTE#5 EOF
+0071ac ef4f      			ldi temp0, TKN_EOF_BYTE
+0071ad 934d      			st X+, temp0
+                 			
+                 			/* Here send tha ACK Packet */
+0071ae 24aa      			clr TKN_TX_BYTE
+                 			;Set (ACK MODE / TX_ACTIVE)
+0071af 2d4b      			mov temp0, TKN_TX_STATUS			// ___/ This should become a routine call..! \__
+0071b0 6440      			sbr temp0, (1<<6)					// Set TX_ACTIVE
+0071b1 6042      			sbr temp0, TKN_MODE_ACK				// Set the '1' bits of MODE
+0071b2 7f4e      			cbr temp0, (~$FC & ~TKN_MODE_ACK)	// Set the '0' bits of MODE
+0071b3 2eb4      			mov TKN_TX_STATUS, temp0			// ...
+0071b4 940e 7e93 			call setLeds0						// ...
+                 
+                 			;Enable DATA REGISTER READY INTERRUPT on the USART
+0071b6 9140 00c1 			lds temp0, UCSR0B
+0071b8 6240      			sbr temp0, (1<<UDRIE0)
+0071b9 9340 00c1 			sts UCSR0B, temp0
+                 
+0071bb 9508      			ret
+                 
+                 TKN_Receiver_TOKEN:
+                 	;No need to actually *store* the token
+0071bc 9463      	inc TKN_RX_BYTE
+0071bd e045      	ldi temp0, TKN_OFFS_TOKEN_EOF + 1
+0071be 1146      	cpse temp0, TKN_RX_BYTE
+0071bf 9508      	ret
+                 	TKN_Receiver_TOKEN_Received:
+                 	; For now only the mode bits are held in the RX_STATUS, so its safe to clear it.
+0071c0 2466      	clr TKN_RX_BYTE	
+0071c1 2455      	clr TKN_RX_STATUS 
+0071c2 940e 707e 	call TKN_TokenArrived
+                 
+0071c4 9508      	ret
+                 
+                 TKN_Receiver_ACK:
+                 	;Store The ACK PACKET
+0071c5 e2c7      	ldi YL, LOW(TKN_RX_BUFFER)
+0071c6 e0d2      	ldi YH, HIGH(TKN_RX_BUFFER)
+0071c7 0dc6      	add YL, TKN_RX_BYTE
+0071c8 8348      	st Y, temp0
+0071c9 9463      	inc TKN_RX_BYTE
+0071ca e046      	ldi temp0, TKN_OFFS_ACK_EOF + 1
+0071cb 1146      	cpse temp0, TKN_RX_BYTE
+0071cc 9508      	ret
+                 	TKN_Receiver_ACK_Received:
+0071cd 2466      		clr TKN_RX_BYTE	
+0071ce 2455      		clr TKN_RX_STATUS
+0071cf e2c7      		ldi YL, LOW(TKN_RX_BUFFER)
+0071d0 814b      		ldd temp0, Y + TKN_OFFS_SENDER
+                 		;Compare the packet's sender with myself...
+0071d1 1544      		cp temp0, TKN_ID 
+                 		;The packet was sent by ME... So the actual receiver did NOT receive it.
+                 		;Discard the packet :(
+0071d2 f0d1      		breq TKN_Receiver_ACK_FromMe
+0071d3 814a      		ldd temp0, Y + TKN_OFFS_RECEIVER
+0071d4 1544      		cp temp0, TKN_ID 
+                 		;The packet is for me!
+0071d5 f0c1      		breq TKN_Receiver_ACK_ForMe
+                 
+                 		TKN_Receiver_ACK_Forward:
+                 			; The ACK is not either FROM me either FOR me.
+                 			; So I have to forward it.
+0071d6 e2c7      			ldi YL, LOW(TKN_RX_BUFFER)
+0071d7 e0d2      			ldi YH, HIGH(TKN_RX_BUFFER)
+                 	
+0071d8 e1a0      			ldi XL, LOW(TKN_TX_BUFFER)
+0071d9 e0b2      			ldi XH, HIGH(TKN_TX_BUFFER)
+                 
+0071da e056      			ldi temp1, TKN_OFFS_ACK_EOF + 1
+                 			TKN_Receiver_ACK_Forward_cpy:
+0071db 9149      			ld temp0, Y+
+0071dc 934d      			st X+, temp0
+0071dd 955a      			dec temp1
+0071de f7e1      			brne TKN_Receiver_ACK_Forward_cpy // >>> Exw allaxei to brne se breq gia DEBUG !!!!!!
+                 
+0071df 24aa      			clr TKN_TX_BYTE
+                 			;Set (ACK MODE / TX_Forward / TX_ACTIVE)
+0071e0 2d4b      			mov temp0, TKN_TX_STATUS			// ___/ This should become a routine call..! \__
+0071e1 6540      			sbr temp0, (1<<4)|(1<<6)			// Set TX_ACTIVE, TX_Forward
+0071e2 6042      			sbr temp0, TKN_MODE_ACK				// Set the '1' bits of MODE
+0071e3 7f4e      			cbr temp0, (~$FC & ~TKN_MODE_ACK)	// Set the '0' bits of MODE
+0071e4 2eb4      			mov TKN_TX_STATUS, temp0			// ...
+0071e5 940e 7e93 			call setLeds0						// ...
+                 
+                 			;Enable DATA REGISTER READY INTERRUPT on the USART
+0071e7 9140 00c1 			lds temp0, UCSR0B
+0071e9 6240      			sbr temp0, (1<<UDRIE0)
+0071ea 9340 00c1 			sts UCSR0B, temp0
+0071ec 9508      			ret
+                 		TKN_Receiver_ACK_FromMe:
+                 			
+0071ed 9508      			ret
+                 		TKN_Receiver_ACK_ForMe:
+0071ee 940e 70ff 			call TKN_AckArrived
+0071f0 9508      			ret
+                 
+                 /*==============================================================
+                 === Routine: token_popPacket
+                 ===     Pop a packet from the Rx queue
+                 ===
+                 === @param: Y The Address of the buffer where the packet will be copied
+                 === 
+                 === @return: If RX_QUEUE Empty -> temp0 = 0;
+                 ===          Else temp0 = The Sender of the packet.
+                 ================================================================*/
+                 TKN_popPacket:
+                 	;Store SREG, temp2
+0071f1 936f      	push temp2
+0071f2 b76f      	in temp2, SREG
+0071f3 94f8      	cli
+0071f4 93af      	push XL
+0071f5 93bf      	push XH
+0071f6 93cf      	push YL
+0071f7 93df      	push YH
+                 
+0071f8 2077      	and TKN_RX_PENDING, TKN_RX_PENDING
+0071f9 f0d1      	breq TKN_popPacketEmptyQueue
+                 
+                 	/* Copy the first packet to the buffer pointed by Y */
+0071fa 0c88      	lsl TKN_RX_QUEUE_INDEX_OUT
+0071fb 0c88      	lsl TKN_RX_QUEUE_INDEX_OUT
+0071fc 0c88      	lsl TKN_RX_QUEUE_INDEX_OUT
+0071fd 0c88      	lsl TKN_RX_QUEUE_INDEX_OUT
+0071fe e0a0      	ldi XL, LOW(TKN_RX_QUEUE)
+0071ff e0b1      	ldi XH, HIGH(TKN_RX_QUEUE)
+007200 0da8      	add XL, TKN_RX_QUEUE_INDEX_OUT
+007201 9486      	lsr TKN_RX_QUEUE_INDEX_OUT
+007202 9486      	lsr TKN_RX_QUEUE_INDEX_OUT
+007203 9486      	lsr TKN_RX_QUEUE_INDEX_OUT
+007204 9486      	lsr TKN_RX_QUEUE_INDEX_OUT
+007205 e150      	ldi temp1, TKN_PACKET_SIZE
+                 	TKN_Pop_fetchPacketLoop:
+007206 914d      	ld temp0, X+
+007207 9349      	st Y+, temp0
+007208 955a      	dec temp1
+007209 f7e1      	brne TKN_Pop_fetchPacketLoop
+                 	
+                 	/* temp0 = packet_Sender */
+00720a e0a8      	ldi XL, LOW(TKN_RX_QUEUE_ADDR)
+00720b e0b2      	ldi XH, HIGH(TKN_RX_QUEUE_ADDR)
+00720c 0da8      	add XL, TKN_RX_QUEUE_INDEX_OUT
+00720d 914c      	ld temp0, x
+                 	
+                 	;TKN_RX_QUEUE_INDEX_OUT = (TKN_RX_QUEUE_INDEX_OUT+PACKET_SIZE)%BUFFER_SIZE
+00720e 9483      	inc TKN_RX_QUEUE_INDEX_OUT
+00720f 2d58      	mov temp1, TKN_RX_QUEUE_INDEX_OUT
+007210 7f57      	cbr temp1, TKN_QUEUE_LEN
+007211 2e85      	mov TKN_RX_QUEUE_INDEX_OUT, temp1
+                 
+007212 947a      	dec TKN_RX_PENDING
+007213 c001      	rjmp TKN_popPacketRet
+                 
+                 	TKN_popPacketEmptyQueue:
+007214 2744      	clr temp0
+                 	TKN_popPacketRet:
+                 	;Restore SREG, temp2
+007215 91df      	pop YH
+007216 91cf      	pop YL
+007217 91bf      	pop XH
+007218 91af      	pop XL
+007219 bf6f      	out SREG, temp2
+00721a 916f      	pop temp2
+00721b 9508      	ret
+                 
+                 
+                 
+                 .include "BL_.asm"
+                 
+                 ===This routine writes one page of data from RAM to Flash
+                 === 
+                 === - the first data location in RAM is pointed to by the Y pointer
+                 ===   the first data location in Flash is pointed to by the Z-pointer
+                 === - error handling is not included
+                 === - the routine must be placed inside the Boot space
+                 ===   (at least the BL_Do_spm sub routine). Only code inside NRWW section can
+                 ===   be read during Self-Programming (Page Erase and Page Write).
+                 === 
+                 === - registers used: 
+                 ===       r0, r1, temp1 (r16), temp2 (r17), looplo (r24), loophi (r25), spmcrval (r20)
+                 === 
+                 === - storing and restoring of registers is not included in the routine
+                 ===   register usage can be optimized at the expense of code size
+                 === - It is assumed that either the interrupt table is moved to the Boot
+                 ===   loader section or that the interrupts are disabled.
+                 ================================================================*/
+                 
+                 .def spmcrval = r23
+                 .def looplo   = r24
+                 .def loophi   = r25
+                 
+                 .equ PAGESIZEB = PAGESIZE*2 ;PAGESIZEB is page size in BYTES, not words
+                 .org SMALLBOOTSTART
+                 
+                 BL_Write_page:
+                 	; Page Erase
+007e00 e073      	ldi spmcrval, (1<<PGERS) | (1<<SPMEN)
+007e01 940e 7e2a 	call BL_Do_spm
+                 	; re-enable the RWW section
+007e03 e171      	ldi spmcrval, (1<<RWWSRE) | (1<<SPMEN)
+007e04 940e 7e2a 	call BL_Do_spm
+                 	; transfer data from RAM to Flash page buffer
+007e06 e080      	ldi looplo, low(PAGESIZEB) ;init loop variable
+007e07 e091      	ldi loophi, high(PAGESIZEB) ;not required for PAGESIZEB<=256
+                 
+                 	BL_Wrloop:
+007e08 9009      		ld r0, Y+
+007e09 9019      		ld r1, Y+
+007e0a e071      		ldi spmcrval, (1<<SPMEN)
+007e0b 940e 7e2a 		call BL_Do_spm
+007e0d 9632      		adiw ZH:ZL, 2
+007e0e 9702      		sbiw loophi:looplo, 2 ;use subi for PAGESIZEB<=256
+007e0f f7c1      	brne BL_Wrloop
+                 
+                 	; execute Page Write
+007e10 50e0      	subi ZL, low(PAGESIZEB) ;restore pointer
+007e11 40f1      	sbci ZH, high(PAGESIZEB) ;not required for PAGESIZEB<=256
+007e12 e075      	ldi spmcrval, (1<<PGWRT) | (1<<SPMEN)
+007e13 940e 7e2a 	call BL_Do_spm
+                 	; re-enable the RWW section
+007e15 e171      	ldi spmcrval, (1<<RWWSRE) | (1<<SPMEN)
+007e16 940e 7e2a 	call BL_Do_spm
+                 	; read back and check, optional
+007e18 e080      	ldi looplo, low(PAGESIZEB) ;init loop variable
+007e19 e091      	ldi loophi, high(PAGESIZEB) ;not required for PAGESIZEB<=256
+007e1a 50c0      	subi YL, low(PAGESIZEB) ;restore pointer
+007e1b 40d1      	sbci YH, high(PAGESIZEB)
+                 
+                 	BL_Rdloop:
+007e1c 9005      		lpm r0, Z+
+007e1d 9019      		ld r1, Y+
+007e1e 1001      		cpse r0, r1
+007e1f 940c 7e35 		jmp BL_Error
+007e21 9701      		sbiw loophi:looplo, 1 ;use subi for PAGESIZEB<=256
+007e22 f7c9      	brne BL_Rdloop
+                 
+                 BL_Return:
+                 	; BL_Return to RWW section
+                 	; verify that RWW section is safe to read
+007e23 b757      	in temp1, SPMCSR
+007e24 ff56      	sbrs temp1, RWWSB ; If RWWSB is set, the RWW section is not ready yet
+007e25 9508      	ret
+                 	; re-enable the RWW section
+007e26 e171      	ldi spmcrval, (1<<RWWSRE) | (1<<SPMEN)
+007e27 940e 7e2a 	call BL_Do_spm
+007e29 cff9      	rjmp BL_Return
+                 
+                 BL_Do_spm:
+                 	; check for previous SPM complete
+                 	BL_Wait_spm:
+007e2a b757      		in temp1, SPMCSR
+007e2b fd50      		sbrc temp1, SPMEN
+007e2c cffd      	rjmp BL_Wait_spm
+                 
+                 	; input: spmcrval determines SPM action
+                 	; disable interrupts if enabled, store status
+007e2d b76f      	in temp2, SREG
+007e2e 94f8      	cli
+                 
+                 	; check that no EEPROM write access is present
+                 	BL_Wait_ee:
+007e2f 99f9      		sbic EECR, EEPE
+007e30 cffe      	rjmp BL_Wait_ee
+                 
+                 	; SPM timed sequence
+007e31 bf77      	out SPMCSR, spmcrval
+007e32 95e8      	spm
+                 	; restore SREG (to enable interrupts if originally enabled)
+007e33 bf6f      	out SREG, temp2
+007e34 9508      	ret
+                 
+                 BL_Error:
+                 	// Should implement error handling
+007e35 9508      	ret
+                 .include "Usart.asm"
+                 
+                  * Code responsible to handle the USART...
+                  *	1. Initialization
+                  *	2. Byte transmission
+                  *	3. Byte Reception
+                  *******************************************/
+                 
+                 /*==============================================================
+                 === USART INIT =================================================
+                 ================================================================*/
+                 USART_Init:
+                 	; Set baud rate (2400bps,  8MHz -> UBRR=207)
+                 	;               (4800bps,  8MHz -> UBRR=103)
+                 	;               (9600bps,  8MHz -> UBRR= 51)
+                 	;               (38400bps, 8MHz -> UBRR= 12)
+                 	;               (57600bps, 8MHz -> UBRR=  8)
+                 	;               (115200bps,8MHz -> UBRR=  3)
+007e36 e040      	ldi temp0, 0
+007e37 9340 00c5 	sts UBRR0H, temp0
+007e39 e048      	ldi temp0, 8
+007e3a 9340 00c4 	sts UBRR0L, temp0
+                 
+                 	; Enable receiver, transmitter, Rx Interrupt, //TxDataRegReady Interrupt.
+007e3c e948      	ldi temp0, (1<<RXEN0)|(1<<TXEN0)|(1<<RXCIE0)//|(1<<UDRIE0)
+007e3d 9340 00c1 	sts UCSR0B,temp0
+                 
+                 	; Set frame format: 8data, 1stop bit
+007e3f e046      	ldi temp0, (3<<UCSZ00)
+007e40 9340 00c2 	sts UCSR0C,temp0
+                 
+007e42 9508      	ret
+                 
+                 /*==============================================================
+                 === USART TRANSMIT =============================================
+                 ================================================================*/
+                 USART_Transmit:
+                 	; Wait for empty transmit buffer
+007e43 9150 00c0 	lds  temp1, UCSR0A
+007e45 ff55      	sbrs temp1, UDRE0
+007e46 cffc      	rjmp USART_Transmit
+                 
+                 	; Put temp register into the send buffer.
+007e47 9340 00c6 	sts  UDR0, temp0
+                 
+007e49 9508      	ret
+                 
+                 /*==============================================================
+                 === USART RECEIVE ==============================================
+                 ================================================================*/
+                 USART_Receive:
+                 	; Wait for data to be received
+007e4a 9140 00c0 	lds  temp0, UCSR0A
+007e4c ff47      	sbrs temp0, RXC0
+007e4d cffc      	rjmp USART_Receive
+                 
+                 	; Get and return received data from buffer
+007e4e 9140 00c6 	lds temp0, UDR0
+                 
+007e50 9508      	ret
+                 
+                 /*******************************************
+                  * ISRs for the USART
+                  *******************************************/
+                 /*==============================================================
+                 === USART0 Rx Complete ISR =====================================
+                 ================================================================*/
+                 URXC0_ISR:
+007e51 b70f      	in rsreg, SREG
+007e52 2f14      	mov itemp0, temp0
+007e53 2f25      	mov itemp1, temp1
+007e54 2f36      	mov itemp2, temp2
+007e55 93af      	push XL
+007e56 93bf      	push XH
+007e57 93cf      	push YL
+007e58 93df      	push YH
+007e59 93ef      	push ZL
+007e5a 93ff      	push ZH
+                 
+007e5b 940e 7e4a 	call USART_Receive
+007e5d 940e 711d 	call TKN_Receiver
+                 
+007e5f 91ff      	pop ZH
+007e60 91ef      	pop ZL
+007e61 91df      	pop YH
+007e62 91cf      	pop YL
+007e63 91bf      	pop XH
+007e64 91af      	pop XL
+007e65 2f63      	mov temp2, itemp2
+007e66 2f52      	mov temp1, itemp1
+007e67 2f41      	mov temp0, itemp0
+007e68 bf0f      	out SREG, rsreg
+                 
+007e69 9518      	reti
+                 
+                 /*==============================================================
+                 === USART0 Data Register Ready ISR==============================
+                 ================================================================*/
+                 US0TKN_TX_ISR:
+007e6a b70f      	in rsreg, SREG
+007e6b 2f14      	mov itemp0, temp0
+007e6c 2f25      	mov itemp1, temp1
+007e6d 2f36      	mov itemp2, temp2
+007e6e 93af      	push XL
+007e6f 93bf      	push XH
+007e70 93cf      	push YL
+007e71 93df      	push YH
+007e72 93ef      	push ZL
+007e73 93ff      	push ZH
+                 
+007e74 940e 708b 	call TKN_Transmitter
+                 	
+007e76 91ff      	pop ZH
+007e77 91ef      	pop ZL
+007e78 91df      	pop YH
+007e79 91cf      	pop YL
+007e7a 91bf      	pop XH
+007e7b 91af      	pop XL
+007e7c 2f63      	mov temp2, itemp2
+007e7d 2f52      	mov temp1, itemp1
+007e7e 2f41      	mov temp0, itemp0
+007e7f bf0f      	out SREG, rsreg
+                 
+                 .include "Utils.asm"
+007e80 9518      
+                 === LED Routines: ===
+                 ===		setLedsX:
+                 === 
+                 ================================================================*/
+                 .dseg
+                 ledValues: 
+00023e           	.byte 2
+                 
+                 .cseg
+                 ledInit:
+007e81 93cf      	push YL
+007e82 93df      	push YH
+007e83 934f      	push temp0
+                 
+007e84 2744      	clr temp0
+                 
+007e85 e3ce      	ldi YL, LOW(ledValues)
+007e86 e0d2      	ldi YH, HIGH(ledValues)
+                 	
+007e87 9349      	st Y+, temp0
+007e88 9349      	st Y+, temp0
+                 	
+007e89 940e 7e8f 	call setLeds
+                 
+007e8b 914f      	pop temp0
+007e8c 91df      	pop YH
+007e8d 91cf      	pop YL
+007e8e 9508      	ret
+                 
+                 setLeds:
+007e8f 9540      	com temp0
+007e90 b945      	out LEDS_OUT, temp0
+007e91 9540      	com temp0 ;Restore register
+007e92 9508      	ret
+                 
+                 setLeds0:
+007e93 93cf      	push YL
+007e94 93df      	push YH
+007e95 935f      	push temp1
+                 
+007e96 e3ce      	ldi YL, LOW(ledValues)
+007e97 e0d2      	ldi YH, HIGH(ledValues)
+                 
+007e98 9349      	st Y+, temp0
+007e99 8158      	ld temp1, Y
+                 	
+007e9a 2b54      	or temp1, temp0
+007e9b 9550      	com temp1
+007e9c b955      	out LEDS_OUT, temp1
+                 	
+007e9d 915f      	pop temp1
+007e9e 91df      	pop YH
+007e9f 91cf      	pop YL
+007ea0 9508      	ret
+                 
+                 setLeds1:
+007ea1 93cf      	push YL
+007ea2 93df      	push YH
+007ea3 935f      	push temp1
+                 
+007ea4 e3ce      	ldi YL, LOW(ledValues)
+007ea5 e0d2      	ldi YH, HIGH(ledValues)
+                 
+007ea6 8349      	std Y+1, temp0
+007ea7 8158      	ld temp1, Y
+                 
+007ea8 2b54      	or temp1, temp0
+007ea9 9550      	com temp1
+007eaa b955      	out LEDS_OUT, temp1
+                 	
+007eab 915f      	pop temp1
+007eac 91df      	pop YH
+007ead 91cf      	pop YL
+007eae 9508      	ret
+                 
+                 /*==============================================================
+                 === Make an effect with the LEDs ===============================
+                 === Dependencies: LEDS_OUT points to the led port
+                 ================================================================*/
+                 blinkLeds:
+                 	;save state
+007eaf 934f      	push temp0
+007eb0 935f      	push temp1
+                 
+007eb1 b153      	in temp1, LEDS_IN
+007eb2 ef4f      	ser temp0
+                 blink:
+007eb3 940e 7e8f 	call setLeds
+007eb5 940e 7ebe 	call delay
+007eb7 9546      	lsr  temp0
+007eb8 fd40      	sbrc temp0, 0
+007eb9 cff9      	rjmp blink
+                 	
+                 	;restore state
+007eba b955      	out LEDS_OUT, temp1
+007ebb 915f      	pop temp1
+007ebc 914f      	pop temp0
+007ebd 9508      	ret
+                 
+                 /*==============================================================
+                 === A small software delay =====================================
+                 ================================================================*/
+                 delay:
+                 	;save state
+007ebe 934f      	push temp0
+007ebf 935f      	push temp1
+                 
+007ec0 2744      	clr  temp0
+007ec1 2755      dl1:clr  temp1
+007ec2 955a      dl2:dec  temp1
+007ec3 f7f1      	brne dl2
+007ec4 954a      	dec  temp0
+007ec5 f7d9      	brne dl1
+                 
+                 	;restore state
+007ec6 915f      	pop temp1
+007ec7 914f      	pop temp0
+007ec8 9508      	ret
+                 
+                 /*==============================================================
+                 === EEPROM Read ================================================
+                 === Read 1 byte from EEPROM to temp0 register.
+                 === It is assumed that interrupts are controlled so that 
+                 === no interrupts will occur during execution of this routine.
+                 ================================================================*/
+                 EEPROM_read:
+007ec9 935f      	push temp1
+007eca 936f      	push temp2
+                 
+                 	; Wait for completion of previous write
+007ecb 99f9      	sbic EECR,EEPE
+007ecc cffc      	rjmp EEPROM_read
+                 	; Set up address (temp2:temp1) in address register
+007ecd bd51      	out EEARL, temp1
+007ece bd62      	out EEARH, temp2
+                 	; Start eeprom read by writing EERE
+007ecf 9af8      	sbi EECR, EERE
+                 	; Read data from Data Register
+007ed0 b540      	in temp0, EEDR
+                 
+007ed1 916f      	pop temp2
+007ed2 915f      	pop temp1
+007ed3 9508      	ret
+                 
+                 
+                 
+                 
+                 
+                 /*==============================================================
+                 === Reset - Initializations ===
+                 ================================================================*/
+                 Reset:
+                 	;Init Stack Pointer
+007ed4 ef0f      	ldi  r16,low(RAMEND)
+007ed5 bf0d      	out  SPL,r16
+007ed6 e100      	ldi  r16,high(RAMEND)
+007ed7 bf0e      	out  SPH,r16
+                 
+                 	;Configure PORTB as output  (LEDs are connected to this port)
+                 	;All bits have logic zero output
+007ed8 ef0f      	ldi  r16,0b11111111
+007ed9 b905      	out  PORTB,r16
+007eda ef0f      	ldi  r16,0b11111111	// All bits are set to OUTPUT
+007edb b904      	out  DDRB,r16
+                 
+                 	;Configure PORTA as input (Switches are connected to this port)
+007edc ef0f      	ldi  r16,0b11111111
+007edd b902      	out  PORTA,r16
+007ede e000      	ldi  r16,0b00000000
+007edf b901      	out  DDRA,r16
+                 
+                 	/*Procceed to the application*/
+007ee0 940c 7eea 	jmp main
+                  
+                 /*==============================================================
+                 === Main ===
+                 ================================================================*/
+                 .dseg
+                 dataPacket:
+000240           	.byte TKN_PACKET_SIZE
+                 .org $300
+                 hexLine:
+000300           	.byte $FF
+                 
+                 .cseg
+                 tempBuff:
+007ee2 4d2d
+007ee3 5543
+007ee4 522d
+007ee5 4145
+007ee6 5944
+007ee7 2d2d
+007ee8 2d2d
+007ee9 2d2d      .db "-MCU-READY------"
+                 
+                 main:
+007eea 940e 7e81 	call ledInit
+007eec 940e 7041 	call TKN_init
+007eee 940e 7f22 	call Enable_PcInt7
+                 
+                 	;Fill the data packet.
+007ef0 ece4      	ldi ZL, LOW(tempBuff<<1)
+007ef1 effd      	ldi ZH, HIGH(tempBuff<<1)
+                 
+007ef2 e4c0      	ldi YL,LOW(dataPacket)
+007ef3 e0d2      	ldi YH,HIGH(dataPacket)
+                 	
+007ef4 e150      	ldi temp1, TKN_PACKET_SIZE
+                 fillPacketLoop:
+007ef5 9145      		lpm temp0, Z+
+007ef6 9349      		st Y+, temp0
+007ef7 955a      		dec temp1;
+007ef8 f7e1      	brne fillPacketLoop
+                 
+                 	;Move Interrupts in boot section
+007ef9 940e 7f1b 	call Move_interrupts_BootSec
+                 
+007efb 2433      	clr lineCount
+007efc e0c0      	ldi YL,LOW(hexLine)
+007efd e0d3      	ldi YH,HIGH(hexLine)
+                 	
+                 	;Enable Interrupts and enter the main loop.
+007efe 9478      	sei
+                 
+                 recv_loop:
+                 	/* Poll for incoming packets */
+007eff 940e 71f1 	call TKN_popPacket
+007f01 2344      	and temp0, temp0
+007f02 f3e1      	breq recv_loop
+                 
+007f03 cffb      	rjmp recv_loop // DEBUG (Short-circuit loop)
+                 
+                 	/* Here, a new packet has been received in the hexline buffer */
+                 	/* Send it back (Debug reasons) */
+                 	/*
+                 	push temp0
+                 	push_loop1:
+                 	call TKN_pushPacket
+                 	and temp0, temp0
+                 	brne push_loop1
+                 	pop temp0
+                 	*/
+                 
+                 	/* Detect '\n' or '\0' in the last character of the packet */
+007f04 855f      	ldd temp1, Y + TKN_PACKET_SIZE - 1
+007f05 2355      	and temp1, temp1 //detect zero byte
+007f06 f039      	breq hexLine_complete
+007f07 305a      	cpi temp1, '\n'
+007f08 f029      	breq hexLine_complete //detect new line
+007f09 e150      	ldi temp1, TKN_PACKET_SIZE
+007f0a 0fc5      	add YL, temp1
+007f0b f408      	brcc notOverflow
+007f0c 95d3      	inc YH
+                 	notOverflow:
+007f0d cff1      	rjmp recv_loop
+                 
+                 hexLine_complete:
+                 	/**
+                 	* HERE I should analyze the hex line ...
+                 	* Just delay for now... 
+                 	ldi temp1, 1
+                 	procDelay:
+                 	call delay
+                 	dec temp1
+                 	brne procDelay
+                 	*/
+                 
+                 	/* Send the ready singaling string */
+007f0e e4c0      	ldi YL,LOW(dataPacket)
+007f0f e0d2      	ldi YH,HIGH(dataPacket)
+                 	push_loop2:
+007f10 940e 7053 	call TKN_pushPacket
+007f12 2344      	and temp0, temp0
+007f13 f7e1      	brne push_loop2
+                 
+007f14 9433      	inc lineCount
+007f15 2d43      	mov temp0, lineCount
+007f16 940e 7ea1 	call setLeds1
+                 
+007f18 e0c0      	ldi YL,LOW(hexLine)
+007f19 e0d3      	ldi YH,HIGH(hexLine)
+007f1a cfe4      	rjmp recv_loop
+                 
+                 
+                 /*==============================================================
+                 === Interrupts ===
+                 === (ISRs / Enable routines / move to BOOT_SEC / ...
+                 ================================================================*/
+                 Move_interrupts_BootSec:
+                 	; Get MCUCR
+007f1b b745      	in temp0, MCUCR
+007f1c 2f54      	mov temp1, temp0
+                 	; Enable change of Interrupt Vectors
+007f1d 6041      	ori temp0, (1<<IVCE)
+007f1e bf45      	out MCUCR, temp0
+                 	; Move interrupts to Boot Flash section
+007f1f 6052      	ori temp1, (1<<IVSEL)
+007f20 bf55      	out MCUCR, temp1
+                 
+007f21 9508      	ret
+                 
+                 /*==============================================================
+                 === Enable the PCINT7 (switch)
+                 ================================================================*/
+                 Enable_PcInt7:
+007f22 98e8      	cbi EIMSK, INT0
+                 
+007f23 9140 0069 	lds temp0, EICRA
+007f25 6042      	sbr temp0, (2<<ISC00)
+007f26 9340 0069 	sts EICRA, temp0
+                 
+007f28 9ae8      	sbi EIMSK, INT0
+                 	
+007f29 9140 0068 	lds temp0, PCICR
+007f2b 6041      	sbr temp0, (1<<PCIE0)
+007f2c 9340 0068 	sts PCICR, temp0
+                 
+007f2e 9140 006b 	lds temp0, PCMSK0
+007f30 6840      	sbr temp0, (1<<PCINT7)
+007f31 9340 006b 	sts PCMSK0, temp0
+                 
+007f33 9508      	ret
+                 
+                 /*==============================================================
+                 === Handle SWITCH 7 Pin Change Interrupt
+                 ===   var+
+                 ===   Transmit(var)
+                 ================================================================*/
+                 
+                 PCI0_ISR:
+                 	;Save SREG and main thread's temp registers
+007f34 b70f      	in rsreg, SREG
+007f35 2f14      	mov itemp0, temp0
+007f36 2f25      	mov itemp1, temp1
+007f37 2f36      	mov itemp2, temp2
+007f38 93cf      	push YL
+007f39 93df      	push YH
+                 
+                 	;Copy the data to the Transmission buffer
+007f3a e0d2      	ldi YH,HIGH(dataPacket) ; void* data_ptr
+007f3b e4c0      	ldi YL,LOW(dataPacket)  ;
+007f3c e041      	ldi temp0, 1			; HardCode the receiver
+007f3d 940e 7053 	call TKN_pushPacket
+                 	
+                 	;Restore SREG and main thread's temp registers
+007f3f 91df      	pop YH
+007f40 91cf      	pop YL
+007f41 2f63      	mov temp2, itemp2
+007f42 2f52      	mov temp1, itemp1
+007f43 2f41      	mov temp0, itemp0
+007f44 bf0f      	out SREG, rsreg
+                 
+007f45 9518      	reti
+
+
+RESOURCE USE INFORMATION
+------------------------
+
+Notice:
+The register and instruction counts are symbol table hit counts,
+and hence implicitly used resources are not counted, eg, the
+'lpm' instruction without operands implicitly uses r0 and z,
+none of which are counted.
+
+x,y,z are separate entities in the symbol table and are
+counted separately from r26..r31 here.
+
+.dseg memory usage only counts static data declared with .byte
+
+ATmega644PA register use summary:
+r0 :   3 r1 :   3 r2 :   0 r3 :   3 r4 :   7 r5 :  10 r6 :  16 r7 :   6 
+r8 :  14 r9 :  14 r10:  17 r11:  28 r12:   3 r13:   6 r14:  14 r15:  14 
+r16:  18 r17:   6 r18:   6 r19:   6 r20: 189 r21:  94 r22:  24 r23:   7 
+r24:   4 r25:   4 r26:  29 r27:  21 r28:  42 r29:  35 r30:  13 r31:  13 
+x  :  25 y  :  28 z  :   3 
+Registers used: 34 out of 35 (97.1%)
+
+ATmega644PA instruction use summary:
+.lds  :   0 .sts  :   0 adc   :   1 add   :  17 adiw  :   1 and   :   5 
+andi  :   0 asr   :   0 bclr  :   0 bld   :   0 brbc  :   0 brbs  :   0 
+brcc  :   3 brcs  :   0 break :   0 breq  :  14 brge  :   0 brhc  :   0 
+brhs  :   0 brid  :   0 brie  :   0 brlo  :   0 brlt  :   0 brmi  :   0 
+brne  :  13 brpl  :   0 brsh  :   0 brtc  :   0 brts  :   0 brvc  :   0 
+brvs  :   0 bset  :   0 bst   :   0 call  :  39 cbi   :   1 cbr   :  17 
+clc   :   0 clh   :   0 cli   :   3 cln   :   0 clr   :  34 cls   :   0 
+clt   :   0 clv   :   0 clz   :   0 com   :   4 cp    :   6 cpc   :   0 
+cpi   :   7 cpse  :   6 dec   :  12 eor   :   0 fmul  :   0 fmuls :   0 
+fmulsu:   0 icall :   0 ijmp  :   2 in    :  13 inc   :  19 jmp   :   6 
+ld    :  15 ldd   :   8 ldi   : 115 lds   :  11 lpm   :   4 lsl   :  16 
+lsr   :  17 mov   :  59 movw  :   0 mul   :   0 muls  :   0 mulsu :   0 
+neg   :   0 nop   :  27 or    :   2 ori   :   2 out   :  21 pop   :  38 
+push  :  38 rcall :   0 ret   :  46 reti  :  30 rjmp  :  26 rol   :   0 
+ror   :   0 sbc   :   0 sbci  :   2 sbi   :   2 sbic  :   2 sbis  :   0 
+sbiw  :   2 sbr   :  21 sbrc  :   7 sbrs  :   5 sec   :   0 seh   :   0 
+sei   :   1 sen   :   0 ser   :   1 ses   :   0 set   :   0 sev   :   0 
+sez   :   0 sleep :   0 spm   :   2 st    :  28 std   :   2 sts   :  13 
+sub   :   0 subi  :   2 swap  :   0 tst   :   0 wdr   :   0 
+Instructions used: 52 out of 113 (46.0%)
+
+ATmega644PA memory use summary [bytes]:
+Segment   Begin    End      Code   Data   Used    Size   Use%
+---------------------------------------------------------------
+[.cseg] 0x00e000 0x00fe8c   1710     22   1732   65536   2.6%
+[.dseg] 0x000100 0x0003ff      0    591    591    4096  14.4%
+[.eseg] 0x000000 0x000000      0      0      0    2048   0.0%
+
+Assembly complete, 0 errors, 1 warnings
