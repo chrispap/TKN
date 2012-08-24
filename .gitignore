@@ -12,3 +12,8 @@
 *.kdev
 *.kdev4
 
+# AVR Studio #
+##############
+*.avrsuo
+Debug
+debug
