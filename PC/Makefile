@@ -21,7 +21,7 @@ endif
 ### ... ###
 OBJ  =  TKN_Interactive.o TKN_Step.o TKN_Boot.o TKN_PacketCreator.o TKN_Elapse.o $(RES)
 LINKOBJ = rs232.o TKN.o TKN_Util.o TKN_Queue.o $(RES)
-BIN = TKN_Interactive TKN_Step TKN_Elapse TKN_PacketCreator TKN_Boot
+BIN = TKN_Interactive TKN_Step TKN_Elapse TKN_PacketCreator TKN_Boot PrintPackets
 CXXFLAGS = $(CXXINCS)  
 CFLAGS = $(INCS) -Wall -O2  -g
 RM = rm -f
@@ -54,7 +54,7 @@ Boot: TKN_Boot.o $(LINKOBJ)
 	$(CC) -o TKN_Boot TKN_Boot.o $(LINKOBJ) $(THREADLIB)
 
 PrintPackets: src/printPackets.c
-	$(CC) -o printPackets src/printPackets.c
+	$(CC) -o PrintPackets src/printPackets.c
 
 ### Object files ###
 rs232.o: src/rs232.c src/rs232.h
