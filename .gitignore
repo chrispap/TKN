@@ -24,4 +24,5 @@ debug
 *.pro.user*
 *-Release*
 *-Debug*
+*-build-*
 *~
