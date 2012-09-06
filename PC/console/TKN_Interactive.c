@@ -2,17 +2,19 @@
 #include <stdlib.h>
 #include <time.h>
 
-#include "TKN.h"
-#include "TKN_Util.h"
+#include "../lib/TKN.h"
+#include "../lib/TKN_Util.h"
 
 /* Gloabals */
-extern BYTE dest_id;
+BYTE dest_id;
 static time_t time_start, time_end;
 
 int main (int argc, char *argv[])
 {
-    if (init (argc, argv) != 0) 
-        exit (1);
+	if (TKN_InitWithArgs(argc, argv))
+		exit (1);
+
+	dest_id = (argc > 3)? atoi (argv[3]) : TKN_DEST_ID_DEFAULT;
 
     /* Start the network */
     time_start = time(NULL);

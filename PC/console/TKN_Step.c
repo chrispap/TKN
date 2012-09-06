@@ -1,19 +1,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "TKN.h"
-#include "TKN_Util.h"
-
+#include "../lib/TKN.h"
+#include "../lib/TKN_Util.h"
 
 /* Gloabals */
-extern BYTE dest_id;
-
+BYTE dest_id;
 
 int main (int argc, char *argv[])
 {
     int action = 'x';
     
-    if (init (argc, argv) != 0) 
+    if (TKN_InitWithArgs (argc, argv) != 0) 
         exit (1);
     
     while ( (action = getKey ("Ee Dd .>")) != 'e' )
