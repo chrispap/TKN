@@ -17,3 +17,11 @@
 *.avrsuo
 Debug
 debug
+
+# QtCreator project files #
+###########################
+*.pro.user
+*.pro.user*
+*-Release*
+*-Debug*
+*~

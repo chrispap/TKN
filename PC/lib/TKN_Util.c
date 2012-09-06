@@ -14,9 +14,7 @@
 #include "TKN.h"
 #include "TKN_Util.h"
 
-
 /* UI Functions */
-
 int getKey (char *acceptKeys)
 {
     char key, *c;
