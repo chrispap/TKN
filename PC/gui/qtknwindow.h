@@ -7,13 +7,16 @@ namespace Ui {
     class QTKNWindow;
 }
 
-class QTKNWindow : public QMainWindow
+class TKNWindow : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    explicit QTKNWindow(QWidget *parent = 0);
-    ~QTKNWindow();
+    explicit TKNWindow(QWidget *parent = 0);
+    ~TKNWindow();
+
+    static void tokenReceived();
+    static void dataReceived();
 
 private slots:
     void on_buttonStartStop_clicked();
@@ -28,6 +31,8 @@ private slots:
 
 private:
     Ui::QTKNWindow *ui;
+
+    static TKNWindow *self;
 
     void updateUI();
 

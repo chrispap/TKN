@@ -29,7 +29,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>QTKNWindow</string>
+   <string>TKN GUI</string>
   </property>
   <property name="autoFillBackground">
    <bool>false</bool>
@@ -76,9 +76,9 @@ QTextEdit {
     <widget class="QLCDNumber" name="lcd_TokenCounter">
      <property name="geometry">
       <rect>
-       <x>190</x>
+       <x>210</x>
        <y>100</y>
-       <width>131</width>
+       <width>101</width>
        <height>31</height>
       </rect>
      </property>
@@ -88,8 +88,11 @@ QTextEdit {
      <property name="lineWidth">
       <number>2</number>
      </property>
+     <property name="numDigits">
+      <number>7</number>
+     </property>
      <property name="digitCount">
-      <number>11</number>
+      <number>7</number>
      </property>
      <property name="mode">
       <enum>QLCDNumber::Dec</enum>
@@ -101,9 +104,9 @@ QTextEdit {
     <widget class="QLabel" name="label_5">
      <property name="geometry">
       <rect>
-       <x>60</x>
+       <x>100</x>
        <y>100</y>
-       <width>121</width>
+       <width>101</width>
        <height>31</height>
       </rect>
      </property>
@@ -313,7 +316,7 @@ QTextEdit {
      <x>0</x>
      <y>0</y>
      <width>624</width>
-     <height>25</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">

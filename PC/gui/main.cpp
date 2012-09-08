@@ -4,7 +4,7 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    QTKNWindow w;
+    TKNWindow w;
     w.show();
     int retVal = a.exec();
     return retVal;

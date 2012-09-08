@@ -9,10 +9,11 @@
 #include "lib/TKN.h"
 #include "lib/TKN_Util.h"
 
-const QString QTKNWindow::buttonStartText = QString("TKN Start");
-const QString QTKNWindow::buttonStopText = QString("TKN Stop");
+const QString TKNWindow::buttonStartText = QString("TKN Start");
+const QString TKNWindow::buttonStopText = QString("TKN Stop");
+TKNWindow* TKNWindow::self;
 
-QTKNWindow::QTKNWindow(QWidget *parent) :
+TKNWindow::TKNWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::QTKNWindow)
 {
@@ -25,14 +26,26 @@ QTKNWindow::QTKNWindow(QWidget *parent) :
     this->tknStarted = false;
     this->updateUI();
 
+    self = this;
 }
 
-QTKNWindow::~QTKNWindow()
+TKNWindow::~TKNWindow()
 {
     delete ui;
 }
 
-void QTKNWindow::updateUI()
+void TKNWindow::tokenReceived()
+{
+    self->ui->lcd_TokenCounter->display( self->ui->lcd_TokenCounter->value() + 1);
+
+}
+
+void TKNWindow::dataReceived()
+{
+    self->on_buttonRec_clicked();
+}
+
+void TKNWindow::updateUI()
 {
     ui->lineEdit_Baud->setEnabled(!tknStarted);
     ui->lineEdit_ComPort->setEnabled(!tknStarted);
@@ -42,13 +55,13 @@ void QTKNWindow::updateUI()
     ui->buttonStartStop->setStyleSheet(tknStarted? "* { background-color: rgba(200,0,0,255) }" : "* { background-color: rgba(0,200,0,255) }");
 }
 
-void QTKNWindow::on_buttonStartStop_clicked()
+void TKNWindow::on_buttonStartStop_clicked()
 {
     if (!tknStarted) {
         int port = ui->lineEdit_ComPort->text().toInt();
         int baud = ui->lineEdit_Baud->text().toInt();
 
-        if ( TKN_Init(port, baud, TKN_ID_DEFAULT))
+        if ( TKN_Init(port, baud, TKN_ID_DEFAULT, TKNWindow::tokenReceived, TKNWindow::dataReceived))
             return;
         if ( TKN_Start())
             return;
@@ -66,7 +79,7 @@ void QTKNWindow::on_buttonStartStop_clicked()
 
 }
 
-void QTKNWindow::on_button_Send_clicked()
+void TKNWindow::on_button_Send_clicked()
 {
     int dest_id = ui->comboBox_destId->currentText().toInt();
     TKN_Data data;
@@ -76,12 +89,12 @@ void QTKNWindow::on_button_Send_clicked()
     TKN_PushData(&data, dest_id);
 }
 
-void QTKNWindow::on_actionAbout_triggered()
+void TKNWindow::on_actionAbout_triggered()
 {
     QMessageBox::information(this, "About", "About...", QMessageBox::Ok);
 }
 
-void QTKNWindow::on_buttonRec_clicked()
+void TKNWindow::on_buttonRec_clicked()
 {
     char recd[sizeof(TKN_Data)+1];
     recd[sizeof(TKN_Data)]=0;
@@ -93,7 +106,7 @@ void QTKNWindow::on_buttonRec_clicked()
 
 }
 
-void QTKNWindow::on_buttonClear_clicked()
+void TKNWindow::on_buttonClear_clicked()
 {
     ui->textEdit_Console->clear();
 }

@@ -83,7 +83,7 @@
     <Compile Include="Main.asm">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="BL_.asm">
+    <Compile Include="Flash.asm">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="TKN.asm">

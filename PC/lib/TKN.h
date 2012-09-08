@@ -42,7 +42,7 @@ typedef struct {BYTE data[TKN_DATA_SIZE]; } TKN_Data;
 
 /* TKN Function Prototypes */ 
 int TKN_ExportPackets ();
-int TKN_Init (int port, int baud, BYTE id);
+int TKN_Init (int port, int baud, BYTE id, void (*recTokenCallback)(void), void (*recDataCallback)(void) );
 int TKN_InitWithArgs (int argc, char *argv[]);
 int TKN_Close ();
 int TKN_Start ();

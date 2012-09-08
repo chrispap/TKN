@@ -64,7 +64,8 @@ static void* TKN_Run(void* params);
 static DWORD WINAPI TKN_Run (LPVOID params);
 #endif
 
-
+static void(*recTokenCallback)(void);
+static void(*recDataCallback)(void);
 
 /* Print Functions */
 
@@ -305,6 +306,7 @@ int TKN_Receive ()
 		      #ifdef ECHO_DATA
 		      TKN_PrintDataPacket (RX_Buffer, 1, 1);
 		      #endif
+                      if (recDataCallback) recDataCallback();
 		      TKN_SendAckPacket (RX_Buffer[TKN_OFFS_SENDER], MY_ID, RX_Buffer[TKN_OFFS_PACKET_ID]);
 		  }
 		  continue;
@@ -317,6 +319,7 @@ int TKN_Receive ()
 		  #ifdef ECHO_TOKENS
 		  printf ("T< ");
 		  #endif
+                  if(recTokenCallback) recTokenCallback();
 		  break;
 	      }
         }
@@ -408,7 +411,7 @@ int TKN_IsDataValid (BYTE * data, BYTE checkByte)
  * 1. Open the serial port
  * 2. Assign the node ID
  */
-int TKN_Init (int port, int baud, BYTE id)
+int TKN_Init (int port, int baud, BYTE id, void (*_recTokenCallback)(void), void (*_recDataCallback)(void) )
 {
     PORT_NUM = port;
     MY_ID = id;
@@ -426,6 +429,9 @@ int TKN_Init (int port, int baud, BYTE id)
       printf ("D  -> Send data \n>  -> Send token\nE  -> Exit\n\n");
       TKN_PrintCols ();
       
+      recTokenCallback = _recTokenCallback;
+      recDataCallback = _recDataCallback;
+
       return 0; //success
     }
 }
@@ -446,7 +452,7 @@ int TKN_InitWithArgs (int argc, char *argv[])
 
     node_id = TKN_ID_DEFAULT;
 
-    if (TKN_Init (portNum, baud, node_id) != 0)
+    if (TKN_Init (portNum, baud, node_id, NULL, NULL) != 0)
     {
         printf ("Cannot open PORT%d\n", portNum);
         return 1;
