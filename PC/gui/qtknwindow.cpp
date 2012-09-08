@@ -1,6 +1,8 @@
 #include "qtknwindow.h"
 #include "ui_qtknwindow.h"
 #include <QMessageBox>
+#include <QThread>
+#include <QDebug>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -27,6 +29,11 @@ TKNWindow::TKNWindow(QWidget *parent) :
     this->updateUI();
 
     self = this;
+
+    connect(this, SIGNAL(tokenReceived_signal(int)), ui->lcd_TokenCounter, SLOT(display(int)), Qt::QueuedConnection);
+    connect(this, SIGNAL(dataReceived_signal()), this, SLOT(on_buttonRec_clicked()), Qt::QueuedConnection);
+
+    tknCounter = 0;
 }
 
 TKNWindow::~TKNWindow()
@@ -34,15 +41,14 @@ TKNWindow::~TKNWindow()
     delete ui;
 }
 
-void TKNWindow::tokenReceived()
+void TKNWindow::tokenReceivedStatic()
 {
-    self->ui->lcd_TokenCounter->display( self->ui->lcd_TokenCounter->value() + 1);
-
+    emit self->tokenReceived_signal(self->tknCounter++);
 }
 
-void TKNWindow::dataReceived()
+void TKNWindow::dataReceivedStatic()
 {
-    self->on_buttonRec_clicked();
+    emit self->dataReceived_signal();
 }
 
 void TKNWindow::updateUI()
@@ -61,7 +67,7 @@ void TKNWindow::on_buttonStartStop_clicked()
         int port = ui->lineEdit_ComPort->text().toInt();
         int baud = ui->lineEdit_Baud->text().toInt();
 
-        if ( TKN_Init(port, baud, TKN_ID_DEFAULT, TKNWindow::tokenReceived, TKNWindow::dataReceived))
+        if ( TKN_Init(port, baud, TKN_ID_DEFAULT, TKNWindow::tokenReceivedStatic, TKNWindow::dataReceivedStatic))
             return;
         if ( TKN_Start())
             return;
@@ -102,7 +108,6 @@ void TKNWindow::on_buttonRec_clicked()
     if (TKN_PopData((TKN_Data*)(&recd)) >= 0) {
         ui->textEdit_Console->append( QString(recd));
     }
-
 
 }
 

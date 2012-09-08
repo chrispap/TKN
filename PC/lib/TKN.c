@@ -16,7 +16,7 @@
 #include "TKN_Queue.h"
 #include "rs232.h"
 
-#define TKN_DEBUG
+//#define TKN_DEBUG
 #ifdef TKN_DEBUG
   //#define ECHO_ATTEMPTS
   //#define ECHO_TOKENS
@@ -76,8 +76,11 @@ static char* stripLF(char *str)
     return str;
 }
 
-int TKN_PrintCols ()
+int TKN_PrintCols (int port)
 {
+    printf ("COM PORT %d OPENED SUCCESFULLY\n\n", port);
+    printf ("D  -> Send data \n>  -> Send token\nE  -> Exit\n\n");
+
     printf ("FROM\tTO\tID\tDATA \n");
     printf ("-------------------------------------------\n");
 
@@ -305,8 +308,8 @@ int TKN_Receive ()
 		      #endif
 		      #ifdef ECHO_DATA
 		      TKN_PrintDataPacket (RX_Buffer, 1, 1);
-		      #endif
-                      if (recDataCallback) recDataCallback();
+              #endif
+              if (recDataCallback) recDataCallback();
 		      TKN_SendAckPacket (RX_Buffer[TKN_OFFS_SENDER], MY_ID, RX_Buffer[TKN_OFFS_PACKET_ID]);
 		  }
 		  continue;
@@ -319,7 +322,7 @@ int TKN_Receive ()
 		  #ifdef ECHO_TOKENS
 		  printf ("T< ");
 		  #endif
-                  if(recTokenCallback) recTokenCallback();
+          if(recTokenCallback) recTokenCallback();
 		  break;
 	      }
         }
@@ -424,10 +427,8 @@ int TKN_Init (int port, int baud, BYTE id, void (*_recTokenCallback)(void), void
     {
 	  TKN_Queue_Init( &RX_QUEUE, TKN_QUEUE_SIZE);
 	  TKN_Queue_Init( &TX_QUEUE, TKN_QUEUE_SIZE);
-	  
-      printf ("COM PORT %d OPENED SUCCESFULLY\n\n", port);
-      printf ("D  -> Send data \n>  -> Send token\nE  -> Exit\n\n");
-      TKN_PrintCols ();
+
+      //TKN_PrintCols (port);
       
       recTokenCallback = _recTokenCallback;
       recDataCallback = _recDataCallback;
@@ -615,6 +616,7 @@ DWORD WINAPI TKN_Run (LPVOID params)
         }
 		
         TKN_PassToken();
+
         if (TKN_Receive() == TKN_TYPE_TOKEN)
             TKN_TokenCount++;
         else

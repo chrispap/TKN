@@ -15,31 +15,28 @@ public:
     explicit TKNWindow(QWidget *parent = 0);
     ~TKNWindow();
 
-    static void tokenReceived();
-    static void dataReceived();
+    static void tokenReceivedStatic();
+    static void dataReceivedStatic();
+
+signals:
+    void tokenReceived_signal(int);
+    void dataReceived_signal();
 
 private slots:
     void on_buttonStartStop_clicked();
-
     void on_actionAbout_triggered();
-
     void on_button_Send_clicked();
-
     void on_buttonRec_clicked();
-
     void on_buttonClear_clicked();
 
 private:
     Ui::QTKNWindow *ui;
-
     static TKNWindow *self;
-
     void updateUI();
-
-    static const QString buttonStartText, buttonStopText;
-
+    static const QString buttonStartText,
+        buttonStopText;
     bool tknStarted;
-
+    int tknCounter;
 };
 
 #endif // QTKNWINDOW_H
