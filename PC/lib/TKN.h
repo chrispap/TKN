@@ -53,8 +53,10 @@ int TKN_PopData (TKN_Data *);
 int TKN_SendString (char * str, BYTE dest_id);
 int TKN_WaitString(char *ready_str);
 
-/* TODO
- * Thes funcs should become static !!! */
+/**
+ * TODO:
+ */
+/* Thes funcs should become static !!! */
 int TKN_SendDataPacket (TKN_Data * data, BYTE to);
 int TKN_PassToken ();
 int TKN_Receive ();

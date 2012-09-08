@@ -491,7 +491,7 @@ int TKN_Stop()
         if ( pthread_join(TKN_Thread, NULL)) 
             TKN_Running=1;
         
-        return TKN_Running;
+        return TKN_Running; // 0 if thread is succesfully stopped.
     }
     else return -1;
 }

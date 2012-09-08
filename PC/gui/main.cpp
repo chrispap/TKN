@@ -7,6 +7,6 @@ int main(int argc, char *argv[])
     QTKNWindow w;
     w.show();
     int retVal = a.exec();
-
     return retVal;
+
 }
