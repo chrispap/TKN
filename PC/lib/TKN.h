@@ -44,6 +44,7 @@ typedef struct {BYTE data[TKN_DATA_SIZE]; } TKN_Data;
 int TKN_ExportPackets ();
 int TKN_Init (int port, int baud, BYTE id, void (*recTokenCallback)(void), void (*recDataCallback)(void) );
 int TKN_InitWithArgs (int argc, char *argv[]);
+int TKN_PrintCols ();
 int TKN_Close ();
 int TKN_Start ();
 int TKN_Stop ();

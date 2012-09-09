@@ -11,14 +11,19 @@ static time_t time_start, time_end;
 
 int main (int argc, char *argv[])
 {
-	if (TKN_InitWithArgs(argc, argv))
-		exit (1);
+    if (TKN_InitWithArgs(argc, argv))
+        exit (1);
 
-	dest_id = (argc > 3)? atoi (argv[3]) : TKN_DEST_ID_DEFAULT;
+    printf (">> TKN opened succesfully.\n");
+    printf ("D  -> Send data \nE  -> Exit\n\n");
+
+    TKN_PrintCols();
+
+    dest_id = (argc > 3)? atoi (argv[3]) : TKN_DEST_ID_DEFAULT;
 
     /* Start the network */
     time_start = time(NULL);
-    TKN_Start();
+    //TKN_Start();
     
     int action;
     while ( (action = getKey ("Ee Dd .>")) != 'e' )
@@ -41,7 +46,7 @@ int main (int argc, char *argv[])
     TKN_Stop();
     TKN_Close();
     time_end = time (NULL);
-    printf (">> nEllapsed time: %ld sec \n", time_end - time_start);
+    printf (">> Ellapsed time: %ld sec \n", time_end - time_start);
     printf (">> Token Counter: %d \n", TKN_GetTokenCount() );
     
     return 0;

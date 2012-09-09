@@ -21,32 +21,34 @@ int main (int argc, char *argv[])
     
     /* Open the file */
     if ((hexFile = fopen (flname, "r")) == NULL) {
-		perror("Cannot open data file");
-		exit (1);
+        perror("Cannot open data file");
+        exit (1);
     }
 
     /* Init network */ 
-	if (TKN_InitWithArgs(argc, argv))
-		exit (1);
+    if (TKN_InitWithArgs(argc, argv))
+        exit (1);
 
-	dest_id = (argc > 3)? atoi (argv[3]) : TKN_DEST_ID_DEFAULT;
+    printf (">> TKN opened succesfully.\n");
+
+    dest_id = (argc > 3)? atoi (argv[3]) : TKN_DEST_ID_DEFAULT;
 
     TKN_Start();
-	time_start = time(NULL);
+    time_start = time(NULL);
 
     /* Send file */ 
     while (!(fileIsRead = fgets(hexLine, HEXLINE_SIZE, hexFile)==NULL? 1:0))
     {
-      lineCounter++;
-      TKN_SendString (hexLine, dest_id);
-      printf(">> Pushed line #%3d\n", lineCounter);
-      TKN_WaitString(mcuReadyStr);
+        lineCounter++;
+        TKN_SendString (hexLine, dest_id);
+        printf(">> Pushed line #%3d\n", lineCounter);
+        TKN_WaitString(mcuReadyStr);
     }
-	
+
     /* Shut down the network */
     TKN_Stop();
     TKN_Close ();
-	time_end = time (NULL);
+    time_end = time (NULL);
     printf (">> Ellapsed time: %ld sec \n", time_end - time_start);
     printf (">> Token Counter: %d \n", TKN_GetTokenCount() );
     printf (">> Lines sent   : %d \n", lineCounter );

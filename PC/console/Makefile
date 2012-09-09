@@ -21,7 +21,12 @@ endif
 ### ... ###
 OBJ  =  TKN_Interactive.o TKN_Step.o TKN_Boot.o TKN_PacketCreator.o TKN_Elapse.o 
 LINKOBJ = ../lib/rs232.o ../lib/TKN.o ../lib/TKN_Util.o ../lib/TKN_Queue.o 
+
+ifdef SystemRoot
+BIN = TKN_Interactive.exe TKN_Step.exe TKN_Elapse.exe  TKN_Boot.exe 
+else
 BIN = TKN_Interactive TKN_Step TKN_Elapse  TKN_Boot 
+endif
 CXXFLAGS = $(CXXINCS)  
 CFLAGS = $(INCS) -Wall -O2  -g
 RM = rm -f
@@ -39,7 +44,22 @@ clean:
 	${RM} $(OBJ) $(LINKOBJ) $(BIN)
 
 
-### Executables ###
+ifdef SystemRoot
+### Executables Win ###
+TKN_Interactive.exe: TKN_Interactive.o $(LINKOBJ)
+	$(CC) -o TKN_Interactive TKN_Interactive.o $(LINKOBJ) $(THREADLIB)
+
+TKN_Step.exe: TKN_Step.o $(LINKOBJ)
+	$(CC) -o TKN_Step TKN_Step.o $(LINKOBJ) $(THREADLIB)
+
+TKN_Elapse.exe: TKN_Elapse.o $(LINKOBJ)
+	$(CC) -o TKN_Elapse TKN_Elapse.o $(LINKOBJ) $(THREADLIB) 
+
+TKN_Boot.exe: TKN_Boot.o $(LINKOBJ)
+	$(CC) -o TKN_Boot TKN_Boot.o $(LINKOBJ) $(THREADLIB)	
+
+else
+### Executables linux ###
 TKN_Interactive: TKN_Interactive.o $(LINKOBJ)
 	$(CC) -o TKN_Interactive TKN_Interactive.o $(LINKOBJ) $(THREADLIB)
 
@@ -51,8 +71,9 @@ TKN_Elapse: TKN_Elapse.o $(LINKOBJ)
 
 TKN_Boot: TKN_Boot.o $(LINKOBJ)
 	$(CC) -o TKN_Boot TKN_Boot.o $(LINKOBJ) $(THREADLIB)
+endif
 
-
+	
 ### Object files (for executables) ###
 TKN_Interactive.o: TKN_Interactive.c
 	$(CC) -c TKN_Interactive.c -o TKN_Interactive.o $(CFLAGS)

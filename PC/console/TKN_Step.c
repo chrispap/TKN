@@ -14,11 +14,14 @@ int main (int argc, char *argv[])
     if (TKN_InitWithArgs (argc, argv) != 0) 
         exit (1);
     
+	printf (">> TKN opened succesfully.\n");	
+	printf ("D  -> Send data \n>  -> Send token\nE  -> Exit\n\n");
+
     while ( (action = getKey ("Ee Dd .>")) != 'e' )
     {
         if (action == 'd') 
             TKN_SendDataPacket ((TKN_Data*)"__From Laptop___", dest_id);
-		
+
         TKN_PassToken ();
         TKN_Receive ();
     }
