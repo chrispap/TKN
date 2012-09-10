@@ -140,7 +140,7 @@ QTextEdit {
       <item row="0" column="1">
        <widget class="QLineEdit" name="lineEdit_ComPort">
         <property name="text">
-         <string>16</string>
+         <string>17</string>
         </property>
        </widget>
       </item>

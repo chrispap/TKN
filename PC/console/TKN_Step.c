@@ -14,9 +14,12 @@ int main (int argc, char *argv[])
     if (TKN_InitWithArgs (argc, argv) != 0) 
         exit (1);
     
+	dest_id = (argc > 3)? atoi (argv[3]) : TKN_DEST_ID_DEFAULT;
+	
 	printf (">> TKN opened succesfully.\n");	
 	printf ("D  -> Send data \n>  -> Send token\nE  -> Exit\n\n");
-
+	TKN_PrintCols();
+	
     while ( (action = getKey ("Ee Dd .>")) != 'e' )
     {
         if (action == 'd') 

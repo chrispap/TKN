@@ -13,20 +13,19 @@ int main (int argc, char *argv[])
 {
     if (TKN_InitWithArgs(argc, argv))
         exit (1);
-
+	
+	dest_id = (argc > 3)? atoi (argv[3]) : TKN_DEST_ID_DEFAULT;
+	
     printf (">> TKN opened succesfully.\n");
     printf ("D  -> Send data \nE  -> Exit\n\n");
-
     TKN_PrintCols();
-
-    dest_id = (argc > 3)? atoi (argv[3]) : TKN_DEST_ID_DEFAULT;
 
     /* Start the network */
     time_start = time(NULL);
-    //TKN_Start();
+    TKN_Start();
     
     int action;
-    while ( (action = getKey ("Ee Dd .>")) != 'e' )
+    while ( (action = getKey ("Ee Dd")) != 'e' )
     {
         if (action == 'd') 
             TKN_PushData((TKN_Data*)"__From Laptop___", dest_id);

@@ -47,18 +47,19 @@ clean:
 ifdef SystemRoot
 ### Executables Win ###
 TKN_Interactive.exe: TKN_Interactive.o $(LINKOBJ)
-	$(CC) -o TKN_Interactive TKN_Interactive.o $(LINKOBJ) $(THREADLIB)
+	$(CC) -o TKN_Interactive.exe TKN_Interactive.o $(LINKOBJ) $(THREADLIB)
 
 TKN_Step.exe: TKN_Step.o $(LINKOBJ)
-	$(CC) -o TKN_Step TKN_Step.o $(LINKOBJ) $(THREADLIB)
+	$(CC) -o TKN_Step.exe TKN_Step.o $(LINKOBJ) $(THREADLIB)
 
 TKN_Elapse.exe: TKN_Elapse.o $(LINKOBJ)
-	$(CC) -o TKN_Elapse TKN_Elapse.o $(LINKOBJ) $(THREADLIB) 
+	$(CC) -o TKN_Elapse.exe TKN_Elapse.o $(LINKOBJ) $(THREADLIB) 
 
 TKN_Boot.exe: TKN_Boot.o $(LINKOBJ)
-	$(CC) -o TKN_Boot TKN_Boot.o $(LINKOBJ) $(THREADLIB)	
+	$(CC) -o TKN_Boot.exe TKN_Boot.o $(LINKOBJ) $(THREADLIB)	
 
 else
+
 ### Executables linux ###
 TKN_Interactive: TKN_Interactive.o $(LINKOBJ)
 	$(CC) -o TKN_Interactive TKN_Interactive.o $(LINKOBJ) $(THREADLIB)

@@ -1,5 +1,7 @@
 #include "rs232.h"
 
+//#define RS_DEBUG
+
 #ifdef __linux__		/* Linux */
 
 int Cport[22], error;
@@ -39,7 +41,9 @@ OpenComport (int comport_number, int baudrate, char read_timeout)
 
   if ((comport_number > 23) || (comport_number < 0))
     {
-      printf ("Illegal comport number\n");
+	  #ifdef RS_DEBUG
+	  printf ("Illegal comport number\n");
+	  #endif  
       return (1);
     }
 
@@ -115,8 +119,10 @@ OpenComport (int comport_number, int baudrate, char read_timeout)
       baudr = B1000000;
       break;
     default:
-      printf ("Invalid baudrate\n");
-      return (1);
+      #ifdef RS_DEBUG
+	  printf ("Invalid baudrate\n");
+      #endif
+	  return (1);
       break;
     }
 
@@ -272,7 +278,9 @@ OpenComport (int comport_number, int baudrate, char read_timeout)
 {
   if ((comport_number > 17) || (comport_number < 0))
     {
+	  #ifdef RS_DEBUG
       printf ("Illegal comport number\n");
+	  #endif
       return (1);
     }
 
@@ -318,7 +326,9 @@ OpenComport (int comport_number, int baudrate, char read_timeout)
       strcpy (baudr, "baud=256000 data=8 parity=N stop=1");
       break;
     default:
+	  #ifdef RS_DEBUG
       printf ("invalid baudrate\n");
+	  #endif
       return (1);
       break;
     }
@@ -330,7 +340,9 @@ OpenComport (int comport_number, int baudrate, char read_timeout)
 
   if (Cport[comport_number] == INVALID_HANDLE_VALUE)
     {
+	  #ifdef RS_DEBUG
       printf ("Unable to open comport\n");
+	  #endif
       return (1);
     }
 
@@ -340,16 +352,18 @@ OpenComport (int comport_number, int baudrate, char read_timeout)
 
   if (!BuildCommDCBA (baudr, &port_settings))
     {
+	  #ifdef RS_DEBUG
       printf ("Unable to set comport dcb settings\n");
+	  #endif
       CloseHandle (Cport[comport_number]);
       return (1);
     }
 
-  int showDialog = 0;
+  int showDialog = 1;
 
   if (showDialog)
     {
-      /* Show a dialog to the user to chabge tha configuration. */
+      /* Show a dialog to the user to change tha configuration. */
       COMMCONFIG commConfig;
       memset (&commConfig, 0, sizeof (COMMCONFIG));
       commConfig.dwSize = sizeof (COMMCONFIG);
@@ -358,7 +372,9 @@ OpenComport (int comport_number, int baudrate, char read_timeout)
       /* If the dialog succeeds set the new values to the DCB struct */
       if (!CommConfigDialog (comports[comport_number], NULL, &commConfig))
 	{
+	  #ifdef RS_DEBUG
 	  printf ("Error #%ld on config dialog. \n", GetLastError ());
+	  #endif
 	}
       else
 	{
@@ -368,7 +384,9 @@ OpenComport (int comport_number, int baudrate, char read_timeout)
 
   if (!SetCommState (Cport[comport_number], &port_settings))
     {
+	  #ifdef RS_DEBUG
       printf ("Unable to set comport cfg settings\n");
+	  #endif
       CloseHandle (Cport[comport_number]);
       return (1);
     }
@@ -387,7 +405,9 @@ OpenComport (int comport_number, int baudrate, char read_timeout)
 
   if (!SetCommTimeouts (Cport[comport_number], &Cptimeouts))
     {
+	  #ifdef RS_DEBUG
       printf ("Unable to set comport time-out settings\n");
+	  #endif
       CloseHandle (Cport[comport_number]);
       return (1);
     }
