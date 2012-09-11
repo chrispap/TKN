@@ -16,7 +16,7 @@
 #include "TKN_Queue.h"
 #include "rs232.h"
 
-//#define TKN_DEBUG
+#define TKN_DEBUG
 #ifdef TKN_DEBUG
   #define ECHO_ATTEMPTS
   #define ECHO_TOKENS
@@ -417,6 +417,9 @@ int TKN_Init (int port, int baud, BYTE id, void (*_recTokenCallback)(void), void
     PACKET_COUNTER = 0;
 
     if (OpenComport (PORT_NUM, baud, TKN_READ_TIMEOUT) == 1){
+		#ifdef TKN_DEBUG
+        printf ("Cannot open PORT%d\n", port);
+        #endif
         return 1; //error
     }
     else 
@@ -447,16 +450,7 @@ int TKN_InitWithArgs (int argc, char *argv[])
 
     node_id = TKN_ID_DEFAULT;
 
-    if (TKN_Init (portNum, baud, node_id, NULL, NULL) != 0)
-    {
-        #ifdef TKN_DEBUG
-        printf ("Cannot open PORT%d\n", portNum);
-        #endif
-        return 1;
-    }
-    else
-      return 0;
-
+    return TKN_Init (portNum, baud, node_id, NULL, NULL);
 }
 
 /**
