@@ -20,7 +20,7 @@ endif
 
 
 ### ... ###
-OBJ = rs232.o TKN.o TKN_Util.o TKN_Queue.o
+OBJ = rs232.o TKN.o TKN_Util.o TKN_Queue.o ListSerial.o
 LINKOBJ = 
 CXXFLAGS = $(CXXINCS)  
 CFLAGS = $(INCS) -Wall -O2  -g
@@ -51,3 +51,6 @@ TKN_Util.o: TKN_Util.c TKN_Util.h
 
 TKN_Queue.o: TKN_Queue.c TKN_Queue.h
 	$(CC) -c TKN_Queue.c -o TKN_Queue.o $(CFLAGS)
+
+ListSerial.o: ListSerial.c
+	$(CC) -c ListSerial.c -o ListSerial.o $(CFLAGS)

@@ -54,6 +54,8 @@ int TKN_PopData (TKN_Data *);
 int TKN_SendString (char * str, BYTE dest_id);
 int TKN_WaitString(char *ready_str);
 
+char** listSerialPorts();
+
 /**
  * TODO:
  */

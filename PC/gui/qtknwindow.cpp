@@ -22,8 +22,20 @@ TKNWindow::TKNWindow(QWidget *parent) :
     ui->setupUi(this);
     ui->buttonStartStop->setText(buttonStartText);
 
-    for (int i=0; i<5; i++)
-        ui->comboBox_destId->insertItem(i, QString('1'+i));
+    int i;
+
+    char port_list[][] = listSerialPorts();
+
+    for (i=0; *port_list; i++)
+        ui->comboBox_ComPort->insertItem(i, QString(**(port_list++)));
+
+    QString baudList[] = {"9600", "38400", "57600", "115200" };
+
+    for (i=0; i<sizeof(baudList)/sizeof(baudList[0]) ; i++)
+        ui->comboBox_Baud->insertItem(i, baudList[i]);
+
+    for (i=0; i<5; i++)
+        ui->comboBox_DestId->insertItem(i, QString('1'+i));
 
     this->tknStarted = false;
     this->updateUI();
@@ -53,8 +65,8 @@ void TKNWindow::dataReceivedStatic()
 
 void TKNWindow::updateUI()
 {
-    ui->lineEdit_Baud->setEnabled(!tknStarted);
-    ui->lineEdit_ComPort->setEnabled(!tknStarted);
+    ui->comboBox_Baud->setEnabled(!tknStarted);
+    ui->comboBox_ComPort->setEnabled(!tknStarted);
     ui->groupBox_Send->setEnabled(tknStarted);
     ui->buttonRec->setEnabled(tknStarted);
     ui->buttonStartStop->setText(tknStarted? buttonStopText : buttonStartText);
@@ -63,12 +75,18 @@ void TKNWindow::updateUI()
 
 void TKNWindow::on_buttonStartStop_clicked()
 {
-    if (!tknStarted) {
-        int port = ui->lineEdit_ComPort->text().toInt();
-        int baud = ui->lineEdit_Baud->text().toInt();
+    if (!tknStarted)
+    {
+        int baud = ui->comboBox_Baud->currentText().toInt();
+        int port = atoi(ui->comboBox_ComPort->currentText().toAscii().data()+3);
 
-        if ( TKN_Init(port, baud, TKN_ID_DEFAULT, TKNWindow::tokenReceivedStatic, TKNWindow::dataReceivedStatic))
+        if ( TKN_Init(port,
+                      baud,
+                      TKN_ID_DEFAULT,
+                      TKNWindow::tokenReceivedStatic,
+                      TKNWindow::dataReceivedStatic) )
             return;
+
         if ( TKN_Start())
             return;
 
@@ -87,7 +105,7 @@ void TKNWindow::on_buttonStartStop_clicked()
 
 void TKNWindow::on_button_Send_clicked()
 {
-    int dest_id = ui->comboBox_destId->currentText().toInt();
+    int dest_id = ui->comboBox_DestId->currentText().toInt();
     TKN_Data data;
     qMemSet(&data, 0, sizeof(data));
     QByteArray bytes = ui->lineEdit_DataToSend->text().toAscii();

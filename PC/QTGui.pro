@@ -11,7 +11,8 @@ SOURCES += \
     lib/TKN_Util.c \
     lib/TKN_Queue.c \
     lib/TKN.c \
-    lib/rs232.c
+    lib/rs232.c \
+    lib/ListSerial.c
 
 FORMS += \
     gui/qtknwindow.ui

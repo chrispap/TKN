@@ -14,6 +14,11 @@ int main (int argc, char *argv[])
     if (TKN_InitWithArgs (argc, argv) != 0) 
         exit (1);
     
+	char ** list_ser = listSerialPorts();
+	
+	while(*list_ser)
+		printf("com port name: %s. \n", *(list_ser++));
+	
 	dest_id = (argc > 3)? atoi (argv[3]) : TKN_DEST_ID_DEFAULT;
 	
 	printf (">> TKN opened succesfully.\n");	

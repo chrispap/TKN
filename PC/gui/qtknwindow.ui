@@ -132,29 +132,15 @@ QTextEdit {
       <rect>
        <x>10</x>
        <y>20</y>
-       <width>151</width>
+       <width>141</width>
        <height>62</height>
       </rect>
      </property>
      <layout class="QGridLayout" name="gridLayout">
-      <item row="0" column="1">
-       <widget class="QLineEdit" name="lineEdit_ComPort">
-        <property name="text">
-         <string>17</string>
-        </property>
-       </widget>
-      </item>
       <item row="1" column="0">
        <widget class="QLabel" name="label_3">
         <property name="text">
          <string>Baud:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QLineEdit" name="lineEdit_Baud">
-        <property name="text">
-         <string>57600</string>
         </property>
        </widget>
       </item>
@@ -164,6 +150,12 @@ QTextEdit {
          <string>Serial port:</string>
         </property>
        </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QComboBox" name="comboBox_ComPort"/>
+      </item>
+      <item row="1" column="1">
+       <widget class="QComboBox" name="comboBox_Baud"/>
       </item>
      </layout>
     </widget>
@@ -269,7 +261,7 @@ QTextEdit {
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
       <item row="0" column="1">
-       <widget class="QComboBox" name="comboBox_destId">
+       <widget class="QComboBox" name="comboBox_DestId">
         <property name="maxVisibleItems">
          <number>4</number>
         </property>

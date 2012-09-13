@@ -20,12 +20,12 @@ endif
 
 ### ... ###
 OBJ  =  TKN_Interactive.o TKN_Step.o TKN_Boot.o TKN_PacketCreator.o TKN_Elapse.o 
-LINKOBJ = ../lib/rs232.o ../lib/TKN.o ../lib/TKN_Util.o ../lib/TKN_Queue.o 
+LINKOBJ = ../lib/rs232.o ../lib/TKN.o ../lib/TKN_Util.o ../lib/TKN_Queue.o ../lib/ListSerial.o 
 
 ifdef SystemRoot
 BIN = TKN_Interactive.exe TKN_Step.exe TKN_Elapse.exe  TKN_Boot.exe 
 else
-BIN = TKN_Interactive TKN_Step TKN_Elapse  TKN_Boot 
+BIN = TKN_Interactive TKN_Step TKN_Elapse TKN_Boot 
 endif
 CXXFLAGS = $(CXXINCS)  
 CFLAGS = $(INCS) -Wall -O2  -g
