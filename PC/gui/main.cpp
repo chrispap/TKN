@@ -1,10 +1,10 @@
 #include <QtGui/QApplication>
-#include "qtknwindow.h"
+#include "TKN_Window.h"
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    TKNWindow w;
+    TKN_Window w;
     w.show();
     int retVal = a.exec();
     return retVal;

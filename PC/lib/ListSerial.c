@@ -32,7 +32,7 @@ char ** listSerialPorts()
     DWORD cchValue = MAX_VALUE_NAME; 
 
     // Get the class name and the value count. 
-    retCode = RegQueryInfoKey(
+    retCode = RegQueryInfoKeyA(
                 hKey,                    // key handle
                 achClass,                // buffer for class name
                 &cchClassName,           // size of class string
@@ -57,11 +57,12 @@ char ** listSerialPorts()
             cchValue = MAX_VALUE_NAME; 
             achValue[0] = '\0'; 
             char *entryData = malloc((MAX_COMPORT_NAME+1) * sizeof(char));
+            memset(entryData, 0, (MAX_COMPORT_NAME+1) * sizeof(char));
 
             entryData[0] = '\0';
             DWORD entryDataSize = MAX_COMPORT_NAME;
             
-            retCode = RegEnumValue(hKey, 
+            retCode = RegEnumValueA(hKey,
                                    i,
                                    achValue,
                                    &cchValue,
