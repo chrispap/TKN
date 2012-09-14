@@ -6,21 +6,9 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1024</width>
-    <height>300</height>
+    <width>268</width>
+    <height>357</height>
    </rect>
-  </property>
-  <property name="sizePolicy">
-   <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-    <horstretch>0</horstretch>
-    <verstretch>0</verstretch>
-   </sizepolicy>
-  </property>
-  <property name="minimumSize">
-   <size>
-    <width>300</width>
-    <height>300</height>
-   </size>
   </property>
   <property name="windowTitle">
    <string>TKN GUI</string>
@@ -29,21 +17,21 @@
    <bool>false</bool>
   </property>
   <property name="styleSheet">
-   <string notr="true">QGroupBox::title { 
-    background-color: transparent;
-     subcontrol-position: top left; /* position at the top left*/ 
-     padding: 2px 2px;
- } 
-
-QGroupBox { 
-    background-color:  qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(0, 0, 0, 55), stop:1 rgba(55, 55, 55, 55));
+   <string notr="true">QGroupBox { 
+    background-color:  rgba(100,150,50, 200);
     border: 2px solid gray;
-    padding: 5px 2px;
+    padding: 10 0 0 0;
     font: bold;
  } 
 
+QGroupBox::Title{
+    padding: 3px;
+    font: 14pt; 
+}
+
 QTextEdit { 
-    background-color: rgba(255, 255, 255, 150)
+	background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(0, 0, 0, 255), stop:1 rgba(55, 55, 55, 155));
+    color: rgb(0,250,0);
 }</string>
   </property>
   <property name="toolButtonStyle">
@@ -54,7 +42,7 @@ QTextEdit {
   </property>
   <widget class="QWidget" name="centralWidget">
    <property name="sizePolicy">
-    <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+    <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
      <horstretch>0</horstretch>
      <verstretch>0</verstretch>
     </sizepolicy>
@@ -68,11 +56,23 @@ QTextEdit {
         <verstretch>0</verstretch>
        </sizepolicy>
       </property>
+      <property name="minimumSize">
+       <size>
+        <width>250</width>
+        <height>300</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>250</width>
+        <height>300</height>
+       </size>
+      </property>
       <property name="title">
        <string>TKN Status</string>
       </property>
       <property name="flat">
-       <bool>true</bool>
+       <bool>false</bool>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">
        <item>
@@ -127,10 +127,10 @@ QTextEdit {
             <bool>false</bool>
            </property>
            <property name="numDigits">
-            <number>13</number>
+            <number>16</number>
            </property>
            <property name="digitCount">
-            <number>13</number>
+            <number>16</number>
            </property>
            <property name="mode">
             <enum>QLCDNumber::Dec</enum>
@@ -172,29 +172,22 @@ QTextEdit {
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1024</width>
+     <width>268</width>
      <height>21</height>
     </rect>
    </property>
    <property name="defaultUp">
-    <bool>true</bool>
+    <bool>false</bool>
    </property>
    <property name="nativeMenuBar">
     <bool>false</bool>
    </property>
-   <widget class="QMenu" name="menuFile">
-    <property name="title">
-     <string>File</string>
-    </property>
-    <addaction name="actionOpen"/>
-   </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
      <string>Help</string>
     </property>
     <addaction name="actionAbout"/>
    </widget>
-   <addaction name="menuFile"/>
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusBar">

@@ -2,6 +2,7 @@
 #define TKN_NODEBOX_H
 
 #include <QGroupBox>
+#include <QPixmap>
 
 namespace Ui {
     class TKN_NodeBox;
@@ -24,6 +25,7 @@ private:
     Ui::TKN_NodeBox *ui;
 
     int node_id;
+
 };
 
 #endif // TKN_NODEBOX_H

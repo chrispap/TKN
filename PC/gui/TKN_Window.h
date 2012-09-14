@@ -2,7 +2,7 @@
 #define TKN_WINDOW_H
 
 #include <QMainWindow>
-#include <QList>
+#include <QMap>
 #include "TKN_Nodebox.h"
 
 namespace Ui {
@@ -33,7 +33,7 @@ private:
     Ui::TKN_Window *ui;
 
     void updateUI();
-    QList<TKN_NodeBox*> nodeList;
+    QMap<int, TKN_NodeBox*> nodeMap;
     static TKN_Window *self;
     static const QString buttonStartText, buttonStopText;
     bool tknStarted;

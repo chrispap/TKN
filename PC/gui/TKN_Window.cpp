@@ -4,7 +4,7 @@
 #include <QMessageBox>
 #include <QThread>
 #include <QDebug>
-#include <QList>
+#include <QMap>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -38,14 +38,8 @@ TKN_Window::TKN_Window(QWidget *parent) :
     for (i=0; i<sizeof(baudList)/sizeof(baudList[0]) ; i++)
         ui->comboBox_Baud->insertItem(i, baudList[i]);
 
-    /*Add the nodes */
-    nodeList = QList<TKN_NodeBox*>();
-
-    for (i=2; i<5; i++) {
-        TKN_NodeBox *nd = new TKN_NodeBox(this, i);
-        nodeList << nd;
-        ui->centralWidget->layout()->addWidget(nd);
-    }
+    /*Create the node list */
+    nodeMap = QMap<int, TKN_NodeBox*>();
 
     this->tknStarted = false;
     this->updateUI();
@@ -65,7 +59,7 @@ TKN_Window::~TKN_Window()
 
 void TKN_Window::on_actionAbout_triggered()
 {
-    QMessageBox::information(this, "About", "About...", QMessageBox::Ok);
+    QMessageBox::information(this, "About TKN Gui", "Chris Papapavlou\nchrispapapaulou@gmail.com", QMessageBox::Ok);
 }
 
 void TKN_Window::tokenReceivedStatic()
@@ -82,10 +76,12 @@ void TKN_Window::updateUI()
 {
     ui->comboBox_Baud->setEnabled(!tknStarted);
     ui->comboBox_ComPort->setEnabled(!tknStarted);
-//    ui->groupBox_Send->setEnabled(tknStarted);
-//    ui->buttonRec->setEnabled(tknStarted);
     ui->buttonStartStop->setText(tknStarted? buttonStopText : buttonStartText);
     ui->buttonStartStop->setStyleSheet(tknStarted? "* { background-color: rgba(200,0,0,255) }" : "* { background-color: rgba(0,200,0,255) }");
+
+    QMap<int, TKN_NodeBox*>::iterator i;
+    for (i = nodeMap.begin(); i != nodeMap.end(); ++i)
+        (*i)->setEnabled(tknStarted);
 }
 
 void TKN_Window::on_buttonStartStop_clicked()
@@ -101,6 +97,18 @@ void TKN_Window::on_buttonStartStop_clicked()
                       TKN_Window::tokenReceivedStatic,
                       TKN_Window::dataReceivedStatic) )
             return;
+
+        if (!nodeMap.empty()){
+            qDeleteAll(nodeMap.begin(), nodeMap.end());
+            nodeMap.clear();
+        }
+
+        for (BYTE *nodes = TKN_ListActiveNodes(); *nodes; nodes++){
+            TKN_NodeBox *nd = new TKN_NodeBox(this, (int)(*nodes));
+            nodeMap[*nodes] = nd;
+            ui->centralWidget->layout()->addWidget(nd);
+
+        }
 
         if ( TKN_Start())
             return;
@@ -123,8 +131,10 @@ void TKN_Window::on_dataReceived()
     char recData[sizeof(TKN_Data)+1];
     recData[sizeof(TKN_Data)]='\0';
     BYTE sender;
+
     if (sender=TKN_PopData((TKN_Data*) &recData)){
-        nodeList.at(sender-2)->console_output(recData);
+        if (nodeMap.contains((int)sender))
+            nodeMap[(int)(sender)]->console_output(recData); //probably should make a slot to TKN_NodeBox...
     }
 
 }

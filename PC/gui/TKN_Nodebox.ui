@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>250</width>
-    <height>200</height>
+    <width>220</width>
+    <height>300</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -18,14 +18,14 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>250</width>
-    <height>200</height>
+    <width>220</width>
+    <height>300</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>250</width>
-    <height>16777215</height>
+    <width>220</width>
+    <height>300</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -76,6 +76,16 @@
      </property>
     </widget>
    </item>
+   <item row="7" column="0">
+    <widget class="QLabel" name="labelAVR">
+     <property name="text">
+      <string/>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+   </item>
   </layout>
  </widget>
  <resources/>
@@ -87,8 +97,8 @@
    <slot>clear()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>124</x>
-     <y>178</y>
+     <x>134</x>
+     <y>270</y>
     </hint>
     <hint type="destinationlabel">
      <x>124</x>

@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>AVR_Chip-W180px.PNG</file>
+    </qresource>
+</RCC>

@@ -178,6 +178,8 @@ int TKN_ExportPackets ()
  * Listen to the network channel
  * until to receive a packet which
  * is for us.
+ *
+ * @return BYTE type of received packet.
  */
 int TKN_Receive ()
 {
@@ -323,7 +325,7 @@ int TKN_Receive ()
         }
         
         // Either return TKN_TYPE_NONE which will mean timeout
-        // or a valid TKN_TYPE_
+        // or a valid TKN_TYPE_XXXX
         return (int) pType; 
 
     } while (1);
@@ -465,6 +467,33 @@ int TKN_Close ()
     TKN_Queue_Free (&TX_QUEUE);
     TKN_Queue_Free (&RX_QUEUE);
     return 0;
+}
+
+BYTE * TKN_ListActiveNodes()
+{
+    BYTE *nodes = NULL;
+
+    if ( !TKN_Running) //if running we cannot <<play>> with our nodes!
+    {
+        /* Discover which nodes exist on the network right now. */
+        nodes = malloc(11*sizeof(BYTE)); // TODO: #define TKN_MAX_NODES-on-network 10
+        memset(nodes, 0, 11*sizeof(BYTE));
+
+        TKN_Data testData;
+        memset(&testData, 0, sizeof(testData));
+        strcpy((char*) &testData, "TEST_DATA");
+
+        BYTE possibleNode;
+        int i=0;
+        for (possibleNode=2; possibleNode<10 && i<10; possibleNode++){
+            // With the limitation of max i =0
+            // only 10 nodes can be discovered
+            if (TKN_SendDataPacket(&testData , possibleNode) == 0)
+                nodes[i++] = possibleNode; // TODO: check nodes' array bounds
+        }
+    }
+
+    return nodes;
 }
 
 #ifdef __linux__ /* linux */
