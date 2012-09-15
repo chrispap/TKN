@@ -469,7 +469,7 @@ int TKN_Close ()
     return 0;
 }
 
-BYTE * TKN_ListActiveNodes()
+BYTE * TKN_ListActiveNodes(BYTE maxID)
 {
     BYTE *nodes = NULL;
 
@@ -485,7 +485,7 @@ BYTE * TKN_ListActiveNodes()
 
         BYTE possibleNode;
         int i=0;
-        for (possibleNode=2; possibleNode<10 && i<10; possibleNode++){
+        for (possibleNode=2; possibleNode<10 && i<maxID; possibleNode++){
             // With the limitation of max i =0
             // only 10 nodes can be discovered
             if (TKN_SendDataPacket(&testData , possibleNode) == 0)

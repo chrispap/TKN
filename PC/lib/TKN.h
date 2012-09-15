@@ -55,7 +55,7 @@ int TKN_SendString (char * str, BYTE dest_id);
 int TKN_WaitString(char *ready_str);
 
 char** listSerialPorts();
-BYTE * TKN_ListActiveNodes();
+BYTE * TKN_ListActiveNodes(BYTE maxID);
 
 /**
  * TODO:

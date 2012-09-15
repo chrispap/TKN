@@ -22,7 +22,7 @@ public:
 
 signals:
     void tokenReceived_signal(int);
-    void dataReceived_signal();
+    void dataReceived();
 
 private slots:
     void on_buttonStartStop_clicked();

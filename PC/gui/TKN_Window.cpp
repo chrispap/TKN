@@ -47,7 +47,7 @@ TKN_Window::TKN_Window(QWidget *parent) :
     self = this;
 
     connect(this, SIGNAL(tokenReceived_signal(int)), ui->lcd_TokenCounter, SLOT(display(int)), Qt::QueuedConnection);
-    connect(this, SIGNAL(dataReceived_signal()), this, SLOT(on_dataReceived()), Qt::QueuedConnection);
+    connect(this, SIGNAL(dataReceived()), this, SLOT(on_dataReceived()), Qt::QueuedConnection);
 
     tknCounter = 0;
 }
@@ -69,7 +69,7 @@ void TKN_Window::tokenReceivedStatic()
 
 void TKN_Window::dataReceivedStatic()
 {
-    emit self->dataReceived_signal();
+    emit self->dataReceived();
 }
 
 void TKN_Window::updateUI()
@@ -103,7 +103,7 @@ void TKN_Window::on_buttonStartStop_clicked()
             nodeMap.clear();
         }
 
-        for (BYTE *nodes = TKN_ListActiveNodes(); *nodes; nodes++){
+        for (BYTE *nodes = TKN_ListActiveNodes(10); *nodes; nodes++){
             TKN_NodeBox *nd = new TKN_NodeBox(this, (int)(*nodes));
             nodeMap[*nodes] = nd;
             ui->centralWidget->layout()->addWidget(nd);
