@@ -6,9 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>268</width>
-    <height>357</height>
+    <width>298</width>
+    <height>465</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="windowTitle">
    <string>TKN GUI</string>
@@ -32,6 +38,7 @@ QGroupBox::Title{
 QTextEdit { 
 	background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(0, 0, 0, 255), stop:1 rgba(55, 55, 55, 155));
     color: rgb(0,250,0);
+    font: 9pt;
 }</string>
   </property>
   <property name="toolButtonStyle">
@@ -42,7 +49,7 @@ QTextEdit {
   </property>
   <widget class="QWidget" name="centralWidget">
    <property name="sizePolicy">
-    <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+    <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
      <horstretch>0</horstretch>
      <verstretch>0</verstretch>
     </sizepolicy>
@@ -58,14 +65,14 @@ QTextEdit {
       </property>
       <property name="minimumSize">
        <size>
-        <width>250</width>
-        <height>300</height>
+        <width>280</width>
+        <height>400</height>
        </size>
       </property>
       <property name="maximumSize">
        <size>
-        <width>250</width>
-        <height>300</height>
+        <width>280</width>
+        <height>400</height>
        </size>
       </property>
       <property name="title">
@@ -117,8 +124,17 @@ QTextEdit {
          </item>
          <item row="0" column="1">
           <widget class="QLCDNumber" name="lcd_TokenCounter">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>33</height>
+            </size>
+           </property>
            <property name="frameShape">
             <enum>QFrame::Box</enum>
+           </property>
+           <property name="frameShadow">
+            <enum>QFrame::Raised</enum>
            </property>
            <property name="lineWidth">
             <number>2</number>
@@ -127,10 +143,10 @@ QTextEdit {
             <bool>false</bool>
            </property>
            <property name="numDigits">
-            <number>16</number>
+            <number>9</number>
            </property>
            <property name="digitCount">
-            <number>16</number>
+            <number>9</number>
            </property>
            <property name="mode">
             <enum>QLCDNumber::Dec</enum>
@@ -150,17 +166,11 @@ QTextEdit {
         </widget>
        </item>
        <item>
-        <spacer name="verticalSpacer">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
+        <widget class="QTextEdit" name="textEditConsoleStatus">
+         <property name="readOnly">
+          <bool>true</bool>
          </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
+        </widget>
        </item>
       </layout>
      </widget>
@@ -172,8 +182,8 @@ QTextEdit {
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>268</width>
-     <height>21</height>
+     <width>298</width>
+     <height>25</height>
     </rect>
    </property>
    <property name="defaultUp">

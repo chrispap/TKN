@@ -16,11 +16,11 @@
 #include "TKN_Queue.h"
 #include "rs232.h"
 
-#define TKN_DEBUG
+//#define TKN_DEBUG
 #ifdef TKN_DEBUG
-//#define ECHO_ATTEMPTS
-//#define ECHO_TOKENS
-//#define ECHO_DATA
+  #define ECHO_ATTEMPTS
+  #define ECHO_TOKENS
+  #define ECHO_DATA
   #define ECHO_EVENTS
 #endif
 
@@ -256,7 +256,7 @@ int TKN_Receive ()
             }
 
             if (remaining > 0)
-                return -2;
+                return TKN_TYPE_NONE;
 
             /* Analyze the packet */
             if (pType != TKN_TYPE_TOKEN) // The Token is always for the one who receives it, so no need to check receivers etc.
@@ -283,7 +283,7 @@ int TKN_Receive ()
                     #ifdef ECHO_DATA
                     TKN_PrintDataPacket (RX_Buffer, 1, 0);
                     #endif
-                    return -1;
+                    return TKN_TYPE_DATA;
                 }
             }
 
@@ -385,14 +385,16 @@ int TKN_SendDataPacket (TKN_Data *data, BYTE to)
     printf ("D> ");
     #endif
 
-    /* Edw perimenw na lavw EITE to ACK apo ton paralipti tou paketou pou esteila EITE to idio to paketo. */
+    /* Edw perimenw na lavw EITE to ACK apo ton paralipti tou paketou pou esteila
+       EITE to idio to paketo. */
     int ansPack = TKN_Receive ();
 
     if (ansPack == TKN_TYPE_ACK)
         return 0;
-    else
+    else if (ansPack == TKN_TYPE_DATA)
         return 1;
-    
+    else if (ansPack == TKN_TYPE_NONE)
+        return -1;
 }
 
 /**
@@ -418,7 +420,7 @@ int TKN_Init (int port, int baud, BYTE id, void (*_recTokenCallback)(void), void
     MY_ID = id;
     PACKET_COUNTER = 0;
 
-    if (OpenComport (PORT_NUM, baud, TKN_READ_TIMEOUT) == 1){
+    if (OpenComport(port, baud, TKN_READ_TIMEOUT) == 1){
 		#ifdef TKN_DEBUG
         printf ("Cannot open PORT%d\n", port);
         #endif
@@ -469,15 +471,15 @@ int TKN_Close ()
     return 0;
 }
 
-BYTE * TKN_ListActiveNodes(BYTE maxID)
+BYTE* TKN_ListActiveNodes(BYTE maxID)
 {
     BYTE *nodes = NULL;
 
     if ( !TKN_Running) //if running we cannot <<play>> with our nodes!
     {
         /* Discover which nodes exist on the network right now. */
-        nodes = malloc(11*sizeof(BYTE)); // TODO: #define TKN_MAX_NODES-on-network 10
-        memset(nodes, 0, 11*sizeof(BYTE));
+        nodes = malloc(maxID*sizeof(BYTE));
+        memset(nodes, 0, maxID*sizeof(BYTE));
 
         TKN_Data testData;
         memset(&testData, 0, sizeof(testData));
@@ -485,11 +487,16 @@ BYTE * TKN_ListActiveNodes(BYTE maxID)
 
         BYTE possibleNode;
         int i=0;
-        for (possibleNode=2; possibleNode<10 && i<maxID; possibleNode++){
-            // With the limitation of max i =0
-            // only 10 nodes can be discovered
-            if (TKN_SendDataPacket(&testData , possibleNode) == 0)
+        for (possibleNode=2; possibleNode<maxID; possibleNode++){
+            int ans = TKN_SendDataPacket(&testData , possibleNode);
+            if (ans == 0)
                 nodes[i++] = possibleNode; // TODO: check nodes' array bounds
+            else if (ans>0)
+                continue;
+            else if (ans<0){ // in this case there is no connectivity, so its pointless to resume discovering.
+                free(nodes);
+                return NULL;
+            }
         }
     }
 
@@ -629,11 +636,14 @@ void* TKN_Run(void* params)
 DWORD WINAPI TKN_Run (LPVOID params)
 #endif
 {
+    TKN_Data data;
+    BYTE rid;
+
     while (TKN_Running) 
     {
         if ( !TKN_Queue_IsEmpty(&TX_QUEUE) ) {
-            TKN_Data data;
-            BYTE rid = TKN_Queue_Pop(&TX_QUEUE, &data);
+
+            rid = TKN_Queue_Pop(&TX_QUEUE, &data);
             TKN_SendDataPacket ( &data, rid);
         }
 

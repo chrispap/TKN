@@ -5,11 +5,13 @@
 #include <QThread>
 #include <QDebug>
 #include <QMap>
+#include <QTimer>
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 
+#include "lib/rs232.h"
 #include "lib/TKN.h"
 #include "lib/TKN_Util.h"
 
@@ -79,51 +81,92 @@ void TKN_Window::updateUI()
     ui->buttonStartStop->setText(tknStarted? buttonStopText : buttonStartText);
     ui->buttonStartStop->setStyleSheet(tknStarted? "* { background-color: rgba(200,0,0,255) }" : "* { background-color: rgba(0,200,0,255) }");
 
-    QMap<int, TKN_NodeBox*>::iterator i;
-    for (i = nodeMap.begin(); i != nodeMap.end(); ++i)
-        (*i)->setEnabled(tknStarted);
+//    QMap<int, TKN_NodeBox*>::iterator i;
+//    for (i = nodeMap.begin(); i != nodeMap.end(); ++i)
+//        (*i)->setEnabled(tknStarted);
 }
 
 void TKN_Window::on_buttonStartStop_clicked()
 {
-    if (!tknStarted)
-    {
-        int baud = ui->comboBox_Baud->currentText().toInt();
-        int port = atoi(ui->comboBox_ComPort->currentText().toAscii().data()+3);
-
-        if ( TKN_Init(port,
-                      baud,
-                      TKN_ID_DEFAULT,
-                      TKN_Window::tokenReceivedStatic,
-                      TKN_Window::dataReceivedStatic) )
-            return;
-
-        if (!nodeMap.empty()){
-            qDeleteAll(nodeMap.begin(), nodeMap.end());
-            nodeMap.clear();
-        }
-
-        for (BYTE *nodes = TKN_ListActiveNodes(10); *nodes; nodes++){
-            TKN_NodeBox *nd = new TKN_NodeBox(this, (int)(*nodes));
-            nodeMap[*nodes] = nd;
-            ui->centralWidget->layout()->addWidget(nd);
-
-        }
-
-        if ( TKN_Start())
-            return;
-
-        this->tknStarted = true;
-        this->updateUI();
+    if (!tknStarted){
+        this->startTkn();
     }
     else {
-        if ( !TKN_Stop()) {
-            TKN_Close();
-            this->tknStarted = false;
-            this->updateUI();
-        }
+        this->stopTkn();
     }
 
+    this->updateUI();
+}
+
+void TKN_Window::startTkn()
+{
+    int baud = ui->comboBox_Baud->currentText().toInt();
+
+    /*Get the port index. Needed by rs232 lib */
+    char *portName = ui->comboBox_ComPort->currentText().toAscii().data();
+    int port = getPortIndexByName(portName);
+
+    if (port<0)
+        return;
+
+    /* Init the network */
+    if (TKN_Init(port, baud, TKN_ID_DEFAULT, TKN_Window::tokenReceivedStatic, TKN_Window::dataReceivedStatic))
+        return;
+
+    QString msg;
+    msg = QString("Opened TKN in ")+ui->comboBox_ComPort->currentText();
+    ui->textEditConsoleStatus->append(msg);
+    msg = QString("Discovering nodes");
+    ui->textEditConsoleStatus->append(msg);
+
+    BYTE *nodes = TKN_ListActiveNodes(10);
+
+    if (nodes == NULL){
+        msg = QString("No connectivity");
+        ui->textEditConsoleStatus->append(msg);
+        TKN_Close();
+        msg = QString("Closed TKN");
+        ui->textEditConsoleStatus->append(msg);
+        return;
+    }
+
+    while (*nodes){
+        TKN_NodeBox *nd = new TKN_NodeBox(this, (int)(*nodes));
+        nodeMap[*nodes] = nd;
+        ui->centralWidget->layout()->addWidget(nd);
+        nodes++;
+    }
+
+    if (TKN_Start())
+        return;
+
+    this->tknStarted = true;
+}
+
+void TKN_Window::stopTkn()
+{
+    if ( !TKN_Stop()) {
+
+        if (!nodeMap.empty()){
+
+            QMap<int, TKN_NodeBox*>::iterator i;
+            for (i = nodeMap.begin(); i != nodeMap.end(); ++i)
+                ui->centralWidget->layout()->removeWidget(*i);
+
+            qDeleteAll(nodeMap.begin(), nodeMap.end());
+            nodeMap.clear();
+
+        }
+
+        TKN_Close();
+        this->tknStarted = false;
+        QTimer::singleShot(2, this, SLOT(shrink()));
+    }
+}
+
+void TKN_Window::shrink()
+{
+   resize(0, 0);
 }
 
 void TKN_Window::on_dataReceived()

@@ -27,17 +27,21 @@ signals:
 private slots:
     void on_buttonStartStop_clicked();
     void on_actionAbout_triggered();
+    void shrink();
     void on_dataReceived();
 
 private:
     Ui::TKN_Window *ui;
-
-    void updateUI();
     QMap<int, TKN_NodeBox*> nodeMap;
     static TKN_Window *self;
     static const QString buttonStartText, buttonStopText;
     bool tknStarted;
     int tknCounter;
+
+    void updateUI();
+    void startTkn();
+    void stopTkn();
+
 };
 
 #endif

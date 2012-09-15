@@ -17,7 +17,6 @@ SOURCES += \
     gui/TKN_Nodebox.cpp
 
 FORMS += \
-    gui/TKN_Node.ui \
     gui/TKN_Window.ui \
     gui/TKN_Nodebox.ui
 

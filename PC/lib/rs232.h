@@ -52,6 +52,7 @@ extern "C"
 #include <windows.h>
 #endif
 
+  int getPortIndexByName(char *portName);
   int OpenComport (int, int, char);
   int PollComport (int, unsigned char *, int);
   int SendByte (int, const unsigned char);
