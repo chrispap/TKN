@@ -653,14 +653,7 @@ DWORD WINAPI TKN_Run (LPVOID params)
             }
 
         }
-        else {
-
-        }
         fflush (stdout);
-
-
-
-
     }
 
     #ifdef TKN_DEBUG
@@ -668,7 +661,7 @@ DWORD WINAPI TKN_Run (LPVOID params)
     printf(">> TX_PENDING: %d \n", TX_QUEUE.count);
     printf(">> RX_PENDING: %d \n", RX_QUEUE.count);
     #endif
-    
+    fflush (stdout);
     return 0;
 }
 
