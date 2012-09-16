@@ -27,14 +27,13 @@ TKN_Window::TKN_Window(QWidget *parent) :
 {
     ui->setupUi(this);
     ui->buttonStartStop->setText(buttonStartText);
-
+    self = this;
     int i;
 
     /* available ports */
     char** port_list = listSerialPorts();
-    for (i=0; *port_list; i++, port_list++){
+    for (i=0; *port_list; i++, port_list++)
         ui->comboBox_ComPort->insertItem(i, QString(*port_list));
-    }
 
     /* baud rates */
     for (i=0; i<sizeof(baudList)/sizeof(baudList[0]) ; i++)
@@ -42,16 +41,13 @@ TKN_Window::TKN_Window(QWidget *parent) :
 
     /*Create the node list */
     nodeMap = QMap<int, TKN_NodeBox*>();
-
     this->tknStarted = false;
-    this->updateUI();
 
-    self = this;
-
+    /* Signal connections */
     connect(this, SIGNAL(tokenReceived_signal(int)), ui->lcd_TokenCounter, SLOT(display(int)), Qt::QueuedConnection);
     connect(this, SIGNAL(dataReceived()), this, SLOT(on_dataReceived()), Qt::QueuedConnection);
 
-    tknCounter = 0;
+    this->updateUI();
 }
 
 TKN_Window::~TKN_Window()
@@ -80,10 +76,7 @@ void TKN_Window::updateUI()
     ui->comboBox_ComPort->setEnabled(!tknStarted);
     ui->buttonStartStop->setText(tknStarted? buttonStopText : buttonStartText);
     ui->buttonStartStop->setStyleSheet(tknStarted? "* { background-color: rgba(200,0,0,255) }" : "* { background-color: rgba(0,200,0,255) }");
-
-//    QMap<int, TKN_NodeBox*>::iterator i;
-//    for (i = nodeMap.begin(); i != nodeMap.end(); ++i)
-//        (*i)->setEnabled(tknStarted);
+    shrink();
 }
 
 void TKN_Window::on_buttonStartStop_clicked()
@@ -140,33 +133,32 @@ void TKN_Window::startTkn()
     if (TKN_Start())
         return;
 
+    tknCounter = 0;
     this->tknStarted = true;
 }
 
 void TKN_Window::stopTkn()
 {
     if ( !TKN_Stop()) {
-
         if (!nodeMap.empty()){
-
             QMap<int, TKN_NodeBox*>::iterator i;
             for (i = nodeMap.begin(); i != nodeMap.end(); ++i)
                 ui->centralWidget->layout()->removeWidget(*i);
 
             qDeleteAll(nodeMap.begin(), nodeMap.end());
             nodeMap.clear();
-
         }
 
         TKN_Close();
         this->tknStarted = false;
-        QTimer::singleShot(2, this, SLOT(shrink()));
+        QTimer::singleShot(20, this, SLOT(shrink()));
     }
 }
 
 void TKN_Window::shrink()
 {
    resize(0, 0);
+   setMaximumSize(size());
 }
 
 void TKN_Window::on_dataReceived()

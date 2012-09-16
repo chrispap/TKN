@@ -106,7 +106,7 @@ recv_loop:
 	and temp0, temp0
 	breq recv_loop
 
-	// rjmp recv_loop // DEBUG (Short-circuit loop)
+	//rjmp recv_loop // DEBUG (Short-circuit loop)
 
 	/* Here, a new packet has been received in the hexline buffer */
 	/* Send it back (Debug reasons) */

@@ -16,10 +16,10 @@
 #include "TKN_Queue.h"
 #include "rs232.h"
 
-//#define TKN_DEBUG
+#define TKN_DEBUG
 #ifdef TKN_DEBUG
-  #define ECHO_ATTEMPTS
-  #define ECHO_TOKENS
+  //#define ECHO_ATTEMPTS
+  //#define ECHO_TOKENS
   #define ECHO_DATA
   #define ECHO_EVENTS
 #endif
@@ -395,6 +395,8 @@ int TKN_SendDataPacket (TKN_Data *data, BYTE to)
         return 1;
     else if (ansPack == TKN_TYPE_NONE)
         return -1;
+    else
+        return -1;
 }
 
 /**
@@ -482,8 +484,7 @@ BYTE* TKN_ListActiveNodes(BYTE maxID)
         memset(nodes, 0, maxID*sizeof(BYTE));
 
         TKN_Data testData;
-        memset(&testData, 0, sizeof(testData));
-        strcpy((char*) &testData, "TEST_DATA");
+        memset(&testData, '-', sizeof(testData));
 
         BYTE possibleNode;
         int i=0;
@@ -554,7 +555,7 @@ int TKN_Stop()
     if (TKN_Running)
     {
         TKN_Running=0;
-        if ( WaitForSingleObject (TKN_Thread, 100)) 
+        if ( WaitForSingleObject (TKN_Thread, 2000))
             TKN_Running=1;
         else {
 	  CloseHandle(TKN_Thread);
@@ -641,22 +642,25 @@ DWORD WINAPI TKN_Run (LPVOID params)
 
     while (TKN_Running) 
     {
-        if ( !TKN_Queue_IsEmpty(&TX_QUEUE) ) {
-
-            rid = TKN_Queue_Pop(&TX_QUEUE, &data);
-            TKN_SendDataPacket ( &data, rid);
-        }
-
         TKN_PassToken();
 
-        if (TKN_Receive() == TKN_TYPE_TOKEN)
+        if (TKN_Receive() == TKN_TYPE_TOKEN){
             TKN_TokenCount++;
+
+            if ( !TKN_Queue_IsEmpty(&TX_QUEUE) ) {
+                rid = TKN_Queue_Pop(&TX_QUEUE, &data);
+                TKN_SendDataPacket ( &data, rid);
+            }
+
+        }
         else {
-            #ifdef TKN_DEBUG
-            printf("\n>> Did not get the token back! \n");
-            #endif
+
         }
         fflush (stdout);
+
+
+
+
     }
 
     #ifdef TKN_DEBUG

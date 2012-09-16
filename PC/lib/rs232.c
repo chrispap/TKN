@@ -276,7 +276,7 @@ char baudr[64];
 int
 OpenComport (int comport_number, int baudrate, char read_timeout)
 {
-    if ((comport_number >=  sizeof(comports)/sizeof(*comports))) || (comport_number < 0))
+    if ((comport_number >=  sizeof(comports)/sizeof(*comports)) || (comport_number < 0))
     {
 #ifdef RS_DEBUG
         printf ("Illegal comport number\n");
@@ -494,9 +494,16 @@ cprintf (int comport_number, const char *text)	/* sends a string to serial port 
 }
 
 int
-getPortIndexByName(char *portName)
+getPortIndexByName(char *_portName)
 {
     int i;
+    char portName[20];
+    #ifdef __linux__
+    strcpy(portName, _portName);
+    #else
+    strcpy(portName, "\\\\.\\");
+    strcat(portName, _portName);
+    #endif
 
     for(i=0; i<sizeof(comports)/sizeof(*comports); i++){
         if (strcmp(portName, comports[i]) == 0)

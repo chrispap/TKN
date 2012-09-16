@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>298</width>
-    <height>465</height>
+    <height>439</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -183,7 +183,7 @@ QTextEdit {
      <x>0</x>
      <y>0</y>
      <width>298</width>
-     <height>25</height>
+     <height>21</height>
     </rect>
    </property>
    <property name="defaultUp">
@@ -199,11 +199,6 @@ QTextEdit {
     <addaction name="actionAbout"/>
    </widget>
    <addaction name="menuHelp"/>
-  </widget>
-  <widget class="QStatusBar" name="statusBar">
-   <property name="enabled">
-    <bool>true</bool>
-   </property>
   </widget>
   <action name="actionAbout">
    <property name="text">
