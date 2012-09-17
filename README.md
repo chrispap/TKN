@@ -27,15 +27,9 @@ the network. _???_
 `   
 
 ├── AVR          Protocol implementation for 8bit AVR MCUs (AVR Assembly)   
-
 └── PC           Code for the PC   
-
     ├── console   Command line programs (C)   
-
     ├── gui       Graphical program (C++, Qt)   
-
     └── lib       Protocol implementation for PC, portable to windows/linux (C)   
-    
-    
-    
+
 `
