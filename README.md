@@ -3,7 +3,7 @@ TKN
 A network of AVR MCUs.
 
 **Description**
-- The protocol used is a custom <Token Ring>
+- The protocol used is a custom Token Ring
 - The goal is to interconnect a number of AVR based 
 microcontroller nodes to a real time network so that 
 any of them is able to send data to any of them.
