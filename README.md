@@ -24,10 +24,10 @@ with command line or graphical interface to
 the network. _???_
 
 **Source Layout**
-* AVR          Protocol implementation for 8bit AVR MCUs (AVR Assembly)   
-* PC           Code for the PC   
-    * console   Command line programs (C)   
-    * gui       Graphical program (C++, Qt)   
-    * lib       Protocol implementation for PC, portable to windows/linux (C)   
+* AVR  _Protocol implementation for 8bit AVR MCUs (AVR Assembly)_
+* PC   _Code for the PC_
+    * console _Command line programs (C)_
+    * gui _Graphical program (C++, Qt)_
+    * lib _Protocol implementation for PC, portable to windows/linux (C)_
     
 
