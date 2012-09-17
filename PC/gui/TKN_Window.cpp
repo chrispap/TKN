@@ -5,6 +5,7 @@
 #include <QThread>
 #include <QDebug>
 #include <QMap>
+#include <QTime>
 #include <QTimer>
 
 #include <stdio.h>
@@ -28,6 +29,7 @@ TKN_Window::TKN_Window(QWidget *parent) :
     ui->setupUi(this);
     ui->buttonStartStop->setText(buttonStartText);
     self = this;
+    mTime = new QTime();
     int i;
 
     /* available ports */
@@ -41,7 +43,7 @@ TKN_Window::TKN_Window(QWidget *parent) :
 
     /*Create the node list */
     nodeMap = QMap<int, TKN_NodeBox*>();
-    this->tknStarted = false;
+    this->mTknStarted = false;
 
     /* Signal connections */
     connect(this, SIGNAL(tokenReceived_signal(int)), ui->lcd_TokenCounter, SLOT(display(int)), Qt::QueuedConnection);
@@ -62,7 +64,13 @@ void TKN_Window::on_actionAbout_triggered()
 
 void TKN_Window::tokenReceivedStatic()
 {
-    emit self->tokenReceived_signal(self->tknCounter++);
+    int tknInv=150;
+    self->mTknCounter++;
+
+    if (self->mTknCounter%tknInv == 0) {
+        emit self->tokenReceived_signal(1000*tknInv/self->mTime->elapsed());
+        self->mTime->start();
+    }
 }
 
 void TKN_Window::dataReceivedStatic()
@@ -72,16 +80,16 @@ void TKN_Window::dataReceivedStatic()
 
 void TKN_Window::updateUI()
 {
-    ui->comboBox_Baud->setEnabled(!tknStarted);
-    ui->comboBox_ComPort->setEnabled(!tknStarted);
-    ui->buttonStartStop->setText(tknStarted? buttonStopText : buttonStartText);
-    ui->buttonStartStop->setStyleSheet(tknStarted? "* { background-color: rgba(200,0,0,255) }" : "* { background-color: rgba(0,200,0,255) }");
+    ui->comboBox_Baud->setEnabled(!mTknStarted);
+    ui->comboBox_ComPort->setEnabled(!mTknStarted);
+    ui->buttonStartStop->setText(mTknStarted? buttonStopText : buttonStartText);
+    ui->buttonStartStop->setStyleSheet(mTknStarted? "* { background-color: rgba(200,0,0,255) }" : "* { background-color: rgba(0,200,0,255) }");
     shrink();
 }
 
 void TKN_Window::on_buttonStartStop_clicked()
 {
-    if (!tknStarted){
+    if (!mTknStarted){
         this->startTkn();
     }
     else {
@@ -133,8 +141,9 @@ void TKN_Window::startTkn()
     if (TKN_Start())
         return;
 
-    tknCounter = 0;
-    this->tknStarted = true;
+    mTknCounter = 0;
+    mTime->start();
+    this->mTknStarted = true;
 }
 
 void TKN_Window::stopTkn()
@@ -150,7 +159,7 @@ void TKN_Window::stopTkn()
         }
 
         TKN_Close();
-        this->tknStarted = false;
+        this->mTknStarted = false;
         QTimer::singleShot(20, this, SLOT(shrink()));
     }
 }

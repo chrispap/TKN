@@ -13,7 +13,7 @@ TKN_NodeBox::TKN_NodeBox(QWidget *parent, int id) :
     this->node_id = id;
     this->setTitle(QString("Node ").append(QString('0'+node_id)));
 
-    QPixmap avrChip = QPixmap(":/AVR_Chip-W180px.PNG");
+    QPixmap avrChip = QPixmap(":/AVR_Chip-W180px.png");
 
     this->ui->labelAVR->setPixmap( avrChip);
 

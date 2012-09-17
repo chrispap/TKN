@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>298</width>
-    <height>439</height>
+    <height>442</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -18,6 +18,10 @@
   </property>
   <property name="windowTitle">
    <string>TKN GUI</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="resources.qrc">
+    <normaloff>:/AVR_Chip-W180px.png</normaloff>:/AVR_Chip-W180px.png</iconset>
   </property>
   <property name="autoFillBackground">
    <bool>false</bool>
@@ -118,7 +122,7 @@ QTextEdit {
          <item row="0" column="0">
           <widget class="QLabel" name="label_5">
            <property name="text">
-            <string>Tokens Received:</string>
+            <string>Tokens/sec:</string>
            </property>
           </widget>
          </item>
@@ -183,7 +187,7 @@ QTextEdit {
      <x>0</x>
      <y>0</y>
      <width>298</width>
-     <height>21</height>
+     <height>24</height>
     </rect>
    </property>
    <property name="defaultUp">
@@ -212,6 +216,8 @@ QTextEdit {
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources/>
+ <resources>
+  <include location="resources.qrc"/>
+ </resources>
  <connections/>
 </ui>

@@ -35,8 +35,9 @@ private:
     QMap<int, TKN_NodeBox*> nodeMap;
     static TKN_Window *self;
     static const QString buttonStartText, buttonStopText;
-    bool tknStarted;
-    int tknCounter;
+    bool mTknStarted;
+    int mTknCounter;
+    QTime *mTime;
 
     void updateUI();
     void startTkn();
