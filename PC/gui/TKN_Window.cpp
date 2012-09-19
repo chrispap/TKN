@@ -176,7 +176,7 @@ void TKN_Window::on_dataReceived()
     recData[sizeof(TKN_Data)]='\0';
     BYTE sender;
 
-    if (sender=TKN_PopData((TKN_Data*) &recData)){
+    if ((sender=TKN_PopData((TKN_Data*) &recData))){
         if (nodeMap.contains((int)sender))
             nodeMap[(int)(sender)]->console_output(recData); //probably should make a slot to TKN_NodeBox...
     }
