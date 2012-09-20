@@ -19,22 +19,20 @@ int main (int argc, char *argv[])
     char  hexLine[HEXLINE_SIZE];
     int   fileIsRead = 0, lineCounter=0;
     
-    /* Open the file */
-    if ((hexFile = fopen (flname, "r")) == NULL) {
-        perror("Cannot open data file");
-        exit (1);
-    }
-
     /* Init network */ 
     if (TKN_InitWithArgs(argc, argv))
         exit (1);
 
     printf (">> TKN opened succesfully.\n");
-
     dest_id = (argc > 3)? atoi (argv[3]) : TKN_DEST_ID_DEFAULT;
-
     TKN_Start();
     time_start = time(NULL);
+	
+	/* Open the file */
+    if ((hexFile = fopen (flname, "r")) == NULL) {
+        perror("Cannot open data file");
+        exit (1);
+    }
 
     /* Send file */ 
     while (!(fileIsRead = fgets(hexLine, HEXLINE_SIZE, hexFile)==NULL? 1:0))
