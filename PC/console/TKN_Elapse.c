@@ -33,17 +33,20 @@ int main (int argc, char *argv[])
     TKN_Start ();
     int packC = 0;
 
+	TKN_PrintCols();
+	
     if (FULL_LOAD)  // Send DATA whenever possible!
     {
+        int r;
         do{
-            if (TKN_PushData ((TKN_Data *) "__From Laptop___", dest_id) == 0)
-		packC++;
-        } while ((time (NULL) - time_start) < SECONDS_TO_RUN);
-
+            r = TKN_PushData ((TKN_Data *) "__From Laptop___", dest_id);
+            if (!r)
+            packC++;
+        } while (!r);//(time (NULL) - time_start) < SECONDS_TO_RUN);
     }
     else  // Send nothing
     {
-	sleep (SECONDS_TO_RUN);
+		sleep (SECONDS_TO_RUN);
     }
 
     /* Shut downn the network */

@@ -1,6 +1,6 @@
 #include "rs232.h"
 
-#define RS_DEBUG
+//#define RS_DEBUG
 
 #ifdef __linux__		/* Linux */
 

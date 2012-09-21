@@ -1,8 +1,24 @@
 #include "TKN_Nodebox.h"
 #include "ui_TKN_Nodebox.h"
 #include <QPixmap>
+#include <QDebug>
+#include <QThread>
+#include <QtConcurrentRun>
 
-#include "../lib/TKN.h"
+#include "lib/TKN.h"
+
+
+void sendFile()
+{
+    int packC=0;
+
+    do{
+        if (TKN_PushData ((TKN_Data *) "__From Laptop_", 2) == 0)
+            packC++;
+
+    } while (packC<5000000);
+
+}
 
 TKN_NodeBox::TKN_NodeBox(QWidget *parent, int id) :
     QGroupBox(parent),
@@ -14,7 +30,6 @@ TKN_NodeBox::TKN_NodeBox(QWidget *parent, int id) :
     this->setTitle(QString("Node ").append(QString('0'+node_id)));
 
     QPixmap avrChip = QPixmap(":/AVR_Chip-W180px.png");
-
     this->ui->labelAVR->setPixmap( avrChip);
 
 }
@@ -22,6 +37,19 @@ TKN_NodeBox::TKN_NodeBox(QWidget *parent, int id) :
 TKN_NodeBox::~TKN_NodeBox()
 {
     delete ui;
+}
+
+void TKN_NodeBox::dataReceive(TKN_Data *data)
+{
+    qDebug() << "Line: " << __LINE__ << " - " << QThread::currentThreadId();
+
+    consoleOut(data);
+}
+
+void TKN_NodeBox::consoleOut(TKN_Data *data)
+{
+    qDebug() << "Line: " << __LINE__ << " - " << QThread::currentThreadId();
+    ui->textEditConsole->append(QByteArray((char*)data, sizeof(TKN_Data)));
 }
 
 void TKN_NodeBox::on_buttonSend_clicked()
@@ -33,7 +61,7 @@ void TKN_NodeBox::on_buttonSend_clicked()
     TKN_PushData(&data, node_id);
 }
 
-void TKN_NodeBox::console_output(char *data)
+void TKN_NodeBox::on_buttonSendFile_clicked()
 {
-    ui->textEditConsole->append(data);
+    QtConcurrent::run(sendFile);
 }

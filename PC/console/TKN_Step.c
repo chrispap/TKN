@@ -21,7 +21,7 @@ int main (int argc, char *argv[])
 	
 	dest_id = (argc > 3)? atoi (argv[3]) : TKN_DEST_ID_DEFAULT;
 	
-	printf (">> TKN opened succesfully.\n");	
+	printf (">> TKN opened succesfully.\n");
 	printf ("D  -> Send data \n>  -> Send token\nE  -> Exit\n\n");
 	TKN_PrintCols();
 	
@@ -31,7 +31,9 @@ int main (int argc, char *argv[])
             TKN_SendDataPacket ((TKN_Data*)"__From Laptop___", dest_id);
 
         TKN_PassToken ();
+        fflush (stdout);
         TKN_Receive ();
+        fflush (stdout);
     }
 
     TKN_Close ();

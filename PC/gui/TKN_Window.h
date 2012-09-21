@@ -17,26 +17,30 @@ public:
     explicit TKN_Window(QWidget *parent = 0);
     ~TKN_Window();
 
-    static void tokenReceivedStatic();
-    static void dataReceivedStatic();
+    static void tokenReceivedCallback();
+    static void dataReceivedCallback();
 
 signals:
-    void tokenReceived_signal(int);
-    void dataReceived();
+    void tokenReceived(int);
+    void dataReady();
 
 private slots:
     void on_buttonStartStop_clicked();
     void on_actionAbout_triggered();
+
     void shrink();
-    void on_dataReceived();
+    void dataReceive();
 
 private:
     Ui::TKN_Window *ui;
-    QMap<int, TKN_NodeBox*> nodeMap;
+
     static TKN_Window *self;
     static const QString buttonStartText, buttonStopText;
+    static const QString baudList[];
+
     bool mTknStarted;
     int mTknCounter;
+    QMap<int, TKN_NodeBox*> nodeMap;
     QTime *mTime;
 
     void updateUI();

@@ -4,6 +4,8 @@
 #include <QGroupBox>
 #include <QPixmap>
 
+#include "lib/TKN.h"
+
 namespace Ui {
     class TKN_NodeBox;
 }
@@ -16,10 +18,15 @@ public:
     explicit TKN_NodeBox(QWidget *parent, int id);
     ~TKN_NodeBox();
 
-    void console_output(char *);
+public slots:
+    void dataReceive(TKN_Data*);
 
 private slots:
     void on_buttonSend_clicked();
+
+    void consoleOut(TKN_Data *data);
+
+    void on_buttonSendFile_clicked();
 
 private:
     Ui::TKN_NodeBox *ui;

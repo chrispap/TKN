@@ -35,17 +35,10 @@
    <string>Node </string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="5" column="0">
-    <widget class="QTextEdit" name="textEditConsole">
-     <property name="readOnly">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item row="4" column="0">
-    <widget class="QLabel" name="label">
+   <item row="7" column="0">
+    <widget class="QPushButton" name="buttonClear">
      <property name="text">
-      <string>Console</string>
+      <string>Clear</string>
      </property>
     </widget>
    </item>
@@ -66,10 +59,27 @@
      </property>
     </widget>
    </item>
-   <item row="6" column="0">
-    <widget class="QPushButton" name="buttonClear">
+   <item row="8" column="0">
+    <widget class="QLabel" name="labelAVR">
      <property name="text">
-      <string>Clear</string>
+      <string/>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="6" column="0">
+    <widget class="QTextEdit" name="textEditConsole">
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="0">
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>Console</string>
      </property>
     </widget>
    </item>
@@ -80,13 +90,10 @@
      </property>
     </widget>
    </item>
-   <item row="7" column="0">
-    <widget class="QLabel" name="labelAVR">
+   <item row="4" column="0">
+    <widget class="QPushButton" name="buttonSendFile">
      <property name="text">
-      <string/>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      <string>SEND FILE</string>
      </property>
     </widget>
    </item>

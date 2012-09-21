@@ -8,17 +8,13 @@
 #include <QTime>
 #include <QTimer>
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
-
 #include "lib/rs232.h"
 #include "lib/TKN.h"
 #include "lib/TKN_Util.h"
 
 const QString TKN_Window::buttonStartText = QString("TKN Start");
 const QString TKN_Window::buttonStopText = QString("TKN Stop");
-const QString baudList[] = { "57600", "9600", "38400", "115200" };
+const QString TKN_Window::baudList[] = { "57600", "9600", "38400", "115200" };
 
 TKN_Window* TKN_Window::self;
 
@@ -46,8 +42,8 @@ TKN_Window::TKN_Window(QWidget *parent) :
     this->mTknStarted = false;
 
     /* Signal connections */
-    connect(this, SIGNAL(tokenReceived_signal(int)), ui->lcd_TokenCounter, SLOT(display(int)), Qt::QueuedConnection);
-    connect(this, SIGNAL(dataReceived()), this, SLOT(on_dataReceived()), Qt::QueuedConnection);
+    connect(this, SIGNAL(tokenReceived(int)), ui->lcd_TokenCounter, SLOT(display(int)), Qt::QueuedConnection);
+    connect(this, SIGNAL(dataReady()), this, SLOT(dataReceive()), Qt::QueuedConnection);
 
     this->updateUI();
 }
@@ -57,34 +53,43 @@ TKN_Window::~TKN_Window()
     delete ui;
 }
 
-void TKN_Window::on_actionAbout_triggered()
+void TKN_Window::tokenReceivedCallback()
 {
-    QMessageBox::information(this, "About TKN Gui", "Chris Papapavlou\nchrispapapaulou@gmail.com", QMessageBox::Ok);
-}
-
-void TKN_Window::tokenReceivedStatic()
-{
-    int tknInv=150;
+    static const int tknInv=150;
     self->mTknCounter++;
 
+    /* Every tknInv tokens show the rate
+       of the respective time period */
     if (self->mTknCounter%tknInv == 0) {
-        emit self->tokenReceived_signal(1000*tknInv/self->mTime->elapsed());
+        emit self->tokenReceived(1000*tknInv/self->mTime->elapsed());
         self->mTime->start();
     }
 }
 
-void TKN_Window::dataReceivedStatic()
+void TKN_Window::dataReceivedCallback()
 {
-    emit self->dataReceived();
+    qDebug() << "Line: " << __LINE__ << " - " << QThread::currentThreadId();
+
+    /* In this point just emit the signal
+       so that the reception will take place
+       in the QT ui thread and not in here (TKN Thread) */
+    emit self->dataReady();
 }
 
-void TKN_Window::updateUI()
+void TKN_Window::dataReceive()
 {
-    ui->comboBox_Baud->setEnabled(!mTknStarted);
-    ui->comboBox_ComPort->setEnabled(!mTknStarted);
-    ui->buttonStartStop->setText(mTknStarted? buttonStopText : buttonStartText);
-    ui->buttonStartStop->setStyleSheet(mTknStarted? "* { background-color: rgba(200,0,0,255) }" : "* { background-color: rgba(0,200,0,255) }");
-    shrink();
+    qDebug() << "Line: " << __LINE__ << " - " << QThread::currentThreadId();
+
+    TKN_Data *recData = new TKN_Data;
+    BYTE sender;
+
+    if ((sender=TKN_PopData(recData))) {
+        if (nodeMap.contains((int)sender)) {
+            nodeMap[(int)(sender)]->dataReceive(recData);
+
+        }
+    }
+
 }
 
 void TKN_Window::on_buttonStartStop_clicked()
@@ -107,11 +112,13 @@ void TKN_Window::startTkn()
     char *portName = ui->comboBox_ComPort->currentText().toAscii().data();
     int port = getPortIndexByName(portName);
 
-    if (port<0)
+    if (port<0){
+        ui->textEditConsoleStatus->append("Not a valid port");
         return;
+    }
 
     /* Init the network */
-    if (TKN_Init(port, baud, TKN_ID_DEFAULT, TKN_Window::tokenReceivedStatic, TKN_Window::dataReceivedStatic))
+    if (TKN_Init(port, baud, TKN_ID_DEFAULT, TKN_Window::tokenReceivedCallback, TKN_Window::dataReceivedCallback))
         return;
 
     QString msg;
@@ -133,6 +140,7 @@ void TKN_Window::startTkn()
 
     while (*nodes){
         TKN_NodeBox *nd = new TKN_NodeBox(this, (int)(*nodes));
+//        nd->thre
         nodeMap[*nodes] = nd;
         ui->centralWidget->layout()->addWidget(nd);
         nodes++;
@@ -170,15 +178,16 @@ void TKN_Window::shrink()
    setMaximumSize(size());
 }
 
-void TKN_Window::on_dataReceived()
+void TKN_Window::on_actionAbout_triggered()
 {
-    char recData[sizeof(TKN_Data)+1];
-    recData[sizeof(TKN_Data)]='\0';
-    BYTE sender;
+    QMessageBox::information(this, "About TKN Gui", "Chris Papapavlou\nchrispapapaulou@gmail.com", QMessageBox::Ok);
+}
 
-    if ((sender=TKN_PopData((TKN_Data*) &recData))){
-        if (nodeMap.contains((int)sender))
-            nodeMap[(int)(sender)]->console_output(recData); //probably should make a slot to TKN_NodeBox...
-    }
-
+void TKN_Window::updateUI()
+{
+    ui->comboBox_Baud->setEnabled(!mTknStarted);
+    ui->comboBox_ComPort->setEnabled(!mTknStarted);
+    ui->buttonStartStop->setText(mTknStarted? buttonStopText : buttonStartText);
+    ui->buttonStartStop->setStyleSheet(mTknStarted? "* { background-color: rgba(200,0,0,255) }" : "* { background-color: rgba(0,200,0,255) }");
+    shrink();
 }

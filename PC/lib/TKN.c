@@ -18,8 +18,8 @@
 
 #define TKN_DEBUG
 #ifdef TKN_DEBUG
-  //#define ECHO_ATTEMPTS
-  //#define ECHO_TOKENS
+  #define ECHO_ATTEMPTS
+  #define ECHO_TOKENS
   #define ECHO_DATA
   #define ECHO_EVENTS
 #endif
@@ -643,7 +643,7 @@ DWORD WINAPI TKN_Run (LPVOID params)
     while (TKN_Running) 
     {
         TKN_PassToken();
-
+        
         if (TKN_Receive() == TKN_TYPE_TOKEN){
             TKN_TokenCount++;
 
