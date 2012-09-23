@@ -6,30 +6,32 @@
 === Register definitions ===
 === Constant definitions ===
 ================================================================*/
-.equ LEDS_OUT	 = PORTB
-.equ LEDS_IN	 = PINB
-.equ SWITCHES_IN = PINA
+.equ LEDS_OUT   = PORTB
+.equ LEDS_IN    = PINB
+.equ SWITCHES_IN= PINA
 
-.def rsreg = r16	;Register usage - Inside ISRs
-.def itemp0= r17	;
-.def itemp1= r18	;
-.def itemp2= r19	;
-.def temp0 = r20	;Register usage - Inside main thread
-.def temp1 = r21	;
-.def temp2 = r22	;
+;Register usage - Inside ISRs
+.def rsreg  = r16
+.def itemp0 = r17
+.def itemp1 = r18
+.def itemp2 = r19
 
-.def lineCount = r3
+;Register usage - Inside main thread
+.def temp0  = r20
+.def temp1  = r21
+.def temp2  = r22
+
+.def lineCount  = r3
 
 /*==============================================================
 === inclusion of Source Files === 
-=== !!! >> Vectors.asm should be included first of ALL << !!!
+=== Vectors.asm should be included first of ALL !!!
 ================================================================*/
 .include "Vectors.asm"
 .include "TKN.asm"
 .include "Usart.asm"
 .include "Utils.asm"
 .include "Flash.asm"
-
 
 /*==============================================================
 === Reset - Initializations ===
@@ -61,70 +63,72 @@ Reset:
 === Main ===
 ================================================================*/
 .dseg
-dataPacket:
-	.byte TKN_PACKET_SIZE
+dataPacket: .byte TKN_PACKET_SIZE
 .org $300
-hexLine:
-	.byte $FF
+hexLine:    .byte $FF
 
 .cseg
-tempBuff:
+msg_str:
 .db "-MCU-READY------"
 
 main:
-	call ledInit
-	call TKN_init
-	call Enable_PcInt7
+    call ledInit
+    call TKN_init
+    call Enable_PcInt7
 
-	;Fill the data packet.
-	ldi ZL, LOW(tempBuff<<1)
-	ldi ZH, HIGH(tempBuff<<1)
+    ;Fill the data packet.
+    ldi ZL, LOW(msg_str<<1)
+    ldi ZH, HIGH(msg_str<<1)
 
-	ldi YL,LOW(dataPacket)
-	ldi YH,HIGH(dataPacket)
-	
-	ldi temp1, TKN_PACKET_SIZE
+    ldi YL,LOW(dataPacket)
+    ldi YH,HIGH(dataPacket)
+
+    ldi temp1, TKN_PACKET_SIZE
+    
 fillPacketLoop:
-		lpm temp0, Z+
-		st Y+, temp0
-		dec temp1;
-	brne fillPacketLoop
+    lpm temp0, Z+
+    st Y+, temp0
+    dec temp1;
+    brne fillPacketLoop
 
-	;Move Interrupts in boot section
-	call Move_interrupts_BootSec
+    ;Move Interrupts in boot section
+    call Move_interrupts_BootSec
 
-	clr lineCount
-	ldi YL,LOW(hexLine)
-	ldi YH,HIGH(hexLine)
-	
-	;Enable Interrupts and enter the main loop.
-	sei
+    ;Init local variables.
+    clr lineCount
+    ldi YL,LOW(hexLine)
+    ldi YH,HIGH(hexLine)
 
+    ;Enable Interrupts.
+    sei
+    
+    ;Poll for incoming packets
 recv_loop:
-	/* Poll for incoming packets */
 	call TKN_popPacket
 	and temp0, temp0
-	breq recv_loop
+	brne packetReceived
+    sleep
+    rjmp recv_loop
 
-	//rjmp recv_loop // DEBUG (Short-circuit loop)
+	;rjmp recv_loop // DEBUG
 
-	/* Here, a new packet has been received in the hexline buffer */
-	/* Send it back (Debug reasons) */
-	/*
-	push temp0
-	push_loop1:
-	call TKN_pushPacket
-	and temp0, temp0
-	brne push_loop1
-	pop temp0
-	*/
+packetReceived:
+	;Send the new packet back.
+	;push temp0
+	;push_loop1:
+	;call TKN_pushPacket
+	;and temp0, temp0
+	;brne push_loop1
+	;pop temp0
 
-	/* Detect '\n' or '\0' in the last character of the packet */
+	;Detect '\n' or '\0' in the last character of the packet
 	ldd temp1, Y + TKN_PACKET_SIZE - 1
-	and temp1, temp1 //detect zero byte
+	and temp1, temp1 ;detected zero byte
 	breq hexLine_complete
 	cpi temp1, '\n'
-	breq hexLine_complete //detect new line
+	breq hexLine_complete ;detected new line
+    
+    ;Increase the pointer to the hexline buffer
 	ldi temp1, TKN_PACKET_SIZE
 	add YL, temp1
 	brcc notOverflow
@@ -133,20 +137,18 @@ recv_loop:
 	rjmp recv_loop
 
 hexLine_complete:
-	/**
-	* HERE I should analyze the hex line ...
-	* Just delay for now... 
-	ldi temp1, 1
-	procDelay:
-	call delay
-	dec temp1
-	brne procDelay
-	*/
+	;HERE I should analyze the hex line ...
+	;Just delay for now... 
+	;ldi temp1, 1
+	;procDelay:
+	;call delay
+	;dec temp1
+	;brne procDelay
 
-	/* Send the ready singaling string */
+	;Send the ready singaling string
 	ldi YL,LOW(dataPacket)
 	ldi YH,HIGH(dataPacket)
-	push_loop2:
+push_loop2:
 	call TKN_pushPacket
 	and temp0, temp0
 	brne push_loop2

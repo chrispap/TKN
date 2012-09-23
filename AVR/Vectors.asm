@@ -5,7 +5,8 @@
 */
 
 .cseg
-//.org 0x0000
+
+;org 0x0000
 .org LARGEBOOTSTART
 
 	jmp Reset
