@@ -3,6 +3,7 @@
 
 #include <QGroupBox>
 #include <QPixmap>
+#include <QQueue>
 
 #include "lib/TKN.h"
 
@@ -32,6 +33,7 @@ private:
     Ui::TKN_NodeBox *ui;
 
     int node_id;
+    QQueue<TKN_Data>dataQueue;
 
 };
 

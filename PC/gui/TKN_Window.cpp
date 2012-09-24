@@ -39,8 +39,6 @@ TKN_Window::TKN_Window(QWidget *parent) :
     for (i=0; i<sizeof(baudList)/sizeof(baudList[0]) ; i++)
         ui->comboBox_Baud->insertItem(i, baudList[i]);
 
-    /*Create the node list */
-    nodeMap = QMap<int, TKN_NodeBox*>();
     this->mTknStarted = false;
 
     /* Signal connections */
@@ -82,12 +80,12 @@ void TKN_Window::dataReceive()
 {
 //    qDebug() << "Line: " << __LINE__ << " - " << QThread::currentThreadId();
 
-    TKN_Data *recData = new TKN_Data;
+    TKN_Data recData;
     BYTE sender;
 
-    if ((sender=TKN_PopData(recData))) {
+    if ((sender=TKN_PopData(&recData))) {
         if (nodeMap.contains((int)sender)) {
-            nodeMap[(int)(sender)]->dataReceive(recData);
+            nodeMap[(int)(sender)]->dataReceive(&recData);
 
         }
     }

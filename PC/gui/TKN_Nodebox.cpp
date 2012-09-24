@@ -4,20 +4,20 @@
 #include <QDebug>
 #include <QThread>
 #include <QtConcurrentRun>
+#include <QQueue>
 
 #include "lib/TKN.h"
 
-
-void sendFile(BYTE dest_id)
+void sendFile(QQueue<TKN_Data> dataQueue, BYTE dest_id)
 {
     int packC=0;
     int r;
 
-    do{
+    do {
         r = TKN_PushData ((TKN_Data *) "__From Laptop___", dest_id);
         if (!r)
             packC++;
-    }while (packC<1000);
+    } while (packC<1000);
 
 }
 
@@ -29,6 +29,7 @@ TKN_NodeBox::TKN_NodeBox(QWidget *parent, int id) :
 
     this->node_id = id;
     this->setTitle(QString("Node ").append(QString('0'+node_id)));
+    this->dataQueue = QQueue<TKN_Data>();
 
     QPixmap avrChip = QPixmap(":/AVR_Chip-W180px.png");
     this->ui->labelAVR->setPixmap( avrChip);
@@ -40,10 +41,16 @@ TKN_NodeBox::~TKN_NodeBox()
     delete ui;
 }
 
+/**
+ * Stores the data pointed by the parameter
+ * into some internal storage and emits a
+ * signal.
+ */
 void TKN_NodeBox::dataReceive(TKN_Data *data)
 {
 //    qDebug() << "Line: " << __LINE__ << " - " << QThread::currentThreadId();
-
+    dataQueue.enqueue(*data);
+    //emit...
     consoleOut(data);
 }
 
@@ -64,5 +71,5 @@ void TKN_NodeBox::on_buttonSend_clicked()
 
 void TKN_NodeBox::on_buttonSendFile_clicked()
 {
-    QtConcurrent::run(sendFile, node_id);
+    QtConcurrent::run(sendFile, dataQueue, node_id);
 }
