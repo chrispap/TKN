@@ -13,7 +13,7 @@
 #include "../lib/TKN.h"
 #include "../lib/TKN_Util.h"
 
-#define FULL_LOAD 0
+#define FULL_LOAD 1
 #define SECONDS_TO_RUN 10
 
 BYTE dest_id;
@@ -31,9 +31,8 @@ int main (int argc, char *argv[])
     /* Start the network */
     time_start = time (NULL);
     TKN_Start ();
-    int packC = 0;
-
 	TKN_PrintCols();
+    int packC = 0;
 	
     if (FULL_LOAD)  // Send DATA whenever possible!
     {
@@ -42,7 +41,7 @@ int main (int argc, char *argv[])
             r = TKN_PushData ((TKN_Data *) "__From Laptop___", dest_id);
             if (!r)
             packC++;
-        } while (!r);//(time (NULL) - time_start) < SECONDS_TO_RUN);
+        } while ((time (NULL) - time_start) < SECONDS_TO_RUN);
     }
     else  // Send nothing
     {

@@ -8,15 +8,16 @@
 #include "lib/TKN.h"
 
 
-void sendFile()
+void sendFile(BYTE dest_id)
 {
     int packC=0;
+    int r;
 
     do{
-        if (TKN_PushData ((TKN_Data *) "__From Laptop_", 2) == 0)
+        r = TKN_PushData ((TKN_Data *) "__From Laptop___", dest_id);
+        if (!r)
             packC++;
-
-    } while (packC<5000000);
+    }while (packC<1000);
 
 }
 
@@ -41,14 +42,14 @@ TKN_NodeBox::~TKN_NodeBox()
 
 void TKN_NodeBox::dataReceive(TKN_Data *data)
 {
-    qDebug() << "Line: " << __LINE__ << " - " << QThread::currentThreadId();
+//    qDebug() << "Line: " << __LINE__ << " - " << QThread::currentThreadId();
 
     consoleOut(data);
 }
 
 void TKN_NodeBox::consoleOut(TKN_Data *data)
 {
-    qDebug() << "Line: " << __LINE__ << " - " << QThread::currentThreadId();
+//    qDebug() << "Line: " << __LINE__ << " - " << QThread::currentThreadId();
     ui->textEditConsole->append(QByteArray((char*)data, sizeof(TKN_Data)));
 }
 
@@ -63,5 +64,5 @@ void TKN_NodeBox::on_buttonSend_clicked()
 
 void TKN_NodeBox::on_buttonSendFile_clicked()
 {
-    QtConcurrent::run(sendFile);
+    QtConcurrent::run(sendFile, node_id);
 }

@@ -30,8 +30,10 @@ TKN_Window::TKN_Window(QWidget *parent) :
 
     /* available ports */
     char** port_list = listSerialPorts();
-    for (i=0; *port_list; i++, port_list++)
-        ui->comboBox_ComPort->insertItem(i, QString(*port_list));
+    if (port_list){
+        for (i=0; *port_list; i++, port_list++)
+            ui->comboBox_ComPort->insertItem(i, QString(*port_list));
+    }
 
     /* baud rates */
     for (i=0; i<sizeof(baudList)/sizeof(baudList[0]) ; i++)
@@ -68,7 +70,7 @@ void TKN_Window::tokenReceivedCallback()
 
 void TKN_Window::dataReceivedCallback()
 {
-    qDebug() << "Line: " << __LINE__ << " - " << QThread::currentThreadId();
+//    qDebug() << "Line: " << __LINE__ << " - " << QThread::currentThreadId();
 
     /* In this point just emit the signal
        so that the reception will take place
@@ -78,7 +80,7 @@ void TKN_Window::dataReceivedCallback()
 
 void TKN_Window::dataReceive()
 {
-    qDebug() << "Line: " << __LINE__ << " - " << QThread::currentThreadId();
+//    qDebug() << "Line: " << __LINE__ << " - " << QThread::currentThreadId();
 
     TKN_Data *recData = new TKN_Data;
     BYTE sender;

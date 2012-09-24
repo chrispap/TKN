@@ -483,8 +483,8 @@ TKN_TokenArrived:
 
 /*==============================================================
 === Routine: TKN_Receiver
-===        Receive a byte from temp0 register,
-===     and handle it according to the state in which we are.
+===		Receive a byte from temp0 register and handle it 
+===		based on the state in which we are.
 ================================================================*/
 TKN_Receiver:
     mov temp1, TKN_RX_STATUS
@@ -662,8 +662,8 @@ TKN_Receiver_DATA_ForMe:
     lsl TKN_RX_QUEUE_INDEX_IN
     lsl TKN_RX_QUEUE_INDEX_IN
 
-    ;Store the packet inside RX_BUFFER to the first available 
-    ;RX Queue slot
+    ;Store the packet inside RX_BUFFER 
+	;to the first available RX Queue slot
     ldi XL, LOW(TKN_RX_QUEUE)
     ldi XH, HIGH(TKN_RX_QUEUE)
     add XL, TKN_RX_QUEUE_INDEX_IN

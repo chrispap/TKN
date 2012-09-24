@@ -110,16 +110,21 @@ recv_loop:
     sleep
     rjmp recv_loop
 
-	;rjmp recv_loop // DEBUG
+	
 
 packetReceived:
+	rjmp recv_loop // DEBUG
+
 	;Send the new packet back.
-	;push temp0
-	;push_loop1:
-	;call TKN_pushPacket
-	;and temp0, temp0
-	;brne push_loop1
-	;pop temp0
+	push temp0
+	push_loop1:
+	call TKN_pushPacket
+	and temp0, temp0
+	brne push_loop1
+	pop temp0
+	
+	
+
 
 	;Detect '\n' or '\0' in the last character of the packet
 	ldd temp1, Y + TKN_PACKET_SIZE - 1
