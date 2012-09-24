@@ -107,13 +107,10 @@ recv_loop:
 	call TKN_popPacket
 	and temp0, temp0
 	brne packetReceived
-    sleep
+    ;sleep
     rjmp recv_loop
 
-	
-
 packetReceived:
-	rjmp recv_loop // DEBUG
 
 	;Send the new packet back.
 	push temp0
@@ -122,9 +119,8 @@ packetReceived:
 	and temp0, temp0
 	brne push_loop1
 	pop temp0
-	
-	
 
+	// rjmp recv_loop // DEBUG
 
 	;Detect '\n' or '\0' in the last character of the packet
 	ldd temp1, Y + TKN_PACKET_SIZE - 1
@@ -137,7 +133,7 @@ packetReceived:
 	ldi temp1, TKN_PACKET_SIZE
 	add YL, temp1
 	brcc notOverflow
-	inc YH
+	;inc YH
 	notOverflow:
 	rjmp recv_loop
 
