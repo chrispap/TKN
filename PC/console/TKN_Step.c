@@ -24,21 +24,21 @@ int main (int argc, char *argv[])
 
 	BYTE i=0;
 	char *msg  = "__From Laptop";
-	char data[16];
+	char data[17];
 	strcpy(data, msg);
 
     while ( (action = getKey ("Ee Dd .>")) != 'e' )
     {
         if (action == 'd'){
-            sprintf(data+strlen("__From Laptop"), "%3d", (unsigned int) ++i);			
+            sprintf(data+strlen("__From Laptop"), "%3d", (unsigned int) ++i);
 			TKN_SendDataPacket ((TKN_Data*) data, dest_id);
 		}
 		else {
 			TKN_PassToken ();
-			fflush (stdout);
 			TKN_Receive ();
-			fflush (stdout);
 		}
+        
+        fflush (stdout);
     }
 
     TKN_Close ();
