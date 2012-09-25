@@ -22,6 +22,7 @@ TKN_Window::TKN_Window(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::TKN_Window)
 {
+    /* Ui setup */
     ui->setupUi(this);
     ui->buttonStartStop->setText(buttonStartText);
     self = this;
@@ -68,8 +69,6 @@ void TKN_Window::tokenReceivedCallback()
 
 void TKN_Window::dataReceivedCallback()
 {
-//    qDebug() << "Line: " << __LINE__ << " - " << QThread::currentThreadId();
-
     /* In this point just emit the signal
        so that the reception will take place
        in the QT ui thread and not in here (TKN Thread) */
@@ -78,7 +77,7 @@ void TKN_Window::dataReceivedCallback()
 
 void TKN_Window::dataReceive()
 {
-//    qDebug() << "Line: " << __LINE__ << " - " << QThread::currentThreadId();
+    //qDebug() << "Line: " << __LINE__ << " - " << QThread::currentThreadId();
 
     TKN_Data recData;
     BYTE sender;
@@ -190,4 +189,10 @@ void TKN_Window::updateUI()
     ui->buttonStartStop->setText(mTknStarted? buttonStopText : buttonStartText);
     ui->buttonStartStop->setStyleSheet(mTknStarted? "* { background-color: rgba(200,0,0,255) }" : "* { background-color: rgba(0,200,0,255) }");
     shrink();
+}
+
+void TKN_Window::consoleOut(QString msg)
+{
+
+
 }

@@ -1,25 +1,16 @@
 #include "TKN_Nodebox.h"
 #include "ui_TKN_Nodebox.h"
+#include "TKN_Window.h"
+
 #include <QPixmap>
 #include <QDebug>
 #include <QThread>
 #include <QtConcurrentRun>
 #include <QQueue>
+#include <QMutex>
+#include <QSemaphore>
 
 #include "lib/TKN.h"
-
-void sendFile(QQueue<TKN_Data> dataQueue, BYTE dest_id)
-{
-    int packC=0;
-    int r;
-
-    do {
-        r = TKN_PushData ((TKN_Data *) "__From Laptop___", dest_id);
-        if (!r)
-            packC++;
-    } while (packC<1000);
-
-}
 
 TKN_NodeBox::TKN_NodeBox(QWidget *parent, int id) :
     QGroupBox(parent),
@@ -27,12 +18,13 @@ TKN_NodeBox::TKN_NodeBox(QWidget *parent, int id) :
 {
     ui->setupUi(this);
 
+    /* Ui setup */
     this->node_id = id;
     this->setTitle(QString("Node ").append(QString('0'+node_id)));
-    this->dataQueue = QQueue<TKN_Data>();
+    this->ui->labelAVR->setPixmap( QPixmap(":/AVR_Chip-W180px.png"));
 
-    QPixmap avrChip = QPixmap(":/AVR_Chip-W180px.png");
-    this->ui->labelAVR->setPixmap( avrChip);
+    /* Signal connections */
+    connect(this, SIGNAL(dataReady()), this, SLOT(on_dataReady()));
 
 }
 
@@ -41,22 +33,23 @@ TKN_NodeBox::~TKN_NodeBox()
     delete ui;
 }
 
-/**
- * Stores the data pointed by the parameter
- * into some internal storage and emits a
- * signal.
- */
 void TKN_NodeBox::dataReceive(TKN_Data *data)
 {
-//    qDebug() << "Line: " << __LINE__ << " - " << QThread::currentThreadId();
-    dataQueue.enqueue(*data);
-    //emit...
     consoleOut(data);
+    dataQueueMutex.lock();
+    dataQueue.enqueue(*data);
+    dataQueueMutex.unlock();
+    dataQueueSem.release();
+    emit dataReady();
+}
+
+void TKN_NodeBox::on_dataReady()
+{
+    //...
 }
 
 void TKN_NodeBox::consoleOut(TKN_Data *data)
 {
-//    qDebug() << "Line: " << __LINE__ << " - " << QThread::currentThreadId();
     ui->textEditConsole->append(QByteArray((char*)data, sizeof(TKN_Data)));
 }
 
@@ -71,5 +64,42 @@ void TKN_NodeBox::on_buttonSend_clicked()
 
 void TKN_NodeBox::on_buttonSendFile_clicked()
 {
-    QtConcurrent::run(sendFile, dataQueue, node_id);
+    QtConcurrent::run(this, &TKN_NodeBox::sendFile);
+}
+
+
+void TKN_NodeBox::sendFile()
+{
+    /* Ensure that the data Qeueue has no elements*/
+    int av = dataQueueSem.available();
+
+    if (av>0){
+        dataQueueSem.acquire(av);
+        dataQueueMutex.lock();
+        dataQueue.clear();
+        dataQueueMutex.unlock();
+    }
+
+    /* Do the job */
+    int packC=0;
+    int r;
+    TKN_Data recData;
+    QString recString;
+
+    do {
+        while (TKN_PushData ((TKN_Data *) "__From Laptop__", node_id));
+
+        do {
+            dataQueueSem.acquire();
+            dataQueueMutex.lock();
+            recData = dataQueue.dequeue();
+            dataQueueMutex.unlock();
+            recString = QString(QByteArray((char*)&recData, sizeof(TKN_Data)));
+
+        } while ( QString::compare(QString("-MCU-READY------"), recString));
+
+        packC++;
+    } while (packC<4);
+
+    qDebug() << "File Sent.";
 }

@@ -4,6 +4,8 @@
 #include <QGroupBox>
 #include <QPixmap>
 #include <QQueue>
+#include <QMutex>
+#include <QSemaphore>
 
 #include "lib/TKN.h"
 
@@ -19,6 +21,11 @@ public:
     explicit TKN_NodeBox(QWidget *parent, int id);
     ~TKN_NodeBox();
 
+    int getNode_id(){return node_id;}
+
+signals:
+    void dataReady();
+
 public slots:
     void dataReceive(TKN_Data*);
 
@@ -29,12 +36,17 @@ private slots:
 
     void on_buttonSendFile_clicked();
 
+    void on_dataReady();
+
 private:
     Ui::TKN_NodeBox *ui;
 
     int node_id;
     QQueue<TKN_Data>dataQueue;
+    QMutex dataQueueMutex;
+    QSemaphore dataQueueSem;
 
+    void sendFile();
 };
 
 #endif // TKN_NODEBOX_H

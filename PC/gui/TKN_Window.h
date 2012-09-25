@@ -17,6 +17,8 @@ public:
     explicit TKN_Window(QWidget *parent = 0);
     ~TKN_Window();
 
+    void consoleOut(QString msg);
+
     static void tokenReceivedCallback();
     static void dataReceivedCallback();
 
