@@ -140,11 +140,11 @@ packetReceived:
 hexLine_complete:
 	;HERE I should analyze the hex line ...
 	;Just delay for now... 
-	;ldi temp1, 1
-	;procDelay:
-	;call delay
-	;dec temp1
-	;brne procDelay
+	ldi temp1, 20
+	procDelay:
+	call delay
+	dec temp1
+	brne procDelay
 
 	;Send the ready singaling string
 	ldi YL,LOW(dataPacket)
