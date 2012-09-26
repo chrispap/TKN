@@ -22,6 +22,11 @@
 .def temp2  = r22
 
 .def lineCount  = r3
+.def mVar0 = r3
+.def mVar1 = r2
+.def mVar2 = r1
+.def mVar3 = r0
+
 
 /*==============================================================
 === inclusion of Source Files === 
@@ -103,24 +108,57 @@ fillPacketLoop:
     sei
     
     ;Poll for incoming packets
+	clr mVar0
+	clr mVar1
+	clr mVar2
+	clr mVar3
 recv_loop:
 	call TKN_popPacket
 	and temp0, temp0
 	brne packetReceived
-    ;sleep
-    rjmp recv_loop
+    
+	inc mVar0
+	in temp1, SREG
+	sbrs temp1, SREG_Z
+	rjmp recv_loop
+	
+	inc mVar1
+	in temp1, SREG
+	sbrs temp1, SREG_Z
+	rjmp recv_loop
 
-packetReceived:
+	inc mVar2
+	in temp1, SREG
+	sbrs temp1, SREG_Z
+	rjmp recv_loop
 
-	;Send the new packet back.
-	push temp0
-	push_loop1:
+	inc mVar3
+	rjmp recv_loop
+
+
+packetReceived:	
+	std Y+0, mVar0
+	std Y+1, mVar1
+	std Y+2, mVar2
+	std Y+3, mVar3
+
+push_loop3:
 	call TKN_pushPacket
 	and temp0, temp0
-	brne push_loop1
-	pop temp0
+	brne push_loop3
+	clr mVar0
+	clr mVar1
+	clr mVar2
+	clr mVar3
+	rjmp recv_loop // DEBUG
 
-	// rjmp recv_loop // DEBUG
+	;Send the new packet back.
+	;push temp0
+	;push_loop1:
+	;call TKN_pushPacket
+	;and temp0, temp0
+	;brne push_loop1
+	;pop temp0
 
 	;Detect '\n' or '\0' in the last character of the packet
 	ldd temp1, Y + TKN_PACKET_SIZE - 1
@@ -130,21 +168,21 @@ packetReceived:
 	breq hexLine_complete ;detected new line
     
     ;Increase the pointer to the hexline buffer
-	ldi temp1, TKN_PACKET_SIZE
-	add YL, temp1
-	brcc notOverflow
+	;ldi temp1, TKN_PACKET_SIZE
+	;add YL, temp1
+	;brcc notOverflow
 	;inc YH
-	notOverflow:
-	rjmp recv_loop
+	;notOverflow:
+	;rjmp recv_loop
 
 hexLine_complete:
 	;HERE I should analyze the hex line ...
 	;Just delay for now... 
-	ldi temp1, 20
-	procDelay:
-	call delay
-	dec temp1
-	brne procDelay
+	;ldi temp1, 20
+	;procDelay:
+	;call delay
+	;dec temp1
+	;brne procDelay
 
 	;Send the ready singaling string
 	ldi YL,LOW(dataPacket)
