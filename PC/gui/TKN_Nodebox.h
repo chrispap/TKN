@@ -20,23 +20,19 @@ class TKN_NodeBox : public QGroupBox
 public:
     explicit TKN_NodeBox(QWidget *parent, int id);
     ~TKN_NodeBox();
-
     int getNode_id(){return node_id;}
-
-signals:
-    void dataReady();
 
 public slots:
     void dataReceive(TKN_Data*);
 
+signals:
+    void dataReceived();
+
 private slots:
     void on_buttonSend_clicked();
-
-    void consoleOut(TKN_Data *data);
-
     void on_buttonSendFile_clicked();
-
-    void on_dataReady();
+    void on_dataReceived();
+    void consoleOut(TKN_Data *data);
 
 private:
     Ui::TKN_NodeBox *ui;

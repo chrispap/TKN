@@ -40,10 +40,12 @@ QGroupBox::Title{
 }
 
 QTextEdit { 
-	background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(0, 0, 0, 255), stop:1 rgba(55, 55, 55, 155));
+	background-color: rgba(0, 0, 0, 240); 
     color: rgb(0,250,0);
     font: 9pt;
-}</string>
+}
+/*qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(0, 0, 0, 255), stop:1 rgba(55, 55, 55, 155));*/
+</string>
   </property>
   <property name="toolButtonStyle">
    <enum>Qt::ToolButtonIconOnly</enum>

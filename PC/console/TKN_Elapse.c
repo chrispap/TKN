@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <endian.h>
 
 #ifdef __linux
 #include <signal.h>
@@ -14,7 +15,7 @@
 #include "../lib/TKN_Util.h"
 
 #define FULL_LOAD 1
-#define SECONDS_TO_RUN 10
+#define SECONDS_TO_RUN 2
 
 BYTE dest_id;
 static time_t time_start, time_end;
@@ -33,15 +34,28 @@ int main (int argc, char *argv[])
     TKN_Start ();
 	TKN_PrintCols();
     int packC = 0;
-	
+    
     if (FULL_LOAD)  // Send DATA whenever possible!
     {
-        int r;
         do{
-            r = TKN_PushData ((TKN_Data *) "__From Laptop___", dest_id);
-            if (!r)
+            char myData[TKN_DATA_SIZE] = {0};
+            while (TKN_PushData ((TKN_Data *) myData, dest_id));
             packC++;
-        } while ((time (NULL) - time_start) < SECONDS_TO_RUN);
+        } while (packC<10); //(time (NULL) - time_start) < SECONDS_TO_RUN);
+        
+        sleep(1);
+        printf("\n>> RESULTS \n");
+        long int s=0;
+        int i;
+        for (i=0; i<packC; i++) {
+            TKN_Data recData;
+            while (TKN_PopData(&recData) < 0 );
+            printf(">> Size: %d \n", *((int *) &recData));
+            if (i>0)
+                s += *((int *) &recData);
+        }
+        
+        printf(">> Average: %ld \n", s/(packC-1));
     }
     else  // Send nothing
     {
