@@ -112,7 +112,7 @@ void TKN_Window::startTkn()
     int port = getPortIndexByName(portName);
 
     if (port<0){
-        ui->textEditConsoleStatus->append("Not a valid port");
+        consoleOut("Not a valid port");
         return;
     }
 
@@ -122,24 +122,23 @@ void TKN_Window::startTkn()
 
     QString msg;
     msg = QString("Opened TKN in ")+ui->comboBox_ComPort->currentText();
-    ui->textEditConsoleStatus->append(msg);
+    consoleOut(msg);
     msg = QString("Discovering nodes");
-    ui->textEditConsoleStatus->append(msg);
+    consoleOut(msg);
 
     BYTE *nodes = TKN_ListActiveNodes(10);
 
     if (nodes == NULL){
         msg = QString("No connectivity");
-        ui->textEditConsoleStatus->append(msg);
+        consoleOut(msg);
         TKN_Close();
         msg = QString("Closed TKN");
-        ui->textEditConsoleStatus->append(msg);
+        consoleOut(msg);
         return;
     }
 
     while (*nodes){
         TKN_NodeBox *nd = new TKN_NodeBox(this, (int)(*nodes));
-//        nd->thre
         nodeMap[*nodes] = nd;
         ui->centralWidget->layout()->addWidget(nd);
         nodes++;
@@ -193,6 +192,5 @@ void TKN_Window::updateUI()
 
 void TKN_Window::consoleOut(QString msg)
 {
-
-
+    ui->textEditConsoleStatus->append(msg);
 }

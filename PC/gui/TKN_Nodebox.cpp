@@ -24,7 +24,7 @@ TKN_NodeBox::TKN_NodeBox(QWidget *parent, int id) :
     this->ui->labelAVR->setPixmap( QPixmap(":/AVR_Chip-W180px.png"));
 
     /* Signal connections */
-    connect(this, SIGNAL(dataReady()), this, SLOT(on_dataReady()));
+    connect(this, SIGNAL(dataReceived()), this, SLOT(on_dataReceived()));
 
 }
 
@@ -35,15 +35,18 @@ TKN_NodeBox::~TKN_NodeBox()
 
 void TKN_NodeBox::dataReceive(TKN_Data *data)
 {
-    consoleOut(data);
+    int x = *((int *) data);
+    ui->textEditConsole->append(QString::number(x));
+
+//    consoleOut(data);
     dataQueueMutex.lock();
     dataQueue.enqueue(*data);
     dataQueueMutex.unlock();
     dataQueueSem.release();
-    emit dataReady();
+    emit dataReceived();
 }
 
-void TKN_NodeBox::on_dataReady()
+void TKN_NodeBox::on_dataReceived()
 {
     //...
 }
@@ -66,7 +69,6 @@ void TKN_NodeBox::on_buttonSendFile_clicked()
 {
     QtConcurrent::run(this, &TKN_NodeBox::sendFile);
 }
-
 
 void TKN_NodeBox::sendFile()
 {
@@ -96,10 +98,10 @@ void TKN_NodeBox::sendFile()
             dataQueueMutex.unlock();
             recString = QString(QByteArray((char*)&recData, sizeof(TKN_Data)));
 
-        } while ( QString::compare(QString("-MCU-READY------"), recString));
+        } while ( !QString::compare(QString("-MCU-READY------"), recString));
 
         packC++;
-    } while (packC<4);
+    } while (packC<10);
 
     qDebug() << "File Sent.";
 }

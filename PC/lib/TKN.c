@@ -20,7 +20,7 @@
 #ifdef TKN_DEBUG
   //#define ECHO_ATTEMPTS
   //#define ECHO_TOKENS
-  //#define ECHO_DATA
+  #define ECHO_DATA
   //#define ECHO_EVENTS
 #endif
 
@@ -109,7 +109,7 @@ int TKN_PrintDataPacket (BYTE * buffer, int details, int bin)
     {
         int i;
         for (i = TKN_OFFS_DATA_START; i <= TKN_OFFS_DATA_STOP; i++)
-            TKN_PrintByte (buffer[i], 0);
+            TKN_PrintByte (buffer[i], 1);
         printf("\t");
     }
 
@@ -121,7 +121,7 @@ int TKN_PrintByte (BYTE c, int forceHex)
     if (!forceHex && isprint (c))
         printf ("%1c", c);
     else
-        printf ("$%-2X", c);
+        printf ("$%-2X ", c);
 
     return 0;
 }
