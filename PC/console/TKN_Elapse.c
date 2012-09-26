@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include <endian.h>
 
 #ifdef __linux
 #include <signal.h>
