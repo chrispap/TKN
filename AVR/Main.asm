@@ -10,18 +10,17 @@
 .equ LEDS_IN    = PINB
 .equ SWITCHES_IN= PINA
 
-;Register usage - Inside ISRs
+; Register usage - Inside ISRs
 .def rsreg  = r16
 .def itemp0 = r17
 .def itemp1 = r18
 .def itemp2 = r19
 
-;Register usage - Inside main thread
+; Register usage - Inside main thread
 .def temp0  = r20
 .def temp1  = r21
 .def temp2  = r22
 
-.def lineCount  = r3
 .def mVar0 = r3
 .def mVar1 = r2
 .def mVar2 = r1
@@ -42,26 +41,26 @@
 === Reset - Initializations ===
 ================================================================*/
 Reset:
-	;Init Stack Pointer
+	; Init Stack Pointer
 	ldi  r16,low(RAMEND)
 	out  SPL,r16
 	ldi  r16,high(RAMEND)
 	out  SPH,r16
 
-	;Configure PORTB as output  (LEDs are connected to this port)
-	;All bits have logic zero output
+	; Configure PORTB as output  (LEDs are connected to this port)
+	; All bits have logic zero output
 	ldi  r16,0b11111111
 	out  PORTB,r16
 	ldi  r16,0b11111111	// All bits are set to OUTPUT
 	out  DDRB,r16
 
-	;Configure PORTA as input (Switches are connected to this port)
+	; Configure PORTA as input (Switches are connected to this port)
 	ldi  r16,0b11111111
 	out  PORTA,r16
 	ldi  r16,0b00000000
 	out  DDRA,r16
 
-	/*Procceed to the application*/
+	; Procceed to the application
 	jmp main
  
 /*==============================================================
@@ -81,7 +80,7 @@ main:
     call TKN_init
     call Enable_PcInt7
 
-    ;Fill the data packet.
+    ; Fill the data packet.
     ldi ZL, LOW(msg_str<<1)
     ldi ZH, HIGH(msg_str<<1)
 
@@ -96,109 +95,79 @@ fillPacketLoop:
     dec temp1;
     brne fillPacketLoop
 
-    ;Move Interrupts in boot section
+    ; Move Interrupts in boot section
     call Move_interrupts_BootSec
 
-    ;Init local variables.
-    clr lineCount
+    ; Init local variables.
+    clr mvar0
+	clr mvar1
+	clr mvar2
+	clr mvar3
+
     ldi YL,LOW(hexLine)
     ldi YH,HIGH(hexLine)
 
-    ;Enable Interrupts.
+    ; Enable Interrupts.
     sei
     
-    ;Poll for incoming packets
-	clr mVar0
-	clr mVar1
-	clr mVar2
-	clr mVar3
-recv_loop:
+	; MAIN LOOP START
+main_loop:
 	call TKN_popPacket
 	and temp0, temp0
-	brne packetReceived
-    
-	inc mVar0
-	in temp1, SREG
-	sbrs temp1, SREG_Z
-	rjmp recv_loop
-	
-	inc mVar1
-	in temp1, SREG
-	sbrs temp1, SREG_Z
-	rjmp recv_loop
+	brne packet_received
+	rjmp main_loop
+packet_received:
 
-	inc mVar2
-	in temp1, SREG
-	sbrs temp1, SREG_Z
-	rjmp recv_loop
-
-	inc mVar3
-	rjmp recv_loop
-
-
-packetReceived:	
-	std Y+0, mVar0
-	std Y+1, mVar1
-	std Y+2, mVar2
-	std Y+3, mVar3
-
-push_loop3:
+	; Send the new packet back.
+	push temp0
+	push_loop1:
 	call TKN_pushPacket
 	and temp0, temp0
-	brne push_loop3
-	clr mVar0
-	clr mVar1
-	clr mVar2
-	clr mVar3
-	rjmp recv_loop // DEBUG
+	brne push_loop1
+	pop temp0
 
-	;Send the new packet back.
-	;push temp0
-	;push_loop1:
-	;call TKN_pushPacket
-	;and temp0, temp0
-	;brne push_loop1
-	;pop temp0
-
-	;Detect '\n' or '\0' in the last character of the packet
-	ldd temp1, Y + TKN_PACKET_SIZE - 1
-	and temp1, temp1 ;detected zero byte
-	breq hexLine_complete
-	cpi temp1, '\n'
-	breq hexLine_complete ;detected new line
+;detect_newLine:
+	; Detect '\n' or '\0' in the last character of the packet
+	;ldd temp1, Y + TKN_PACKET_SIZE - 1
+	;and temp1, temp1 ;detected zero byte
+	;breq hexLine_complete
+	;cpi temp1, '\n'
+	;breq hexLine_complete ;detected new line
     
-    ;Increase the pointer to the hexline buffer
+    ; Increase the pointer to the hexline buffer
 	;ldi temp1, TKN_PACKET_SIZE
 	;add YL, temp1
 	;brcc notOverflow
 	;inc YH
 	;notOverflow:
-	;rjmp recv_loop
+	;rjmp main_loop
 
-hexLine_complete:
-	;HERE I should analyze the hex line ...
-	;Just delay for now... 
+;hexLine_complete:
+	; HERE I should analyze the hex line ...
+	; Just delay for now... 
 	;ldi temp1, 20
 	;procDelay:
 	;call delay
 	;dec temp1
 	;brne procDelay
 
-	;Send the ready singaling string
-	ldi YL,LOW(dataPacket)
-	ldi YH,HIGH(dataPacket)
-push_loop2:
-	call TKN_pushPacket
-	and temp0, temp0
-	brne push_loop2
+	; Send the ready singaling string
+	;ldi YL,LOW(dataPacket)
+	;ldi YH,HIGH(dataPacket)
+;push_loop2:
+	;call TKN_pushPacket
+	;and temp0, temp0
+	;brne push_loop2
 
-	inc lineCount
-	mov temp0, lineCount
-	call setLeds1
+	;inc lineCount
+	;mov temp0, lineCount
+	;call setLeds1
 
-	ldi YL,LOW(hexLine)
-	ldi YH,HIGH(hexLine)
-	rjmp recv_loop
+	;ldi YL,LOW(hexLine)
+	;ldi YH,HIGH(hexLine)
+	
+	; MAIN LOOP END
+	rjmp main_loop
 
 
 /*==============================================================
@@ -256,8 +225,8 @@ PCI0_ISR:
 	push YH
 
 	;Copy the data to the Transmission buffer
-	ldi YH,HIGH(dataPacket) ; void* data_ptr
-	ldi YL,LOW(dataPacket)  ;
+	ldi YH,HIGH(dataPacket)
+	ldi YL,LOW(dataPacket)
 	ldi temp0, 1			; HardCode the receiver
 	call TKN_pushPacket
 	

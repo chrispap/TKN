@@ -25,6 +25,7 @@ TKN_NodeBox::TKN_NodeBox(QWidget *parent, int id) :
 
     /* Signal connections */
     connect(this, SIGNAL(dataReceived()), this, SLOT(on_dataReceived()));
+    connect(this, SIGNAL(consoleOut(QString)),parentWidget(), SLOT(consoleOut(QString)), Qt::QueuedConnection);
 
 }
 
@@ -35,23 +36,22 @@ TKN_NodeBox::~TKN_NodeBox()
 
 void TKN_NodeBox::dataReceive(TKN_Data *data)
 {
-    int x = *((int *) data);
-    ui->textEditConsole->append(QString::number(x));
+    receivedDataEcho(data);
 
-//    consoleOut(data);
     dataQueueMutex.lock();
     dataQueue.enqueue(*data);
     dataQueueMutex.unlock();
     dataQueueSem.release();
+
     emit dataReceived();
 }
 
 void TKN_NodeBox::on_dataReceived()
 {
-    //...
+    // No action yet
 }
 
-void TKN_NodeBox::consoleOut(TKN_Data *data)
+void TKN_NodeBox::receivedDataEcho(TKN_Data *data)
 {
     ui->textEditConsole->append(QByteArray((char*)data, sizeof(TKN_Data)));
 }
@@ -84,24 +84,12 @@ void TKN_NodeBox::sendFile()
 
     /* Do the job */
     int packC=0;
-    int r;
-    TKN_Data recData;
-    QString recString;
 
     do {
         while (TKN_PushData ((TKN_Data *) "__From Laptop__", node_id));
-
-        do {
-            dataQueueSem.acquire();
-            dataQueueMutex.lock();
-            recData = dataQueue.dequeue();
-            dataQueueMutex.unlock();
-            recString = QString(QByteArray((char*)&recData, sizeof(TKN_Data)));
-
-        } while ( !QString::compare(QString("-MCU-READY------"), recString));
-
         packC++;
     } while (packC<10);
 
-    qDebug() << "File Sent.";
+    qDebug() << "File Sent";
+    emit consoleOut("File sent");
 }

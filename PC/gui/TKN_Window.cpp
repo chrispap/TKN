@@ -12,11 +12,11 @@
 #include "lib/TKN.h"
 #include "lib/TKN_Util.h"
 
+TKN_Window* TKN_Window::self;
 const QString TKN_Window::buttonStartText = QString("TKN Start");
 const QString TKN_Window::buttonStopText = QString("TKN Stop");
 const QString TKN_Window::baudList[] = { "57600", "9600", "38400", "115200" };
 
-TKN_Window* TKN_Window::self;
 
 TKN_Window::TKN_Window(QWidget *parent) :
     QMainWindow(parent),
@@ -54,9 +54,10 @@ TKN_Window::~TKN_Window()
     delete ui;
 }
 
+
 void TKN_Window::tokenReceivedCallback()
 {
-    static const int tknInv=150;
+    static const int tknInv=50;
     self->mTknCounter++;
 
     /* Every tknInv tokens show the rate
@@ -77,19 +78,17 @@ void TKN_Window::dataReceivedCallback()
 
 void TKN_Window::dataReceive()
 {
-    //qDebug() << "Line: " << __LINE__ << " - " << QThread::currentThreadId();
-
     TKN_Data recData;
     BYTE sender;
 
     if ((sender=TKN_PopData(&recData))) {
         if (nodeMap.contains((int)sender)) {
             nodeMap[(int)(sender)]->dataReceive(&recData);
-
         }
     }
 
 }
+
 
 void TKN_Window::on_buttonStartStop_clicked()
 {

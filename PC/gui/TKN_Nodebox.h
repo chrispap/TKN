@@ -27,21 +27,20 @@ public slots:
 
 signals:
     void dataReceived();
+    void consoleOut(QString msg);
 
 private slots:
     void on_buttonSend_clicked();
     void on_buttonSendFile_clicked();
     void on_dataReceived();
-    void consoleOut(TKN_Data *data);
+    void receivedDataEcho(TKN_Data *data);
 
 private:
     Ui::TKN_NodeBox *ui;
-
     int node_id;
     QQueue<TKN_Data>dataQueue;
     QMutex dataQueueMutex;
     QSemaphore dataQueueSem;
-
     void sendFile();
 };
 

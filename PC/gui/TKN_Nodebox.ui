@@ -117,5 +117,21 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>lineEdit_DataToSend</sender>
+   <signal>returnPressed()</signal>
+   <receiver>buttonSend</receiver>
+   <slot>click()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>99</x>
+     <y>32</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>99</x>
+     <y>60</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
 </ui>
