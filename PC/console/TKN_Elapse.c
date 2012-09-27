@@ -43,18 +43,14 @@ int main (int argc, char *argv[])
         } while (packC<10); //(time (NULL) - time_start) < SECONDS_TO_RUN);
         
         sleep(1);
-        printf("\n>> RESULTS \n");
-        long int s=0;
+        printf("\n>> Receive back \n");
+
         int i;
         for (i=0; i<packC; i++) {
             TKN_Data recData;
             while (TKN_PopData(&recData) < 0 );
-            printf(">> Size: %d \n", *((int *) &recData));
-            if (i>0)
-                s += *((int *) &recData);
         }
         
-        printf(">> Average: %ld \n", s/(packC-1));
     }
     else  // Send nothing
     {

@@ -22,7 +22,7 @@
 .def loophi   = r25
 
 .equ PAGESIZEB = PAGESIZE*2 ;PAGESIZEB is page size in BYTES, not words
-.org SMALLBOOTSTART
+;;;.org SMALLBOOTSTART
 
 BL_Write_page:
 	; Page Erase

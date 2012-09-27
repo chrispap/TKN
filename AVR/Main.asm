@@ -68,46 +68,31 @@ Reset:
 ================================================================*/
 .dseg
 dataPacket: .byte TKN_PACKET_SIZE
-.org $300
-hexLine:    .byte $FF
 
 .cseg
-msg_str:
-.db "-MCU-READY------"
+msg_str:	.db "-MCU-READY------"
+sign_str:	.db "-Signature------"
+err_str:	.db "-Uknown command-"
+int_str:	.db "-PC Int 7-------"
+boot_str:	.db "-Boot-----------"
+user_str:	.db "-Goto User------"
 
 main:
     call ledInit
     call TKN_init
     call Enable_PcInt7
 
-    ; Fill the data packet.
-    ldi ZL, LOW(msg_str<<1)
-    ldi ZH, HIGH(msg_str<<1)
-
-    ldi YL,LOW(dataPacket)
-    ldi YH,HIGH(dataPacket)
-
-    ldi temp1, TKN_PACKET_SIZE
-    
-fillPacketLoop:
-    lpm temp0, Z+
-    st Y+, temp0
-    dec temp1;
-    brne fillPacketLoop
-
-    ; Move Interrupts in boot section
-    call Move_interrupts_BootSec
-
     ; Init local variables.
     clr mvar0
 	clr mvar1
 	clr mvar2
 	clr mvar3
+    ldi YL,LOW(dataPacket)
+    ldi YH,HIGH(dataPacket)
 
-    ldi YL,LOW(hexLine)
-    ldi YH,HIGH(hexLine)
-
-    ; Enable Interrupts.
+    ; Move Interrupts in boot section...
+	; ...and enable them
+    call Move_interrupts_BootSec
     sei
     
 	; MAIN LOOP START
@@ -118,57 +103,101 @@ main_loop:
 	rjmp main_loop
 packet_received:
 
-	; Send the new packet back.
-	push temp0
-	push_loop1:
+switch_command:
+	; Switch command depending on the first char,
+	; only if the second char is ':'
+	ldd temp1, Y+1
+	cpi temp1, ':'
+	brne push_loop
+	ld temp1, Y
+	cpi temp1, 'S'
+	breq send_signature
+	cpi temp1, 'B'
+	breq goto_boot
+	cpi temp1, 'U'
+	breq goto_user
+
+unknown_command:
+    ldi ZL, LOW(err_str<<1)
+    ldi ZH, HIGH(err_str<<1)
+	call fillPacketBuf
+	rjmp push_loop
+	
+send_signature:
+    ;ldi ZL, LOW(sign_str<<1)
+    ;ldi ZH, HIGH(sign_str<<1)
+	;call fillPacketBuf
+	
+	ldi ZL, LOW(0x0000)
+	ldi ZH, HIGH(0x0000)
+	ldi temp0, (1<<SPMEN) | (1<<SIGRD)
+	out SPMCSR, temp0
+	lpm mvar1, Z
+	inc ZL
+	inc ZL
+	ldi temp0, (1<<SPMEN) | (1<<SIGRD)
+	out SPMCSR, temp0
+	lpm mvar2, Z
+	inc ZL
+	inc ZL
+	ldi temp0, (1<<SPMEN) | (1<<SIGRD)
+	out SPMCSR, temp0
+	lpm mvar3, Z
+	
+	std Y+2, mvar1
+	std Y+3, mvar2
+	std Y+4, mvar3
+	rjmp push_loop
+
+goto_boot:
+    ldi ZL, LOW(boot_str<<1)
+    ldi ZH, HIGH(boot_str<<1)
+	call fillPacketBuf
+	rjmp push_loop
+
+goto_user:
+    ldi ZL, LOW(user_str<<1)
+    ldi ZH, HIGH(user_str<<1)
+	call fillPacketBuf
+	rjmp push_loop
+
+push_loop:
 	call TKN_pushPacket
 	and temp0, temp0
-	brne push_loop1
-	pop temp0
+	brne push_loop
 
-;detect_newLine:
-	; Detect '\n' or '\0' in the last character of the packet
-	;ldd temp1, Y + TKN_PACKET_SIZE - 1
-	;and temp1, temp1 ;detected zero byte
-	;breq hexLine_complete
-	;cpi temp1, '\n'
-	;breq hexLine_complete ;detected new line
-    
-    ; Increase the pointer to the hexline buffer
-	;ldi temp1, TKN_PACKET_SIZE
-	;add YL, temp1
-	;brcc notOverflow
-	;inc YH
-	;notOverflow:
-	;rjmp main_loop
-
-;hexLine_complete:
-	; HERE I should analyze the hex line ...
-	; Just delay for now... 
-	;ldi temp1, 20
-	;procDelay:
-	;call delay
-	;dec temp1
-	;brne procDelay
-
-	; Send the ready singaling string
-	;ldi YL,LOW(dataPacket)
-	;ldi YH,HIGH(dataPacket)
-;push_loop2:
-	;call TKN_pushPacket
-	;and temp0, temp0
-	;brne push_loop2
-
-	;inc lineCount
-	;mov temp0, lineCount
-	;call setLeds1
-
-	;ldi YL,LOW(hexLine)
-	;ldi YH,HIGH(hexLine)
-	
-	; MAIN LOOP END
+main_loop_continue:
+	inc mvar0
+	mov temp0, mvar0
+	call setLeds1
 	rjmp main_loop
+	; MAIN LOOP END
 
+/*==============================================================
+=== fillPacketBuf ===
+================================================================*/
+fillPacketBuf:
+	push temp0
+	push temp1
+	push YL
+	push YH
+	push ZL
+	push ZH
+
+    ldi temp1, TKN_PACKET_SIZE
+fillPacketBufLoop:
+    lpm temp0, Z+
+    st Y+, temp0
+    dec temp1;
+    brne fillPacketBufLoop
+
+	pop ZH
+	pop ZL
+	pop YH
+	pop YL
+	pop temp1
+	pop temp0
+	ret
 
 /*==============================================================
 === Interrupts ===
@@ -223,14 +252,22 @@ PCI0_ISR:
 	mov itemp2, temp2
 	push YL
 	push YH
+	push ZL
+	push ZH
 
 	;Copy the data to the Transmission buffer
 	ldi YH,HIGH(dataPacket)
 	ldi YL,LOW(dataPacket)
-	ldi temp0, 1			; HardCode the receiver
+	ldi ZL, LOW(int_str<<1)
+    ldi ZH, HIGH(int_str<<1)
+	call fillPacketBuf
+
+	ldi temp0, 1 ; HardCode the receiver
 	call TKN_pushPacket
 	
 	;Restore SREG and main thread's temp registers
+	pop ZH
+	pop ZL
 	pop YH
 	pop YL
 	mov temp2, itemp2
@@ -239,3 +276,28 @@ PCI0_ISR:
 	out SREG, rsreg
 
 	reti
+
+
+;;; PROXEIRO ;;;
+
+;detect_newLine:
+	; Detect '\n' or '\0' in the last character of the packet
+	;ldd temp1, Y + TKN_PACKET_SIZE - 1
+	;and temp1, temp1 ;detected zero byte
+	;breq hexLine_complete
+	;cpi temp1, '\n'
+	;breq hexLine_complete ;detected new line
+    
+;inc_Buffer:
+    ; Increase the pointer to the hexline buffer
+	;ldi temp1, TKN_PACKET_SIZE
+	;add YL, temp1
+	;brcc notOverflow
+	;inc YH
+	;notOverflow:
+	;rjmp main_loop
+
+;hexLine_complete:
+	; Send the ready singaling string
+	;ldi YL,LOW(dataPacket)
+	;ldi YH,HIGH(dataPacket)
