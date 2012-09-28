@@ -146,6 +146,8 @@ void TKN_Window::startTkn()
     if (TKN_Start())
         return;
 
+    TKN_PrintCols();
+
     mTknCounter = 0;
     mTime->start();
     this->mTknStarted = true;

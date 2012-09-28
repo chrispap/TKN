@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>318</width>
-    <height>642</height>
+    <height>519</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -72,13 +72,13 @@ QTextEdit {
       <property name="minimumSize">
        <size>
         <width>300</width>
-        <height>600</height>
+        <height>480</height>
        </size>
       </property>
       <property name="maximumSize">
        <size>
         <width>300</width>
-        <height>600</height>
+        <height>480</height>
        </size>
       </property>
       <property name="title">
@@ -189,7 +189,7 @@ QTextEdit {
      <x>0</x>
      <y>0</y>
      <width>318</width>
-     <height>24</height>
+     <height>21</height>
     </rect>
    </property>
    <property name="defaultUp">

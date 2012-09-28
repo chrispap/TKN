@@ -4,7 +4,10 @@ HEADERS += \
     lib/TKN.h \
     lib/rs232.h \
     gui/TKN_Window.h \
-    gui/TKN_Nodebox.h
+    gui/TKN_Nodebox.h \
+    lib/HEXParser.hpp \
+    lib/Utility.hpp \
+    lib/ErrorMsg.hpp
 
 SOURCES += \
     gui/main.cpp \
@@ -14,7 +17,10 @@ SOURCES += \
     lib/rs232.c \
     lib/ListSerial.c \
     gui/TKN_Window.cpp \
-    gui/TKN_Nodebox.cpp
+    gui/TKN_Nodebox.cpp \
+    lib/HEXParser.cpp \
+    lib/Utility.cpp \
+    lib/ErrorMsg.cpp
 
 FORMS += \
     gui/TKN_Window.ui \

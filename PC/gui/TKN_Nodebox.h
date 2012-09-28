@@ -20,7 +20,7 @@ class TKN_NodeBox : public QGroupBox
 public:
     explicit TKN_NodeBox(QWidget *parent, int id);
     ~TKN_NodeBox();
-    int getNode_id(){return node_id;}
+    int getNode_id(){return NODE_ID;}
 
 public slots:
     void dataReceive(TKN_Data*);
@@ -31,17 +31,23 @@ signals:
 
 private slots:
     void on_buttonSend_clicked();
-    void on_buttonSendFile_clicked();
-    void on_dataReceived();
+    void on_buttonHexUpload_clicked();
+    //void on_dataReceived();
+    void on_buttonBrowseHex_clicked();
     void receivedDataEcho(TKN_Data *data);
 
 private:
     Ui::TKN_NodeBox *ui;
-    int node_id;
     QQueue<TKN_Data>dataQueue;
     QMutex dataQueueMutex;
     QSemaphore dataQueueSem;
-    void sendFile();
+
+    int PAGESIZE;
+    int NODE_ID;
+
+    void flushRecDataQueue();
+    void dataDeque(TKN_Data *data);
+    void hexUpload();
 };
 
 #endif // TKN_NODEBOX_H

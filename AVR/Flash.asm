@@ -9,7 +9,7 @@
 ===   be read during Self-Programming (Page Erase and Page Write).
 === 
 === - registers used: 
-===       r0, r1, temp1 (r16), temp2 (r17), looplo (r24), loophi (r25), spmcrval (r20)
+===       r0, r1, temp1, temp2, looplo (r24), loophi (r25), spmcrval (r20)
 === 
 === - storing and restoring of registers is not included in the routine
 ===   register usage can be optimized at the expense of code size
@@ -25,6 +25,12 @@
 ;;;.org SMALLBOOTSTART
 
 BL_Write_page:
+	push r0
+	push r1
+	push looplo
+	push loophi
+	push spmcrval
+
 	; Page Erase
 	ldi spmcrval, (1<<PGERS) | (1<<SPMEN)
 	call BL_Do_spm
@@ -70,8 +76,18 @@ BL_Return:
 	; BL_Return to RWW section
 	; verify that RWW section is safe to read
 	in temp1, SPMCSR
-	sbrs temp1, RWWSB ; If RWWSB is set, the RWW section is not ready yet
+	sbrc temp1, RWWSB ; If RWWSB is set, the RWW section is not ready yet
+	rjmp BL_reenable
+	pop spmcrval
+	pop loophi
+	pop looplo
+	pop r1
+	pop r0
+
+	;call blinkLeds
 	ret
+
+BL_reenable:
 	; re-enable the RWW section
 	ldi spmcrval, (1<<RWWSRE) | (1<<SPMEN)
 	call BL_Do_spm

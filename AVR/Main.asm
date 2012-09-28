@@ -21,10 +21,13 @@
 .def temp1  = r21
 .def temp2  = r22
 
-.def mVar0 = r3
-.def mVar1 = r2
-.def mVar2 = r1
-.def mVar3 = r0
+.def mVar0 = r0 ;unused
+.def mVar1 = r1 ;unused
+.def mVar2 = r2 ;unused
+.def mVar3 = r3 ;unused
+.def mVar4 = r23 ;unused
+.def pageCount = r24
+.def wordCount = r25
 
 
 /*==============================================================
@@ -67,26 +70,39 @@ Reset:
 === Main ===
 ================================================================*/
 .dseg
+pageBuff:	.byte (PAGESIZE*2)
 dataPacket: .byte TKN_PACKET_SIZE
 
 .cseg
-msg_str:	.db "-MCU-READY------"
-sign_str:	.db "-Signature------"
-err_str:	.db "-Uknown command-"
+msg_str:	.db "-AVR-TKNboot----"
+err_str:	.db "-Error----------"
 int_str:	.db "-PC Int 7-------"
-boot_str:	.db "-Boot-----------"
+ready_str:	.db "-MCU-READY------"
 user_str:	.db "-Goto User------"
 
 main:
     call ledInit
     call TKN_init
     call Enable_PcInt7
+	//
+	ldi YL, LOW(pageBuff)
+	ldi YH, HIGH(pageBuff)
+	ldi temp0, PAGESIZE
+	ldi temp1, $AA
+	ldi temp2, $BB
+fillPageLoop:
+	st Y+, temp1
+	st Y+, temp2
+	dec temp0
+	brne fillPageLoop
 
+	//
     ; Init local variables.
     clr mvar0
 	clr mvar1
 	clr mvar2
 	clr mvar3
+	clr wordCount
     ldi YL,LOW(dataPacket)
     ldi YH,HIGH(dataPacket)
 
@@ -113,21 +129,29 @@ switch_command:
 	cpi temp1, 'S'
 	breq send_signature
 	cpi temp1, 'B'
-	breq goto_boot
+	breq do_boot
 	cpi temp1, 'U'
-	breq goto_user
+	breq do_user
 
-unknown_command:
-    ldi ZL, LOW(err_str<<1)
-    ldi ZH, HIGH(err_str<<1)
-	call fillPacketBuf
+	; unknown_command:
+    ldi temp1, '?'
+    std Y+0, temp1
+	clr temp1
+	std Y+1, temp1
 	rjmp push_loop
 	
+	push_loop:
+	call TKN_pushPacket
+	and temp0, temp0
+	brne push_loop
+main_loop_continue:
+	inc mvar0
+	mov temp0, mvar0
+	call setLeds1
+	rjmp main_loop
+	; MAIN LOOP END
+
 send_signature:
-    ;ldi ZL, LOW(sign_str<<1)
-    ;ldi ZH, HIGH(sign_str<<1)
-	;call fillPacketBuf
-	
 	ldi ZL, LOW(0x0000)
 	ldi ZH, HIGH(0x0000)
 	ldi temp0, (1<<SPMEN) | (1<<SIGRD)
@@ -143,35 +167,57 @@ send_signature:
 	ldi temp0, (1<<SPMEN) | (1<<SIGRD)
 	out SPMCSR, temp0
 	lpm mvar3, Z
-	
 	std Y+2, mvar1
 	std Y+3, mvar2
 	std Y+4, mvar3
 	rjmp push_loop
 
-goto_boot:
-    ldi ZL, LOW(boot_str<<1)
-    ldi ZH, HIGH(boot_str<<1)
-	call fillPacketBuf
-	rjmp push_loop
+do_user:
+	;cli
+	jmp 0x0000 // <-- Goto User Section !!!
 
-goto_user:
-    ldi ZL, LOW(user_str<<1)
-    ldi ZH, HIGH(user_str<<1)
-	call fillPacketBuf
-	rjmp push_loop
+    ;ldi ZL, LOW(user_str<<1)
+    ;ldi ZH, HIGH(user_str<<1)
+	;call fillPacketBuf
+	;rjmp push_loop
 
-push_loop:
-	call TKN_pushPacket
+do_boot:
+	clr wordCount
+	ldd pageCount, Y+3
+	ldi ZL, LOW(ready_str<<1)
+	ldi ZH, HIGH(ready_str<<1)
+	call fillPacketBuf
+	call TKN_PushPacket
+	ldi ZL, LOW(pageBuff)
+	ldi ZH, HIGH(pageBuff)
+hexPacket_loop:
+	call TKN_popPacket
 	and temp0, temp0
-	brne push_loop
+	brne hexPacket_received
+	rjmp hexPacket_loop
+hexPacket_received:
+	ldi temp1, TKN_PACKET_SIZE
+hexPacket_store:
+	ld temp2, Y+
+	st Z+, temp2
+	dec temp1
+	brne hexPacket_store
+	ldi YL,LOW(dataPacket)
+    ldi YH,HIGH(dataPacket)
+	ldi temp1, TKN_PACKET_SIZE/2
+	add wordCount, temp1
+	cpi wordCount, PAGESIZE
+	brne hexPacket_loop
+hexPage_received:
+	ldi YL, LOW(pageBuff)
+	ldi YH, HIGH(pageBuff)
+	clr ZL
+	mov ZH, pageCount
+	call BL_Write_page
+	ldi YL, LOW(dataPacket)
+    ldi YH, HIGH(dataPacket)
+	rjmp main_loop_continue
 
-main_loop_continue:
-	inc mvar0
-	mov temp0, mvar0
-	call setLeds1
-	rjmp main_loop
-	; MAIN LOOP END
 
 /*==============================================================
 === fillPacketBuf ===
