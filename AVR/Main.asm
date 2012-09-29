@@ -3,36 +3,36 @@
 .include "m644PAdef.inc"
 
 /*==============================================================
-=== Register definitions ===
-=== Constant definitions ===
+=== - Register definitions
+=== - Constant definitions
 ================================================================*/
 .equ LEDS_OUT   = PORTB
 .equ LEDS_IN    = PINB
 .equ SWITCHES_IN= PINA
 
-; Register usage - Inside ISRs
-.def rsreg  = r16
-.def itemp0 = r17
-.def itemp1 = r18
-.def itemp2 = r19
+; Register used for store-restore inside ISRs
+.def itemp0 = r12
+.def itemp1 = r13
+.def itemp2 = r14
+.def rsreg  = r15
 
-; Register usage - Inside main thread
-.def temp0  = r20
-.def temp1  = r21
-.def temp2  = r22
+; Working registers
+.def temp0  = r16
+.def temp1  = r17
+.def temp2  = r18
 
-.def mVar0 = r0 ;unused
-.def mVar1 = r1 ;unused
-.def mVar2 = r2 ;unused
-.def mVar3 = r3 ;unused
-.def mVar4 = r23 ;unused
-.def pageCount = r24
-.def wordCount = r25
-
+; r19 - r25 are available for the main program.
+.def pageCount = r19
+.def wordCount = r20
+.def var0	   = r21
+.def var1	   = r22
+.def var2	   = r23
+.def var3	   = r24
+.def var4	   = r25
 
 /*==============================================================
-=== inclusion of Source Files === 
-=== Vectors.asm should be included first of ALL !!!
+=== - Inclusion of Source Files
+=== - Vectors.asm should be included *first*
 ================================================================*/
 .include "Vectors.asm"
 .include "TKN.asm"
@@ -41,7 +41,8 @@
 .include "Flash.asm"
 
 /*==============================================================
-=== Reset - Initializations ===
+=== - Reset 
+=== - Initializations
 ================================================================*/
 Reset:
 	; Init Stack Pointer
@@ -54,7 +55,7 @@ Reset:
 	; All bits have logic zero output
 	ldi  r16,0b11111111
 	out  PORTB,r16
-	ldi  r16,0b11111111	// All bits are set to OUTPUT
+	ldi  r16,0b11111111	; All bits are set to OUTPUT
 	out  DDRB,r16
 
 	; Configure PORTA as input (Switches are connected to this port)
@@ -67,24 +68,23 @@ Reset:
 	jmp main
  
 /*==============================================================
-=== Main ===
+=== - Main ===
 ================================================================*/
 .dseg
 pageBuff:	.byte (PAGESIZE*2)
-dataPacket: .byte TKN_PACKET_SIZE
+packetBuff:	.byte TKN_PACKET_SIZE
 
 .cseg
-msg_str:	.db "-AVR-TKNboot----"
-err_str:	.db "-Error----------"
-int_str:	.db "-PC Int 7-------"
-ready_str:	.db "-MCU-READY------"
-user_str:	.db "-Goto User------"
+ver_str:	.db "AVR TKN BOOT v0 "
+err_str:	.db "Error           "
+int_str:	.db "Interrupt fired "
+rdy_str:	.db "-MCU-READY------"
 
 main:
     call ledInit
     call TKN_init
     call Enable_PcInt7
-	//
+
 	ldi YL, LOW(pageBuff)
 	ldi YH, HIGH(pageBuff)
 	ldi temp0, PAGESIZE
@@ -96,15 +96,14 @@ fillPageLoop:
 	dec temp0
 	brne fillPageLoop
 
-	//
     ; Init local variables.
-    clr mvar0
-	clr mvar1
-	clr mvar2
-	clr mvar3
+    clr var0
+	clr var1
+	clr var2
+	clr var3
 	clr wordCount
-    ldi YL,LOW(dataPacket)
-    ldi YH,HIGH(dataPacket)
+    ldi YL,LOW(packetBuff)
+    ldi YH,HIGH(packetBuff)
 
     ; Move Interrupts in boot section...
 	; ...and enable them
@@ -126,14 +125,21 @@ switch_command:
 	cpi temp1, ':'
 	brne push_loop
 	ld temp1, Y
+
 	cpi temp1, 'S'
 	breq send_signature
+
+	cpi temp1, 'R'
+	breq run_user
+
+	cpi temp1, 'V'
+	breq send_version
+
 	cpi temp1, 'B'
 	breq do_boot
-	cpi temp1, 'U'
-	breq do_user
 
-	; unknown_command:
+	; Default
+	; Uknown_command:
     ldi temp1, '?'
     std Y+0, temp1
 	clr temp1
@@ -145,34 +151,43 @@ switch_command:
 	and temp0, temp0
 	brne push_loop
 main_loop_continue:
-	inc mvar0
-	mov temp0, mvar0
-	call setLeds1
 	rjmp main_loop
 	; MAIN LOOP END
 
 send_signature:
-	ldi ZL, LOW(0x0000)
-	ldi ZH, HIGH(0x0000)
-	ldi temp0, (1<<SPMEN) | (1<<SIGRD)
-	out SPMCSR, temp0
-	lpm mvar1, Z
-	inc ZL
-	inc ZL
-	ldi temp0, (1<<SPMEN) | (1<<SIGRD)
-	out SPMCSR, temp0
-	lpm mvar2, Z
-	inc ZL
-	inc ZL
-	ldi temp0, (1<<SPMEN) | (1<<SIGRD)
-	out SPMCSR, temp0
-	lpm mvar3, Z
-	std Y+2, mvar1
-	std Y+3, mvar2
-	std Y+4, mvar3
+	clr ZL
+	clr ZH
+	ldi temp2, 2
+	ldi temp1, (1<<SPMEN) | (1<<SIGRD)
+	out SPMCSR, temp1
+	lpm var1, Z
+	add ZL, temp2
+	out SPMCSR, temp1
+	lpm var2, Z
+	add ZL, temp2
+	out SPMCSR, temp1
+	lpm var3, Z
+	
+	clr temp1
+	mov ZL, YL
+	mov ZH, YH
+
+	mov temp2, var1
+	call Bin2ToHex4
+	mov temp2, var2
+	call Bin2ToHex4
+	mov temp2, var3
+	call Bin2ToHex4
+	
 	rjmp push_loop
 
-do_user:
+send_version:
+	ldi ZL, LOW(ver_str<<1)
+	ldi ZH, HIGH(ver_str<<1)
+	call fillPacketBuf
+	rjmp push_loop
+
+run_user:
 	;cli
 	jmp 0x0000 // <-- Goto User Section !!!
 
@@ -184,12 +199,12 @@ do_user:
 do_boot:
 	clr wordCount
 	ldd pageCount, Y+3
-	ldi ZL, LOW(ready_str<<1)
-	ldi ZH, HIGH(ready_str<<1)
+	ldi ZL, LOW(rdy_str<<1)
+	ldi ZH, HIGH(rdy_str<<1)
 	call fillPacketBuf
 	call TKN_PushPacket
-	ldi ZL, LOW(pageBuff)
-	ldi ZH, HIGH(pageBuff)
+	ldi XL, LOW(pageBuff)
+	ldi XH, HIGH(pageBuff)
 hexPacket_loop:
 	call TKN_popPacket
 	and temp0, temp0
@@ -199,11 +214,11 @@ hexPacket_received:
 	ldi temp1, TKN_PACKET_SIZE
 hexPacket_store:
 	ld temp2, Y+
-	st Z+, temp2
+	st X+, temp2
 	dec temp1
 	brne hexPacket_store
-	ldi YL,LOW(dataPacket)
-    ldi YH,HIGH(dataPacket)
+	ldi YL,LOW(packetBuff)
+    ldi YH,HIGH(packetBuff)
 	ldi temp1, TKN_PACKET_SIZE/2
 	add wordCount, temp1
 	cpi wordCount, PAGESIZE
@@ -214,13 +229,16 @@ hexPage_received:
 	clr ZL
 	mov ZH, pageCount
 	call BL_Write_page
-	ldi YL, LOW(dataPacket)
-    ldi YH, HIGH(dataPacket)
+	inc var0
+	mov temp0, var0
+	call setLeds
+	ldi YL, LOW(packetBuff)
+    ldi YH, HIGH(packetBuff)
 	rjmp main_loop_continue
 
 
 /*==============================================================
-=== fillPacketBuf ===
+=== - FillPacketBuf ===
 ================================================================*/
 fillPacketBuf:
 	push temp0
@@ -246,8 +264,9 @@ fillPacketBufLoop:
 	ret
 
 /*==============================================================
-=== Interrupts ===
-=== (ISRs / Enable routines / move to BOOT_SEC / ...
+=== - Utility
+=== - ISRs
+=== - etc
 ================================================================*/
 Move_interrupts_BootSec:
 	; Get MCUCR
@@ -263,7 +282,7 @@ Move_interrupts_BootSec:
 	ret
 
 /*==============================================================
-=== Enable the PCINT7 (switch)
+=== - Enable the PCINT7 (switch)
 ================================================================*/
 Enable_PcInt7:
 	cbi EIMSK, INT0
@@ -285,9 +304,9 @@ Enable_PcInt7:
 	ret
 
 /*==============================================================
-=== Handle SWITCH 7 Pin Change Interrupt
-===   var+
-===   Transmit(var)
+=== - Handle SWITCH 7 Pin Change Interrupt
+===		var+
+===		Transmit(var)
 ================================================================*/
 
 PCI0_ISR:
@@ -302,8 +321,8 @@ PCI0_ISR:
 	push ZH
 
 	;Copy the data to the Transmission buffer
-	ldi YH,HIGH(dataPacket)
-	ldi YL,LOW(dataPacket)
+	ldi YH,HIGH(packetBuff)
+	ldi YL,LOW(packetBuff)
 	ldi ZL, LOW(int_str<<1)
     ldi ZH, HIGH(int_str<<1)
 	call fillPacketBuf
@@ -322,28 +341,3 @@ PCI0_ISR:
 	out SREG, rsreg
 
 	reti
-
-
-;;; PROXEIRO ;;;
-
-;detect_newLine:
-	; Detect '\n' or '\0' in the last character of the packet
-	;ldd temp1, Y + TKN_PACKET_SIZE - 1
-	;and temp1, temp1 ;detected zero byte
-	;breq hexLine_complete
-	;cpi temp1, '\n'
-	;breq hexLine_complete ;detected new line
-    
-;inc_Buffer:
-    ; Increase the pointer to the hexline buffer
-	;ldi temp1, TKN_PACKET_SIZE
-	;add YL, temp1
-	;brcc notOverflow
-	;inc YH
-	;notOverflow:
-	;rjmp main_loop
-
-;hexLine_complete:
-	; Send the ready singaling string
-	;ldi YL,LOW(dataPacket)
-	;ldi YH,HIGH(dataPacket)

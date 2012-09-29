@@ -95,24 +95,100 @@ Reset:
 	.equ SWITCHES_IN= PINA
 
 /*===============
-= Buffers in SRAM 
-=================*/
-
-.dseg
-.org SRAM_START
-dataLabel:
-	.byte 16	// Example: How to reserve 16 bytes to internal RAM
-	
-/*===============
 = Main
 =================*/
 .cseg
 
+.def temp0 = r2
+.def temp1 = r3
+.def temp2 = r23
+
+	ldi temp2, 20
+	in temp1, SWITCHES_IN
 main:
-	in r3, SWITCHES_IN
-	out LEDS_OUT, r3
-	jmp main
+	in temp0, SWITCHES_IN
+	out LEDS_OUT, temp0
+	cp temp1, temp0
+	breq main
+	mov temp1, temp0
+	dec temp2
+	brne main
 
-
+	jmp $7348
+	jmp $7348
+	jmp $7348
+	jmp $7348
+	jmp $7348
+	jmp $7348
+	jmp $7348
+	jmp $7348
+	jmp $7348
+	jmp $7348
+	jmp $7348
+	jmp $7348
+	jmp $7348
+	jmp $7348
+	jmp $7348
+	jmp $7348
+	jmp $7348
+	jmp $7348
+	jmp $7348
+	jmp $7348
+	jmp $7348
+	jmp $7348
+	jmp $7348
+	jmp $7348
+	jmp $7348
+	jmp $7348
+	jmp $7348
+	jmp $7348
+	jmp $7348
+	jmp $7348
+	jmp $7348
+	jmp $7348
+	jmp $7348
+	jmp $7348
+	jmp $7348
+	jmp $7348
+	jmp $7348
+	jmp $7348
+	jmp $7348
+	jmp $7348
+	jmp $7348
+	jmp $7348
+	jmp $7348
+	jmp $7348
+	jmp $7348
+	jmp $7348
+	jmp $7348
+	jmp $7348
+	jmp $7348
+	jmp $7348
+	jmp $7348
+	jmp $7348
+	jmp $7348
+	jmp $7348
+	jmp $7348
+	jmp $7348
+	jmp $7348
+	jmp $7348
+	jmp $7348
+	jmp $7348
+	jmp $7348
+	jmp $7348
+	jmp $7348
+	jmp $7348
+	jmp $7348
+	jmp $7348
+	jmp $7348
+	jmp $7348
+	jmp $7348
+	jmp $7348
+	jmp $7348
+	jmp $7348
+	jmp $7348
+	jmp $7348
+	jmp $7348
+	jmp $7348
 
 

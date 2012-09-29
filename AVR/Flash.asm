@@ -1,20 +1,17 @@
 /*==============================================================
-===This routine writes one page of data from RAM to Flash
+=== - This routine writes one page of data from RAM to Flash
 === 
-=== - the first data location in RAM is pointed to by the Y pointer
-===   the first data location in Flash is pointed to by the Z-pointer
-=== - error handling is not included
-=== - the routine must be placed inside the Boot space
-===   (at least the BL_Do_spm sub routine). Only code inside NRWW section can
-===   be read during Self-Programming (Page Erase and Page Write).
+=== @param Y: First data location in RAM
+=== @param Z: First data location in Flash
+===
+=== - Registers stored before used:
+===		r0, r1, r20, r24, r25
+===
+=== - Registers destroyed:
+===		temp1, temp2
 === 
-=== - registers used: 
-===       r0, r1, temp1, temp2, looplo (r24), loophi (r25), spmcrval (r20)
-=== 
-=== - storing and restoring of registers is not included in the routine
-===   register usage can be optimized at the expense of code size
-=== - It is assumed that either the interrupt table is moved to the Boot
-===   loader section or that the interrupts are disabled.
+=== - It is assumed that either the interrupt table is moved to
+===   the Boot section or that the interrupts are disabled.
 ================================================================*/
 
 .def spmcrval = r23
@@ -22,7 +19,6 @@
 .def loophi   = r25
 
 .equ PAGESIZEB = PAGESIZE*2 ;PAGESIZEB is page size in BYTES, not words
-;;;.org SMALLBOOTSTART
 
 BL_Write_page:
 	push r0
@@ -118,5 +114,5 @@ BL_Do_spm:
 	ret
 
 BL_Error:
-	// Should implement error handling
+	; Should implement error handling some day...
 	ret

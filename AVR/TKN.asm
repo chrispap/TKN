@@ -1,4 +1,4 @@
-/* Packet Byte offsets */
+;Packet Byte offsets
 .equ TKN_OFFS_HEADER    = 0
 .equ TKN_OFFS_TYPE      = 1
 .equ TKN_OFFS_RECEIVER  = 2
@@ -22,35 +22,38 @@
 .equ TKN_MODE_ACK       = $02
 .equ TKN_MODE_TOKEN     = $03
 
-/* Packet Sizes */
+;Packet Sizes
 .equ TKN_PACKET_SIZE     = 16
 .equ TKN_QUEUE_LEN       = 8
 .equ TKN_QUEUE_SIZE      = TKN_PACKET_SIZE * TKN_QUEUE_LEN
 .equ TKN_MAX_PACKET_SIZE = TKN_OFFS_DATA_EOF + 1
 
-/* Register usage */
-/* Transmitter */
-.def TKN_TX_QUEUE_INDEX_IN  = r15
-.def TKN_TX_QUEUE_INDEX_OUT = r14
-.def TKN_TX_PENDING         = r13
-.def TKN_TX_PACKET_ID       = r12
-.def TKN_TX_STATUS          = r11
-.def TKN_TX_BYTE            = r10
-
-/* Receiver */
-.def TKN_RX_QUEUE_INDEX_IN  = r9
+/*==============================================================
+=== - Register usage
+================================================================*/
+;Node
+.def TKN_ID					= r0
+;Transmitter
+.def TKN_TX_QUEUE_INDEX_IN  = r1
+.def TKN_TX_QUEUE_INDEX_OUT = r2
+.def TKN_TX_PENDING         = r3
+.def TKN_TX_PACKET_ID       = r4
+.def TKN_TX_STATUS          = r5
+.def TKN_TX_BYTE            = r6
+;Receiver
+.def TKN_RX_QUEUE_INDEX_IN  = r7
 .def TKN_RX_QUEUE_INDEX_OUT = r8
-.def TKN_RX_PENDING         = r7
-.def TKN_RX_BYTE            = r6
-.def TKN_RX_STATUS          = r5
+.def TKN_RX_PENDING         = r9
+.def TKN_RX_BYTE            = r10
+.def TKN_RX_STATUS          = r11
 
-/*Node*/
-.def TKN_ID = r4
-
+/*==============================================================
+=== - RAM Data
+===		The RX/TX Queues should be 0x80 aligned
+================================================================*/
 .dseg
 .org SRAM_START
 
-/* The RX/TX Queues should be 0x80 aligned */
 TKN_RX_QUEUE:
     .byte TKN_QUEUE_SIZE
 

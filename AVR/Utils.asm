@@ -144,5 +144,42 @@ EEPROM_read:
 	ret
 
 
-
-
+/*==============================================================
+=== - Bin2ToHex4
+===		Converts a 16-bit-binary to uppercase Hex-ASCII
+=== 
+=== - In: 16-bit-binary in temp1:temp2, Z points to first
+===		position of the four-character Hex-ASCII
+===
+===	- Out: Z points to the first digit of the four-character
+===		Hex-ASCII, ASCII digits A..F in capital letters
+=== 
+=== - Used registers: temp1:temp2 (unchanged), temp0 (unchanged)
+================================================================*/
+Bin2ToHex4:
+	push temp0
+	mov temp0, temp1 ; load MSB
+	rcall Bin1ToHex2 ; convert byte
+	mov temp0,temp2
+	rcall Bin1ToHex2
+	sbiw ZL,4 ; Set Z to start
+	pop temp0
+	ret
+;
+; Bin1ToHex2 converts an 8-bit-binary to uppercase hex
+; Called by: Bin2ToHex4
+;
+Bin1ToHex2:
+	push temp0 ; Save byte
+	swap temp0 ; upper to lower nibble
+	rcall Bin1ToHex1
+	pop temp0 ; Restore byte
+Bin1ToHex1:
+	andi temp0,$0F ; mask upper nibble
+	subi temp0,-'0' ; add 0 to convert to ASCII
+	cpi temp0,'9'+1 ; A..F?
+	brcs Bin1ToHex1a
+	subi temp0,-7 ; add 7 for A..F
+Bin1ToHex1a:
+	st z+,temp0 ; store in target
+	ret ; and return
