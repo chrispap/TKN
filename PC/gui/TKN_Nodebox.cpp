@@ -116,6 +116,7 @@ void TKN_NodeBox::hexUpload()
     /* Do the job */
     int page=0;
     int word=0;
+    int byteCount=0;
     long start, end, addr;
     TKN_Data recData;
     BYTE sendData[TKN_DATA_SIZE];
@@ -131,13 +132,15 @@ void TKN_NodeBox::hexUpload()
     start = h.getRangeStart();
     end   = h.getRangeEnd();
 
-    for (addr=start; addr<= end; ){
+    for (addr=start; addr<= end; ) {
         /* Initiate a boot procedure */
         memset(sendData, 0, TKN_DATA_SIZE);
         strcpy ((char*)sendData, "B:");
-        sendData[3] = (BYTE) (addr/(PAGESIZE*2));
+        sendData[3] = addr/(PAGESIZE*2);
 
-        while (TKN_PushData ((TKN_Data *) "B: ", NODE_ID));
+        emit consoleOut(QString("Page: ") + QString ('0'+sendData[3]));
+
+        while (TKN_PushData ((TKN_Data *) sendData, NODE_ID));
 
         /* Wait MCU */
         do {
@@ -145,24 +148,25 @@ void TKN_NodeBox::hexUpload()
             recString = QString(QByteArray((char*)&recData, sizeof(TKN_Data)));
         } while ( QString::compare(QString("-MCU-READY------"), recString));
 
+        qDebug() << "\n00-!!!-00\n";
+
         /* Send a complete page */
         do {
             /* Fill a TKN Packet */
             for (int i=0; i<sizeof(TKN_Data); i++){
                 sendData[i] = addr<=end? ((BYTE) h.getData(addr)): byteForEmpty;
+                byteCount++;
                 addr++;
             }
 
             /* Send it to tha MCU */
             while (TKN_PushData ((TKN_Data *) sendData, NODE_ID));
 
-        } while (addr<=end || (addr % (PAGESIZE*2)!=0) );
+        } while (addr<=end && (addr % (PAGESIZE*2)!=0) );
 
     }
 
-
-
-    QString msg("Hex uploaded");
+    QString msg = QString("Hex uploade complete. Sent ") + QString::number(byteCount) + QString(" bytes.");
     qDebug() << msg ;
     emit consoleOut(msg);
 }

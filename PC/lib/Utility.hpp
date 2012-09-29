@@ -21,6 +21,8 @@
 #ifndef UTILITY_HPP
 #define UTILITY_HPP
 
+#define NOREGISTRY
+
 using namespace std;
 
 #ifndef NOREGISTRY

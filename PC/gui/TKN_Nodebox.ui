@@ -105,7 +105,11 @@
     </widget>
    </item>
    <item row="5" column="0">
-    <widget class="QLineEdit" name="lineEditHexFilePath"/>
+    <widget class="QLineEdit" name="lineEditHexFilePath">
+     <property name="text">
+      <string>/home/chris/GitHub/TKN/PC/data/SimpleLed.hex</string>
+     </property>
+    </widget>
    </item>
    <item row="6" column="0">
     <widget class="QPushButton" name="buttonBrowseHex">

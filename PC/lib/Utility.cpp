@@ -22,9 +22,7 @@
 
 #include <iostream>
 #include <fstream>
-#include <stdlib.h>
-
-#define NOREGISTRY
+#include <QString>
 
 /* Global object */
 Utility Util;
@@ -96,12 +94,7 @@ long Utility::convertHex( const string & txt )
 
 string Utility::convertLong( long num, long radix )
 {
-	char buf[18];
-	string res;
-
-	itoa( num, buf, radix );
-	res = buf;
-	return res;
+    return QString::number(num, (int)radix).toStdString();
 }
 
 
