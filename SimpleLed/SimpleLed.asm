@@ -81,17 +81,34 @@ Reset:
 	.def temp0 = r16
 	.def temp1 = r17
 	.def temp2 = r18
+	
+	.equ TKN_PACKET_SIZE	= 16
+	.equ TKN_pushPacket		= $7053
+	.equ TKN_popPacket		= $707e
+	.equ fillPacketBuf		= $73e9
 
-	.equ TKN_pushPacket	= $7053
-	.equ TKN_popPacket	= $707e
+	jmp main
 
 /*===============
 = - Main
 =================*/
+.dseg
+.org $400
+packetBuff:	.byte TKN_PACKET_SIZE
+
 .cseg
+str:	.db "From user space!"
 
 main:
-	clr YL
-	clr YH
+	ldi YL, LOW(packetBuff)
+	ldi YH, HIGH(packetBuff)
+
+	ldi ZL, LOW(str<<1)
+	ldi ZH, HIGH(str<<1)
+
+	call fillPacketBuf
+
+	ldi temp0, 1
 	call TKN_pushPacket
 	ret
+
