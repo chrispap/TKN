@@ -82,22 +82,16 @@ Reset:
 	.def temp1 = r17
 	.def temp2 = r18
 
-	
+	.equ TKN_pushPacket	= $7053
+	.equ TKN_popPacket	= $707e
+
 /*===============
 = - Main
 =================*/
 .cseg
 
-	call blinkLeds
-	ldi temp2, 20
-	in temp1, SWITCHES_IN
 main:
-	in temp0, SWITCHES_IN
-	out LEDS_OUT, temp0
-	cp temp1, temp0
-	breq main
-	mov temp1, temp0
-	dec temp2
-	brne main
-
+	clr YL
+	clr YH
+	call TKN_pushPacket
 	ret

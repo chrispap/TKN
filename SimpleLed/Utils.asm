@@ -86,7 +86,7 @@ EEPROM_read:
 === - In: 16-bit-binary in temp1:temp2, Z points to first
 ===		position of the four-character Hex-ASCII
 ===
-===	- Out: Z points to the first digit of the four-character
+===	- Out: Z points after the last digit of the four-character
 ===		Hex-ASCII, ASCII digits A..F in capital letters
 === 
 === - Used registers: temp1:temp2 (unchanged), temp0 (unchanged)
@@ -97,7 +97,7 @@ Bin2ToHex4:
 	rcall Bin1ToHex2 ; convert byte
 	mov temp0,temp2
 	rcall Bin1ToHex2
-	sbiw ZL,4 ; Set Z to start
+	;sbiw ZL,4 ; Set Z to start
 	pop temp0
 	ret
 ;

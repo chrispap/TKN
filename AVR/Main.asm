@@ -157,30 +157,7 @@ main_loop_continue:
 	; MAIN LOOP END
 
 send_signature:
-	clr ZL
-	clr ZH
-	ldi temp2, 2
-	ldi temp1, (1<<SPMEN) | (1<<SIGRD)
-	out SPMCSR, temp1
-	lpm var1, Z
-	add ZL, temp2
-	out SPMCSR, temp1
-	lpm var2, Z
-	add ZL, temp2
-	out SPMCSR, temp1
-	lpm var3, Z
-	
-	clr temp1
-	mov ZL, YL
-	mov ZH, YH
-
-	mov temp2, var1
-	call Bin2ToHex4
-	mov temp2, var2
-	call Bin2ToHex4
-	mov temp2, var3
-	call Bin2ToHex4
-	
+	call read_Signature
 	rjmp push_loop
 
 send_version:
@@ -190,21 +167,19 @@ send_version:
 	rjmp push_loop
 
 run_user:
+	push temp0
+	push YL
+	push YH
+
 	ldi ZL, LOW(run_str<<1)
 	ldi ZH, HIGH(run_str<<1)
 	call fillPacketBuf
-	push temp0
 	call TKN_PushPacket
-	pop temp0
-
-	push temp0
-	push temp1
-	push temp2
 	call 0x0000
-	pop temp2
-	pop temp1
+	
+	pop YH
+	pop YL
 	pop temp0
-
 	ldi ZL, LOW(ret_str<<1)
 	ldi ZH, HIGH(ret_str<<1)
 	call fillPacketBuf
@@ -250,6 +225,51 @@ hexPage_received:
     ldi YH, HIGH(packetBuff)
 	rjmp main_loop_continue
 
+
+/*==============================================================
+=== - Read signature
+================================================================*/
+read_signature:
+	clr ZL
+	clr ZH
+	ldi temp1, (1<<SPMEN) | (1<<SIGRD)
+	out SPMCSR, temp1
+	lpm var1, Z
+	inc ZL
+	inc ZL
+	ldi temp1, (1<<SPMEN) | (1<<SIGRD)
+	out SPMCSR, temp1
+	lpm var2, Z
+	inc ZL
+	inc ZL
+	ldi temp1, (1<<SPMEN) | (1<<SIGRD)
+	out SPMCSR, temp1
+	lpm var3, Z
+	mov ZL, YL
+	mov ZH, YH
+	clr temp1
+	mov temp2, var1
+	call Bin2ToHex4
+	ldi temp1, '0'
+	std Y+0, temp1
+	ldi temp1, 'x'
+	std Y+1, temp1
+	clr temp1
+	mov temp2, var2
+	call Bin2ToHex4
+	ldi temp1, '0'
+	std Y+4, temp1
+	ldi temp1, 'x'
+	std Y+5, temp1
+	clr temp1
+	mov temp2, var3
+	call Bin2ToHex4
+	ldi temp1, '0'
+	std Y+8, temp1
+	ldi temp1, 'x'
+	std Y+9, temp1
+
+	ret
 
 /*==============================================================
 === - FillPacketBuf ===
