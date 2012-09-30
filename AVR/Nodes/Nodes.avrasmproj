@@ -22,8 +22,8 @@
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <ToolchainSettings>
       <AvrAssembler>
-        <avrasm.assembler.general.IncludeFile>m644padef.inc</avrasm.assembler.general.IncludeFile>
-      </AvrAssembler>
+  <avrasm.assembler.general.IncludeFile>m644padef.inc</avrasm.assembler.general.IncludeFile>
+</AvrAssembler>
     </ToolchainSettings>
     <GenerateHexFile>True</GenerateHexFile>
     <GenerateMapFile>True</GenerateMapFile>
