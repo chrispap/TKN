@@ -1,8 +1,5 @@
 .include "m644PAdef.inc"
 
-/*===============
-= Int Vectors 
-=================*/
 .cseg
 .org 0x0000
 	jmp Reset
@@ -66,13 +63,8 @@
 	reti
 .org UTXC1addr	; USART1 TX complete
 	reti
+    
 
-
-.include "utils.asm"
-
-/*===============
-= - Reset 
-=================*/
 Reset:
 	.equ LEDS_OUT   = PORTB
 	.equ LEDS_IN    = PINB
@@ -87,11 +79,11 @@ Reset:
 	.equ TKN_popPacket		= $707e
 	.equ fillPacketBuf		= $73e9
 
+    .include "Utils.asm"
+    
 	jmp main
 
-/*===============
-= - Main
-=================*/
+
 .dseg
 .org $400
 packetBuff:	.byte TKN_PACKET_SIZE

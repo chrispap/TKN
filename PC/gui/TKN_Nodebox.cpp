@@ -78,7 +78,7 @@ void TKN_NodeBox::on_buttonSend_clicked()
 
 void TKN_NodeBox::on_buttonBrowseHex_clicked()
 {
-    QString newPath = QFileDialog::getOpenFileName(this);
+    QString newPath = QFileDialog::getOpenFileName(this, "Open hex file", "", "*.hex");
     if (newPath!=NULL)
         ui->lineEditHexFilePath->setText(newPath);
 }
@@ -164,7 +164,6 @@ void TKN_NodeBox::hexUpload()
 
     }
 
-    QString msg = QString("Hex uploade complete. Sent ") + QString::number(byteCount) + QString(" bytes.");
-    qDebug() << msg ;
+    QString msg = QString("Hex upload complete. Sent ") + QString::number(byteCount) + QString(" bytes.");
     emit consoleOut(msg);
 }
