@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # AvrStudio Solution File, Format Version 11.00
-Project("{18226A42-8477-4023-8AD2-40C49DA407C9}") = "Diplwmatiki", "Diplwmatiki.avrasmproj", "{50B8AEF4-2565-4B65-BE99-D6E24FC20440}"
+Project("{18226A42-8477-4023-8AD2-40C49DA407C9}") = "TknBoot", "TknBoot.avrasmproj", "{50B8AEF4-2565-4B65-BE99-D6E24FC20440}"
 EndProject
-Project("{18226A42-8477-4023-8AD2-40C49DA407C9}") = "SimpleLed", "..\SimpleLed\SimpleLed.avrasmproj", "{A204EC66-C9F4-41F4-A06B-A718322B0BD3}"
+Project("{18226A42-8477-4023-8AD2-40C49DA407C9}") = "Nodes", "Nodes\Nodes.avrasmproj", "{A204EC66-C9F4-41F4-A06B-A718322B0BD3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
