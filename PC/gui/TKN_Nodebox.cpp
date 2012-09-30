@@ -148,8 +148,6 @@ void TKN_NodeBox::hexUpload()
             recString = QString(QByteArray((char*)&recData, sizeof(TKN_Data)));
         } while ( QString::compare(QString("-MCU-READY------"), recString));
 
-        qDebug() << "\n00-!!!-00\n";
-
         /* Send a complete page */
         do {
             /* Fill a TKN Packet */
@@ -162,7 +160,7 @@ void TKN_NodeBox::hexUpload()
             /* Send it to tha MCU */
             while (TKN_PushData ((TKN_Data *) sendData, NODE_ID));
 
-        } while (addr<=end && (addr % (PAGESIZE*2)!=0) );
+        } while ((addr % (PAGESIZE*2)!=0) );
 
     }
 

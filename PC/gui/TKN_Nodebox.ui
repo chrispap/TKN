@@ -107,7 +107,7 @@
    <item row="5" column="0">
     <widget class="QLineEdit" name="lineEditHexFilePath">
      <property name="text">
-      <string>/home/chris/GitHub/TKN/PC/data/SimpleLed.hex</string>
+      <string>C:\Users\laptop\Documents\GitHub\TKN\SimpleLed\Debug\SimpleLed.hex</string>
      </property>
     </widget>
    </item>

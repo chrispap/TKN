@@ -67,42 +67,28 @@
 .org UTXC1addr	; USART1 TX complete
 	reti
 
+
+.include "utils.asm"
+
 /*===============
-= Reset 
+= - Reset 
 =================*/
 Reset:
-	// Init Stack Pointer
-	ldi r16,low(RAMEND)
-	out SPL,r16
-	ldi r16,high(RAMEND)
-	out SPH,r16
-
-	; Configure PORTB as output  (LEDs are connected to this port)
-	; All bits have logic zero output
-	ldi  r16,0b11111111
-	out  PORTB,r16
-	ldi  r16,0b11111111	// All bits are set to OUTPUT
-	out  DDRB,r16
-
-	; Configure PORTA as input (Switches are connected to this port)
-	ldi  r16,0b11111111
-	out  PORTA,r16
-	ldi  r16,0b00000000
-	out  DDRA,r16
-
 	.equ LEDS_OUT   = PORTB
 	.equ LEDS_IN    = PINB
 	.equ SWITCHES_IN= PINA
+	
+	.def temp0 = r16
+	.def temp1 = r17
+	.def temp2 = r18
 
+	
 /*===============
-= Main
+= - Main
 =================*/
 .cseg
 
-.def temp0 = r2
-.def temp1 = r3
-.def temp2 = r23
-
+	call blinkLeds
 	ldi temp2, 20
 	in temp1, SWITCHES_IN
 main:
@@ -114,81 +100,4 @@ main:
 	dec temp2
 	brne main
 
-	jmp $7348
-	jmp $7348
-	jmp $7348
-	jmp $7348
-	jmp $7348
-	jmp $7348
-	jmp $7348
-	jmp $7348
-	jmp $7348
-	jmp $7348
-	jmp $7348
-	jmp $7348
-	jmp $7348
-	jmp $7348
-	jmp $7348
-	jmp $7348
-	jmp $7348
-	jmp $7348
-	jmp $7348
-	jmp $7348
-	jmp $7348
-	jmp $7348
-	jmp $7348
-	jmp $7348
-	jmp $7348
-	jmp $7348
-	jmp $7348
-	jmp $7348
-	jmp $7348
-	jmp $7348
-	jmp $7348
-	jmp $7348
-	jmp $7348
-	jmp $7348
-	jmp $7348
-	jmp $7348
-	jmp $7348
-	jmp $7348
-	jmp $7348
-	jmp $7348
-	jmp $7348
-	jmp $7348
-	jmp $7348
-	jmp $7348
-	jmp $7348
-	jmp $7348
-	jmp $7348
-	jmp $7348
-	jmp $7348
-	jmp $7348
-	jmp $7348
-	jmp $7348
-	jmp $7348
-	jmp $7348
-	jmp $7348
-	jmp $7348
-	jmp $7348
-	jmp $7348
-	jmp $7348
-	jmp $7348
-	jmp $7348
-	jmp $7348
-	jmp $7348
-	jmp $7348
-	jmp $7348
-	jmp $7348
-	jmp $7348
-	jmp $7348
-	jmp $7348
-	jmp $7348
-	jmp $7348
-	jmp $7348
-	jmp $7348
-	jmp $7348
-	jmp $7348
-	jmp $7348
-
-
+	ret

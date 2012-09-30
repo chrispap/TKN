@@ -78,6 +78,8 @@ packetBuff:	.byte TKN_PACKET_SIZE
 ver_str:	.db "AVR TKN BOOT v0 "
 err_str:	.db "Error           "
 int_str:	.db "Interrupt fired "
+run_str:	.db "Run user        "
+ret_str:	.db "Return from user"
 rdy_str:	.db "-MCU-READY------"
 
 main:
@@ -188,13 +190,25 @@ send_version:
 	rjmp push_loop
 
 run_user:
-	;cli
-	jmp 0x0000 // <-- Goto User Section !!!
+	ldi ZL, LOW(run_str<<1)
+	ldi ZH, HIGH(run_str<<1)
+	call fillPacketBuf
+	push temp0
+	call TKN_PushPacket
+	pop temp0
 
-    ;ldi ZL, LOW(user_str<<1)
-    ;ldi ZH, HIGH(user_str<<1)
-	;call fillPacketBuf
-	;rjmp push_loop
+	push temp0
+	push temp1
+	push temp2
+	call 0x0000
+	pop temp2
+	pop temp1
+	pop temp0
+
+	ldi ZL, LOW(ret_str<<1)
+	ldi ZH, HIGH(ret_str<<1)
+	call fillPacketBuf
+	rjmp push_loop
 
 do_boot:
 	clr wordCount
