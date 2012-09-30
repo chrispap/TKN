@@ -6,8 +6,6 @@
 .org 0x0000
 	jmp Reset
 
-;Reset 
-Reset:	
 	.def temp0 = r16
 	.def temp1 = r17
 	.def temp2 = r18
@@ -17,6 +15,9 @@ Reset:
 	.equ TKN_popPacket		= 0x707e
 	.equ fillPacketBuf		= 0x73e9
     
+;Reset 
+Reset:	
+
     jmp main
 
 ;Main
@@ -26,7 +27,7 @@ packetBuff:	.byte TKN_PACKET_SIZE
 
 .cseg
 ;  :    .db "----------------"
-str:	.db "Assembled w AVRA"
+str:	.db "Hex for node 1  "
 
 main:
     ldi YL, LOW(packetBuff)

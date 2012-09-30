@@ -63,9 +63,8 @@
 	reti
 .org UTXC1addr	; USART1 TX complete
 	reti
-    
 
-Reset:
+
 	.equ LEDS_OUT   = PORTB
 	.equ LEDS_IN    = PINB
 	.equ SWITCHES_IN= PINA
@@ -78,18 +77,20 @@ Reset:
 	.equ TKN_pushPacket		= $7053
 	.equ TKN_popPacket		= $707e
 	.equ fillPacketBuf		= $73e9
-
-    .include "Utils.asm"
     
-	jmp main
+.include "Utils.asm"
 
+Reset:
+
+	jmp main
 
 .dseg
 .org $400
 packetBuff:	.byte TKN_PACKET_SIZE
 
 .cseg
-str:	.db "From user space!"
+;str:	.db "                "
+str:	.db "General hex     "
 
 main:
 	ldi YL, LOW(packetBuff)

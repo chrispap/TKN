@@ -6,8 +6,6 @@
 .org 0x0000
 	jmp Reset
 
-;Reset 
-Reset:	
 	.def temp0 = r16
 	.def temp1 = r17
 	.def temp2 = r18
@@ -17,8 +15,11 @@ Reset:
 	.equ TKN_popPacket		= 0x707e
 	.equ fillPacketBuf		= 0x73e9
     
+;Reset 
+Reset:	
+
     jmp main
-    
+
 ;Main
 .dseg
 .org $400
@@ -26,10 +27,9 @@ packetBuff:	.byte TKN_PACKET_SIZE
 
 .cseg
 ;  :    .db "----------------"
-str:	.db "node 4          "
+str:	.db "Hex for node 2! "
 
 main:
-    
     ldi YL, LOW(packetBuff)
 	ldi YH, HIGH(packetBuff)
 
@@ -37,7 +37,7 @@ main:
 	ldi ZH, HIGH(str<<1)
 
 	call fillPacketBuf
-
+    
 	ldi temp0, 1
 	call TKN_pushPacket
     

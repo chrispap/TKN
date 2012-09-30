@@ -78,7 +78,11 @@ void TKN_NodeBox::on_buttonSend_clicked()
 
 void TKN_NodeBox::on_buttonBrowseHex_clicked()
 {
-    QString newPath = QFileDialog::getOpenFileName(this, "Open hex file", "", "*.hex");
+    QString dir = ui->lineEditHexFilePath->text().length()>5?
+                ui->lineEditHexFilePath->text():
+                "";
+
+    QString newPath = QFileDialog::getOpenFileName(this, "Open hex file", dir, "*.hex");
     if (newPath!=NULL)
         ui->lineEditHexFilePath->setText(newPath);
 }
