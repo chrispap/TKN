@@ -76,12 +76,11 @@
 	.equ TKN_PACKET_SIZE	= 16
 	.equ TKN_pushPacket		= $7053
 	.equ TKN_popPacket		= $707e
-	.equ fillPacketBuf		= $73e9
-    
+	.equ fillPacketBuf		= $73f0
+
 .include "Utils.asm"
 
 Reset:
-
 	jmp main
 
 .dseg
