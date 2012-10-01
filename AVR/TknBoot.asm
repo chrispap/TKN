@@ -217,10 +217,11 @@ hexPage_received:
 	ldi YH, HIGH(pageBuff)
 	clr ZL
 	mov ZH, pageCount
+	
+	cli
 	call BL_Write_page
-	inc var0
-	mov temp0, var0
-	call setLeds
+	sei
+
 	ldi YL, LOW(packetBuff)
     ldi YH, HIGH(packetBuff)
 	rjmp main_loop_continue

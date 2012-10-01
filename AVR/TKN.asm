@@ -243,7 +243,11 @@ TKN_Pop_fetchPacketLoop:
     mov TKN_RX_QUEUE_INDEX_OUT, temp1
 
     dec TKN_RX_PENDING
-    rjmp TKN_popPacketRet
+
+	mov temp1, temp0
+	mov temp0, TKN_RX_PENDING
+	call setLeds
+	mov temp0, temp1
 
 TKN_popPacketRet:
     pop YH
@@ -683,6 +687,9 @@ TKN_StorePacket:
 
     ;Update TKN_TX_PENDING/POINTER_IN
     inc TKN_RX_PENDING
+
+	mov temp0, TKN_RX_PENDING
+	call setLeds
 
     lsr TKN_RX_QUEUE_INDEX_IN
     lsr TKN_RX_QUEUE_INDEX_IN
