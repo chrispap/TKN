@@ -10,12 +10,6 @@
     <height>519</height>
    </rect>
   </property>
-  <property name="sizePolicy">
-   <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-    <horstretch>0</horstretch>
-    <verstretch>0</verstretch>
-   </sizepolicy>
-  </property>
   <property name="windowTitle">
    <string>TKN GUI</string>
   </property>
@@ -70,12 +64,6 @@ QTextEdit {
        </sizepolicy>
       </property>
       <property name="minimumSize">
-       <size>
-        <width>300</width>
-        <height>480</height>
-       </size>
-      </property>
-      <property name="maximumSize">
        <size>
         <width>300</width>
         <height>480</height>
@@ -175,6 +163,16 @@ QTextEdit {
         <widget class="QTextEdit" name="textEditConsoleStatus">
          <property name="readOnly">
           <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelAVR">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
          </property>
         </widget>
        </item>

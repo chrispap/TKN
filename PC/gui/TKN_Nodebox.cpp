@@ -13,6 +13,7 @@
 
 #include "lib/TKN.h"
 #include "lib/HEXParser.hpp"
+#include "lib/ErrorMsg.hpp"
 
 TKN_NodeBox::TKN_NodeBox(QWidget *parent, int id) :
     QGroupBox(parent),
@@ -23,7 +24,7 @@ TKN_NodeBox::TKN_NodeBox(QWidget *parent, int id) :
     /* Ui setup */
     this->NODE_ID = id;
     this->setTitle(QString("Node ").append(QString('0'+NODE_ID)));
-    this->ui->labelAVR->setPixmap( QPixmap(":/AVR_Chip-W180px.png"));
+    //this->ui->labelAVR->setPixmap( QPixmap(":/AVR_Chip-W180px.png"));
 
     /* Signal connections */
     //connect(this, SIGNAL(dataReceived()), this, SLOT(on_dataReceived()));
@@ -127,14 +128,21 @@ void TKN_NodeBox::hexUpload()
     BYTE byteForEmpty = 0xff;
     QString recString;
 
-    if (ui->lineEditHexFilePath->text().size() < 5)
+//    if (ui->lineEditHexFilePath->text().size() < 5)
+//        return;
+
+    HEXFile *h;
+
+    try {
+        h = new HEXFile(1024*1024, byteForEmpty);
+        h->readFile(ui->lineEditHexFilePath->text().toStdString());
+    } catch(ErrorMsg *err) {
+        emit consoleOut(QString::fromStdString(err->What()));
         return;
+    }
 
-    HEXFile h = HEXFile(1024*1024, byteForEmpty);
-    h.readFile(ui->lineEditHexFilePath->text().toStdString());
-
-    start = h.getRangeStart();
-    end   = h.getRangeEnd();
+    start = h->getRangeStart();
+    end   = h->getRangeEnd();
 
     for (addr=start; addr<= end; ) {
         /* Initiate a boot procedure */
@@ -156,7 +164,7 @@ void TKN_NodeBox::hexUpload()
         do {
             /* Fill a TKN Packet */
             for (int i=0; i<sizeof(TKN_Data); i++){
-                sendData[i] = addr<=end? ((BYTE) h.getData(addr)): byteForEmpty;
+                sendData[i] = addr<=end? ((BYTE) h->getData(addr)): byteForEmpty;
                 byteCount++;
                 addr++;
             }

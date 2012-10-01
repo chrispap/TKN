@@ -484,7 +484,7 @@ BYTE* TKN_ListActiveNodes(BYTE maxID)
         memset(nodes, 0, maxID*sizeof(BYTE));
 
         TKN_Data testData;
-        memset(&testData, '-', sizeof(testData));
+        strcpy(&testData, "V:");
 
         BYTE possibleNode;
         int i=0;

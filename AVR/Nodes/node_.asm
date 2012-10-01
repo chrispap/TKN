@@ -64,19 +64,18 @@
 .org UTXC1addr	; USART1 TX complete
 	reti
 
+.equ LEDS_OUT   = PORTB
+.equ LEDS_IN    = PINB
+.equ SWITCHES_IN= PINA
+	
+.def temp0 = r16
+.def temp1 = r17
+.def temp2 = r18
 
-	.equ LEDS_OUT   = PORTB
-	.equ LEDS_IN    = PINB
-	.equ SWITCHES_IN= PINA
-	
-	.def temp0 = r16
-	.def temp1 = r17
-	.def temp2 = r18
-	
-	.equ TKN_PACKET_SIZE	= 16
-	.equ TKN_pushPacket		= $7053
-	.equ TKN_popPacket		= $707e
-	.equ fillPacketBuf		= $73f0
+.equ TKN_PACKET_SIZE	= 16
+.equ TKN_pushPacket		= 0x7053
+.equ TKN_popPacket		= 0x707e
+.equ fillPacketBuf		= 0x73f0
 
 .include "Utils.asm"
 

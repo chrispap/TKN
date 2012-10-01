@@ -46,6 +46,7 @@ TKN_Window::TKN_Window(QWidget *parent) :
     connect(this, SIGNAL(tokenReceived(int)), ui->lcd_TokenCounter, SLOT(display(int)), Qt::QueuedConnection);
     connect(this, SIGNAL(dataReady()), this, SLOT(dataReceive()), Qt::QueuedConnection);
 
+    this->ui->labelAVR->setPixmap( QPixmap(":/AVR_Chip-W180px.png"));
     this->updateUI();
 }
 
@@ -107,7 +108,8 @@ void TKN_Window::startTkn()
     int baud = ui->comboBox_Baud->currentText().toInt();
 
     /*Get the port index. Needed by rs232 lib */
-    char *portName = ui->comboBox_ComPort->currentText().toAscii().data();
+    char portName[32];
+    strcpy(portName, ui->comboBox_ComPort->currentText().toAscii().data());
     int port = getPortIndexByName(portName);
 
     if (port<0){
@@ -173,8 +175,7 @@ void TKN_Window::stopTkn()
 
 void TKN_Window::shrink()
 {
-   resize(0, 0);
-   setMaximumSize(size());
+   resize(0, height());
 }
 
 void TKN_Window::on_actionAbout_triggered()

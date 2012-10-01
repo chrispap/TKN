@@ -17,7 +17,7 @@
     <AssemblyName>SimpleLed</AssemblyName>
     <Name>Nodes</Name>
     <RootNamespace>SimpleLed</RootNamespace>
-    <EntryFile>$(MSBuildProjectDirectory)\node_.asm</EntryFile>
+    <EntryFile>$(MSBuildProjectDirectory)\node_1.asm</EntryFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <ToolchainSettings>
