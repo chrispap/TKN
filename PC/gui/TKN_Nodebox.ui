@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>200</width>
+    <width>270</width>
     <height>460</height>
    </rect>
   </property>
@@ -18,13 +18,13 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>200</width>
+    <width>270</width>
     <height>460</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>200</width>
+    <width>270</width>
     <height>16777215</height>
    </size>
   </property>
@@ -35,10 +35,17 @@
    <string>Node </string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="9" column="0">
-    <widget class="QPushButton" name="buttonClear">
+   <item row="1" column="1">
+    <widget class="QPushButton" name="buttonSend">
      <property name="text">
-      <string>Clear</string>
+      <string>SEND</string>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="1">
+    <widget class="QPushButton" name="buttonBrowseHex">
+     <property name="text">
+      <string>Browse</string>
      </property>
     </widget>
    </item>
@@ -60,37 +67,9 @@
     </widget>
    </item>
    <item row="8" column="0">
-    <widget class="QTextEdit" name="textEditConsole">
-     <property name="readOnly">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item row="7" column="0">
     <widget class="QLabel" name="label">
      <property name="text">
       <string>Console</string>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="0">
-    <widget class="QPushButton" name="buttonSend">
-     <property name="text">
-      <string>SEND</string>
-     </property>
-    </widget>
-   </item>
-   <item row="6" column="0">
-    <widget class="QPushButton" name="buttonHexUpload">
-     <property name="text">
-      <string>Hex Upload</string>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="0">
-    <widget class="Line" name="line">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
      </property>
     </widget>
    </item>
@@ -101,10 +80,31 @@
      </property>
     </widget>
    </item>
-   <item row="5" column="0">
-    <widget class="QPushButton" name="buttonBrowseHex">
+   <item row="10" column="0">
+    <widget class="QPushButton" name="buttonClear">
      <property name="text">
-      <string>Browse</string>
+      <string>Clear</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0">
+    <widget class="Line" name="line">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="7" column="0">
+    <widget class="QPushButton" name="buttonHexUpload">
+     <property name="text">
+      <string>Hex Upload</string>
+     </property>
+    </widget>
+   </item>
+   <item row="9" column="0" colspan="2">
+    <widget class="QTextEdit" name="textEditConsole">
+     <property name="readOnly">
+      <bool>true</bool>
      </property>
     </widget>
    </item>
