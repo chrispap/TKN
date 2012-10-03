@@ -24,27 +24,26 @@ packetBuff:	.byte TKN_PACKET_SIZE
 str:	.db "                "
 
 main:
-
-    ldi YL, LOW(packetBuff)
+	ldi YL, LOW(packetBuff)
 	ldi YH, HIGH(packetBuff)
-
 	ldi ZL, LOW(str<<1)
 	ldi ZH, HIGH(str<<1)
-
 	call fillPacketBuf
 
+	ldi counter, $f0
+loop:
 	mov ZL, YL
 	mov ZH, YH
-	ldi counter, 5
-
-loop:
 	mov temp0, counter
 	call bin1ToHex2
 
 	ldi temp0, 1
+send:
 	call TKN_pushPacket
+	and temp0, temp0
+	brne send
 
-	dec counter
+	inc counter
 	brne loop
 	
 	ret
