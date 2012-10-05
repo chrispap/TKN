@@ -498,10 +498,12 @@ getPortIndexByName(char *_portName)
 {
     int i;
     char portName[20];
+    portName[0] = '\0';
     #ifdef __linux__
     strcpy(portName, _portName);
     #else
-    strcpy(portName, "\\\\.\\");
+    if (atoi(_portName+3)>7)
+        strcpy(portName, "\\\\.\\");
     strcat(portName, _portName);
     #endif
 
