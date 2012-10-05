@@ -26,7 +26,7 @@ FORMS += \
     gui/TKN_Window.ui \
     gui/TKN_Nodebox.ui
 
-CONFIG += CONSOLE
+#CONFIG += CONSOLE
 
 RESOURCES += \
     gui/resources.qrc

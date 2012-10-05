@@ -61,8 +61,8 @@ void TKN_Window::tokenReceivedCallback()
     static const int tknInv=50;
     self->mTknCounter++;
 
-    emit self->tokenReceived(self->mTknCounter++);
-    return;
+    //emit self->tokenReceived(self->mTknCounter++);
+    //return;
 
     /* Every tknInv tokens show the rate
        of the respective time period */
