@@ -64,18 +64,20 @@
 .org UTXC1addr	; USART1 TX complete
 	reti
 
-.equ LEDS_OUT   = PORTB
-.equ LEDS_IN    = PINB
-.equ SWITCHES_IN= PINA
-	
-.def temp0 = r16
-.def temp1 = r17
-.def temp2 = r18
+.equ LEDS_OUT           = PORTB
+.equ LEDS_IN            = PINB
+.equ SWITCHES_IN        = PINA
 
-.equ TKN_PACKET_SIZE	= 16
-.equ TKN_pushPacket		= 0x7053
-.equ TKN_popPacket		= 0x707e
-.equ fillPacketBuf		= 0x73f0
+.equ TKN_PACKET_SIZE    = 16
+.equ TKN_pushPacket     = 0x7053
+.equ TKN_popPacket      = 0x707e
+.equ fillPacketBuf      = 0x73f0
+.equ bin1ToHex2         = 0x72c8
+.equ setLeds            = 0x727a
+
+.def temp0              = r16
+.def temp1              = r17
+.def temp2              = r18
 
 .include "Utils.asm"
 
@@ -87,8 +89,7 @@ Reset:
 packetBuff:	.byte TKN_PACKET_SIZE
 
 .cseg
-;str:	.db "                "
-str:	.db "General hex     "
+str:	.db "Node with vector"
 
 main:
 	ldi YL, LOW(packetBuff)
@@ -102,4 +103,3 @@ main:
 	ldi temp0, 1
 	call TKN_pushPacket
 	ret
-
