@@ -1,6 +1,6 @@
 .include "m644PAdef.inc"
 
-.equ TKN_PACKET_SIZE    = 16
+.equ TKN_PACKET_SIZE    = 0x10
 .equ TKN_pushPacket     = 0x7053
 .equ TKN_popPacket      = 0x707e
 .equ fillPacketBuf      = 0x73f0
@@ -14,7 +14,7 @@
 
 .dseg
 .org $400
-packetBuff:    .byte TKN_PACKET_SIZE
+packetBuff: .byte TKN_PACKET_SIZE
 
 .cseg
 ;Vectors
