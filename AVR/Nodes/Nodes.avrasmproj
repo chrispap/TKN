@@ -17,7 +17,7 @@
     <AssemblyName>SimpleLed</AssemblyName>
     <Name>Nodes</Name>
     <RootNamespace>SimpleLed</RootNamespace>
-    <EntryFile>$(MSBuildProjectDirectory)\node_1.asm</EntryFile>
+    <EntryFile>$(MSBuildProjectDirectory)\general_node.asm</EntryFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <ToolchainSettings>
@@ -43,13 +43,16 @@
     <GenerateEepFile>False</GenerateEepFile>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="node_1.asm">
+    <Compile Include="general_node.asm">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="node_.asm">
+    <Compile Include="led_flashing.asm">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Utils.asm">
+    <Compile Include="pwm_autoDimm.asm">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="pwm_setBrightness.asm">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
