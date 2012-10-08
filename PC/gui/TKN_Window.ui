@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>318</width>
-    <height>519</height>
+    <height>522</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -22,7 +22,7 @@
   </property>
   <property name="styleSheet">
    <string notr="true">QGroupBox { 
-    background-color:  rgba(100,150,50, 200);
+    background-color:  rgba(100,120,100, 100);
     border: 2px solid gray;
     padding: 10 0 0 0;
     font: bold;
@@ -187,7 +187,7 @@ QTextEdit {
      <x>0</x>
      <y>0</y>
      <width>318</width>
-     <height>21</height>
+     <height>24</height>
     </rect>
    </property>
    <property name="defaultUp">
