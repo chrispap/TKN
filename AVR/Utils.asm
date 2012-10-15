@@ -127,12 +127,12 @@ dl2:dec  temp1
 === no interrupts will occur during execution of this routine.
 ================================================================*/
 EEPROM_read:
-	push temp1
-	push temp2
-
 	; Wait for completion of previous write
 	sbic EECR,EEPE
 	rjmp EEPROM_read
+    ; Store regs used
+    push temp1
+    push temp2
 	; Set up address (temp2:temp1) in address register
 	out EEARL, temp1
 	out EEARH, temp2
@@ -140,7 +140,7 @@ EEPROM_read:
 	sbi EECR, EERE
 	; Read data from Data Register
 	in temp0, EEDR
-
+    ; Restore regs used
 	pop temp2
 	pop temp1
 	ret
