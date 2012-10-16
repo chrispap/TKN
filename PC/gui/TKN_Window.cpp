@@ -1,12 +1,13 @@
 #include "TKN_Window.h"
 #include "ui_TKN_Window.h"
 #include "TKN_Nodebox.h"
+#include <QCloseEvent>
 #include <QMessageBox>
 #include <QThread>
 #include <QDebug>
-#include <QMap>
-#include <QTime>
 #include <QTimer>
+#include <QTime>
+#include <QMap>
 
 #include "lib/rs232.h"
 #include "lib/TKN.h"
@@ -53,6 +54,15 @@ TKN_Window::TKN_Window(QWidget *parent) :
 TKN_Window::~TKN_Window()
 {
     delete ui;
+}
+
+void TKN_Window::closeEvent(QCloseEvent *evt){
+    if (nodeMap.isEmpty())
+        evt->accept();
+    else {
+        emit consoleOut("Stop the network first.");
+        evt->ignore();
+    }
 }
 
 
@@ -154,8 +164,8 @@ void TKN_Window::startTkn()
     TKN_PrintCols();
 
     mTknCounter = 0;
-    mTime->start();
     this->mTknStarted = true;
+    mTime->start();
 }
 
 void TKN_Window::stopTkn()

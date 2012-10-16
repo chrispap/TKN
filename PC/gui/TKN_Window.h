@@ -19,6 +19,9 @@ public:
     static void tokenReceivedCallback();
     static void dataReceivedCallback();
 
+protected:
+    void closeEvent(QCloseEvent *event);
+
 public slots:
     void consoleOut(QString msg);
 

@@ -93,12 +93,16 @@ void TKN_NodeBox::on_buttonHexUpload_clicked()
     QtConcurrent::run(this, &TKN_NodeBox::hexUpload);
 }
 
-void TKN_NodeBox::dataDeque(TKN_Data *data)
+bool TKN_NodeBox::dataDeque(TKN_Data *data, int timeout)
 {
-    dataQueueSem.acquire();
-    dataQueueMutex.lock();
-    *data = dataQueue.dequeue();
-    dataQueueMutex.unlock();
+    if (dataQueueSem.tryAcquire(1, timeout)) {
+        dataQueueMutex.lock();
+        *data = dataQueue.dequeue();
+        dataQueueMutex.unlock();
+        return true;
+    }
+    else
+        return false;
 }
 
 void TKN_NodeBox::flushRecDataQueue()
@@ -150,15 +154,18 @@ void TKN_NodeBox::hexUpload()
         strcpy ((char*)sendData, "B:");
         sendData[3] = addr/(PAGESIZE*2);
 
-        emit consoleOut(QString("Page: ") + QString ('0'+sendData[3]));
-
         while (TKN_PushData ((TKN_Data *) sendData, NODE_ID));
 
         /* Wait MCU */
         do {
-            dataDeque(&recData);
+            if ( !dataDeque(&recData, 400)) {
+                emit consoleOut("MCU Busy, aborting.");
+                return;
+            }
             recString = QString(QByteArray((char*)&recData, sizeof(TKN_Data)));
         } while ( QString::compare(QString("-MCU-READY------"), recString));
+
+        emit consoleOut(QString("Sending Page: ") + QString ('0'+sendData[3]));
 
         /* Send a complete page */
         do {

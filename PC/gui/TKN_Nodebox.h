@@ -46,7 +46,7 @@ private:
     int NODE_ID;
 
     void flushRecDataQueue();
-    void dataDeque(TKN_Data *data);
+    bool dataDeque(TKN_Data *data, int timeout);
     void hexUpload();
 };
 
