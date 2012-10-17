@@ -17,7 +17,7 @@
     <AssemblyName>SimpleLed</AssemblyName>
     <Name>Nodes</Name>
     <RootNamespace>SimpleLed</RootNamespace>
-    <EntryFile>$(MSBuildProjectDirectory)\pwm_autoDimm.asm</EntryFile>
+    <EntryFile>$(MSBuildProjectDirectory)\pwm_setBrightness.asm</EntryFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <ToolchainSettings>
