@@ -10,8 +10,8 @@ ifdef SystemRoot
 	CC   = gcc.exe
 	WINDRES = windres.exe
 	#windows paths
-	INCS =  -I"C:/Dev-Cpp/include" 
-	CXXINCS =  -I"C:/Dev-Cpp/lib/gcc/mingw32/3.4.2/include"  -I"C:/Dev-Cpp/include/c++/3.4.2/backward"  -I"C:/Dev-Cpp/include/c++/3.4.2/mingw32"  -I"C:/Dev-Cpp/include/c++/3.4.2"  -I"C:/Dev-Cpp/include" 	
+	INCS =  -I"C:/"  -I"C:/" 
+	CXXINCS =  -I"C:"  -I"C:/" 
 	THREADLIB = 
 ### For linux only
 else
