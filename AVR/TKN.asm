@@ -37,9 +37,9 @@
 .def TKN_TX_QUEUE_INDEX_IN  = r1
 .def TKN_TX_QUEUE_INDEX_OUT = r2
 .def TKN_TX_PENDING         = r3
-.def TKN_TX_PACKET_ID       = r4
+.def TKN_TX_BYTE            = r4
 .def TKN_TX_STATUS          = r5
-.def TKN_TX_BYTE            = r6
+.def TKN_TX_PACKET_ID       = r6
 ;Receiver
 .def TKN_RX_QUEUE_INDEX_IN  = r7
 .def TKN_RX_QUEUE_INDEX_OUT = r8
