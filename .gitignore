@@ -15,6 +15,10 @@
 # AVR Studio #
 ##############
 *.avrsuo
+*.atsln
+*.atsuo
+*.asmproj
+*.db
 Debug
 debug
 

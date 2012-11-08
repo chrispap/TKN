@@ -244,11 +244,6 @@ TKN_Pop_fetchPacketLoop:
 
     dec TKN_RX_PENDING
 
-	mov temp1, temp0
-	mov temp0, TKN_RX_PENDING
-	call setLeds
-	mov temp0, temp1
-
 TKN_popPacketRet:
     pop YH
     pop YL
@@ -301,7 +296,7 @@ TKN_Transmitter_Activate:
     sbr temp0, TKN_MODE_TOKEN 
     cbr temp0, (~$FC & ~TKN_MODE_TOKEN)
     mov TKN_TX_STATUS, temp0
-    call setLeds0
+    ;;;call setLeds0
     ret
 
 TKN_Transmitter_FetchPacket:
@@ -355,7 +350,7 @@ TKN_Push_fetchPacketLoop:
     sbr temp0, TKN_MODE_DATA
     cbr temp0, (~$FC & ~TKN_MODE_DATA)
     mov TKN_TX_STATUS, temp0
-    call setLeds0
+    ;;;call setLeds0
     ret
 
 TKN_Transmitter_TOKEN:
@@ -379,7 +374,7 @@ TKN_Transmitter_TOKEN_Passed:
     clr TKN_TX_BYTE
     clr TKN_TX_STATUS
     mov temp0, TKN_TX_STATUS
-    call setLeds0
+    ;;;call setLeds0
 
     ;Disable DATA REGISTER READY INTERRUPT on the USART
     lds temp0, UCSR0B
@@ -409,7 +404,7 @@ TKN_Transmitter_DATA_PacketSent_Forward:
     clr TKN_TX_BYTE
     clr TKN_TX_STATUS
     mov temp0, TKN_TX_STATUS
-    call setLeds0
+    ;;;call setLeds0
     ret
     
 TKN_Transmitter_DATA_PacketSent_Normal:
@@ -418,7 +413,7 @@ TKN_Transmitter_DATA_PacketSent_Normal:
     cbr temp0, (1<<6)
     sbr temp0, (1<<5)
     mov TKN_TX_STATUS, temp0
-    call setLeds0
+    ;;;call setLeds0
     ret
 
 TKN_AckArrived:
@@ -437,7 +432,7 @@ TKN_AckArrived:
     sbr temp0, TKN_MODE_TOKEN | (1<<6) 
     cbr temp0, (~$FC & ~TKN_MODE_TOKEN) | (1<<5)
     mov TKN_TX_STATUS, temp0
-    call setLeds0
+    ;;;call setLeds0
     ret
 
 TKN_Transmitter_ACK:
@@ -458,7 +453,7 @@ TKN_Transmitter_ACK_PacketSent:
     clr TKN_TX_BYTE
     clr TKN_TX_STATUS
     mov temp0, TKN_TX_STATUS
-    call setLeds0
+    ;;;call setLeds0
     ret
 
 
@@ -480,7 +475,7 @@ TKN_TokenArrived:
     mov temp0, TKN_TX_STATUS
     sbr temp0, (1<<7) | (1<<6)
     mov TKN_TX_STATUS, temp0
-    call setLeds0
+    ;;;call setLeds0
     
     ;Enable DATA REGISTER READY INTERRUPT on the USART
     lds temp0, UCSR0B
@@ -631,7 +626,7 @@ TKN_Receiver_DATA_Forward_cpy:
     sbr temp0, TKN_MODE_DATA         ;Set the '1' bits of MODE
     cbr temp0, (~$FC & ~TKN_MODE_DATA);Set the '0' bits of MODE
     mov TKN_TX_STATUS, temp0
-    call setLeds0
+    ;;;call setLeds0
 
     ;Enable DATA REGISTER READY INTERRUPT on the USART
     lds temp0, UCSR0B
@@ -688,9 +683,6 @@ TKN_StorePacket:
     ;Update TKN_TX_PENDING/POINTER_IN
     inc TKN_RX_PENDING
 
-	mov temp0, TKN_RX_PENDING
-	call setLeds
-
     lsr TKN_RX_QUEUE_INDEX_IN
     lsr TKN_RX_QUEUE_INDEX_IN
     lsr TKN_RX_QUEUE_INDEX_IN
@@ -737,7 +729,7 @@ TKN_Receiver_DATA_SendACK:
     sbr temp0, TKN_MODE_ACK     ;Set the '1' bits of MODE
     cbr temp0, (~$FC & ~TKN_MODE_ACK)   ;Set the '0' bits of MODE
     mov TKN_TX_STATUS, temp0
-    call setLeds0
+    ;;;call setLeds0
 
     ;Enable DATA REGISTER READY INTERRUPT on the USART
     lds temp0, UCSR0B
@@ -809,7 +801,7 @@ TKN_Receiver_ACK_Forward_cpy:
     sbr temp0, TKN_MODE_ACK     ;Set the '1' bits of MODE
     cbr temp0, (~$FC & ~TKN_MODE_ACK)   ;Set the '0' bits of MODE
     mov TKN_TX_STATUS, temp0
-    call setLeds0
+    ;;;call setLeds0
 
     ;Enable DATA REGISTER READY INTERRUPT on the USART
     lds temp0, UCSR0B
