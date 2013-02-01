@@ -16,12 +16,12 @@
 #include "TKN_Queue.h"
 #include "rs232.h"
 
-//#define TKN_DEBUG
+#define TKN_DEBUG
 #ifdef TKN_DEBUG
   //#define ECHO_ATTEMPTS
-  //#define ECHO_TOKENS
-  #define ECHO_DATA
+  #define ECHO_TOKENS
   #define ECHO_EVENTS
+  //#define ECHO_DATA
 #endif
 
 /* The Packet Buffers */
@@ -55,7 +55,7 @@ static int   TKN_IsDataValid (BYTE *, BYTE);
 static int   TKN_PrintDataPacket (BYTE *, int, int);
 static int   TKN_PrintByte (BYTE c, int forceHex);
 static char* stripLF(char *str);
-#ifdef __linux__ 
+#ifdef __linux__
 static void* TKN_Run(void* params);
 #else
 static DWORD WINAPI TKN_Run (LPVOID params);
@@ -68,7 +68,7 @@ static void(*recDataCallback)(void);
 
 static char* stripLF(char *str)
 {
-	int len = strlen(str); 
+    int len = strlen(str);
     if (len>0 && str[len-1] == '\n') str[len-1]= '\0';
     return str;
 }
@@ -82,7 +82,7 @@ int TKN_PrintCols ()
 
 int TKN_PrintDataPacket (BYTE * buffer, int details, int bin)
 {
-    static char data[TKN_DATA_SIZE + 1];	// +1 for the zero char
+    static char data[TKN_DATA_SIZE + 1];    // +1 for the zero char
 
     printf ("\n");
 
@@ -130,32 +130,32 @@ int TKN_ExportPackets ()
 {
   /* Create packets dir if not exist */
   char packetDir[50] = "packets";
-  
+
   #ifdef __linux__
   mkdir(packetDir, (mode_t) 0777);
   #else
   CreateDirectory( packetDir, NULL);
   #endif
-  
-  char* fileNames[3] = 
-    { "DATA.hex", 
-      "ACK.hex", 
-      "TOKEN.hex" 
+
+  char* fileNames[3] =
+    { "DATA.hex",
+      "ACK.hex",
+      "TOKEN.hex"
     };
-    
-  int lengths[3] = 
-    { sizeof(DATA_PACKET), 
-      sizeof(ACK_PACKET), 
-      sizeof(TOKEN_PACKET) 
+
+  int lengths[3] =
+    { sizeof(DATA_PACKET),
+      sizeof(ACK_PACKET),
+      sizeof(TOKEN_PACKET)
     };
-    
-  BYTE* packets[3] = 
-    { DATA_PACKET, 
-      ACK_PACKET, 
-      TOKEN_PACKET 
+
+  BYTE* packets[3] =
+    { DATA_PACKET,
+      ACK_PACKET,
+      TOKEN_PACKET
     };
-  
-  /* Create the 3 packet files */    
+
+  /* Create the 3 packet files */
   FILE *fd = NULL;
   int i,j;
   strcat(packetDir, "/");
@@ -183,7 +183,7 @@ int TKN_ExportPackets ()
  */
 int TKN_Receive ()
 {
-    static BYTE RX_Buffer[TKN_OFFS_DATA_EOF + 1];	// Receive buffer. Its size is determined by the largest packet which is the data packet.
+    static BYTE RX_Buffer[TKN_OFFS_DATA_EOF + 1];   // Receive buffer. Its size is determined by the largest packet which is the data packet.
     static TKN_Data rxdata;
     int pLength, pAttempts;
     BYTE pType;
@@ -219,9 +219,9 @@ int TKN_Receive ()
             #ifdef TKN_DEBUG
             printf (" no response\n");
             #endif
-	} 
-	else
-	{
+    }
+    else
+    {
             /* Determine packet length */
             switch (pType)
             {
@@ -243,7 +243,7 @@ int TKN_Receive ()
             int remaining = pLength - 2, rec = 0;
             BYTE *RX_Buffer_tmp = RX_Buffer + 2;
             while (remaining > 0 && pAttempts < (TKN_MAX_ATTEMPTS << 2)) // Be more tolerant compared to the first byte max-Attempts
-	    {
+        {
                 #ifdef ECHO_ATTEMPTS
                 printf (",");
                 #endif
@@ -289,13 +289,13 @@ int TKN_Receive ()
 
             /* Here I have a packet which is ~FOR ME~ */
             int i;
-	    switch (pType)
+        switch (pType)
             {
             case TKN_TYPE_DATA:
                 if (TKN_IsDataValid(RX_Buffer+TKN_OFFS_DATA_START, RX_Buffer[TKN_OFFS_CONTROL]))
                 {
                     for (i = TKN_OFFS_DATA_START; i <= TKN_OFFS_DATA_STOP; i++)
-                        rxdata.data[i-TKN_OFFS_DATA_START] = RX_Buffer [i];	//Extract the data from tha packet and store it in a buffer
+                        rxdata.data[i-TKN_OFFS_DATA_START] = RX_Buffer [i]; //Extract the data from tha packet and store it in a buffer
 
                     if ( !TKN_Queue_IsFull(&RX_QUEUE))
                         TKN_Queue_Push(&RX_QUEUE, &rxdata, RX_Buffer[TKN_OFFS_SENDER]);
@@ -323,13 +323,13 @@ int TKN_Receive ()
                 break;
             }
         }
-        
+
         // Either return TKN_TYPE_NONE which will mean timeout
         // or a valid TKN_TYPE_XXXX
-        return (int) pType; 
+        return (int) pType;
 
     } while (1);
-    
+
 }
 
 /**
@@ -423,12 +423,12 @@ int TKN_Init (int port, int baud, BYTE id, void (*_recTokenCallback)(void), void
     PACKET_COUNTER = 0;
 
     if (OpenComport(port, baud, TKN_READ_TIMEOUT) == 1){
-		#ifdef TKN_DEBUG
+        #ifdef TKN_DEBUG
         printf ("Cannot open PORT%d\n", port);
         #endif
         return 1; //error
     }
-    else 
+    else
     {
         TKN_Queue_Init( &RX_QUEUE, TKN_QUEUE_SIZE);
         TKN_Queue_Init( &TX_QUEUE, TKN_QUEUE_SIZE);
@@ -445,7 +445,7 @@ int TKN_InitWithArgs (int argc, char *argv[])
     int portNum, baud, node_id;
 
     if (argc > 1)
-        portNum = atoi (argv[1]);	// In conversion error port_num=0
+        portNum = atoi (argv[1]);   // In conversion error port_num=0
     else
         portNum = TKN_PORT_DEFAULT;
 
@@ -523,9 +523,9 @@ int TKN_Stop()
     if (TKN_Running)
     {
         TKN_Running=0;
-        if ( pthread_join(TKN_Thread, NULL)) 
+        if ( pthread_join(TKN_Thread, NULL))
             TKN_Running=1;
-        
+
         return TKN_Running; // 0 if thread is succesfully stopped.
     }
     else return -1;
@@ -542,7 +542,7 @@ int TKN_Start()
         TKN_Running=1;
         if ( !(TKN_Thread = CreateThread( NULL, 0, &TKN_Run, NULL, 0, NULL)))
             TKN_Running=0;
-			
+
         return !TKN_Running;
     }
     else return -1;
@@ -558,14 +558,14 @@ int TKN_Stop()
         if ( WaitForSingleObject (TKN_Thread, 2000))
             TKN_Running=1;
         else {
-	  CloseHandle(TKN_Thread);
-	}
+      CloseHandle(TKN_Thread);
+    }
 
         return TKN_Running;
     }
     else return -1;
-    
-    
+
+
 
 }
 
@@ -579,9 +579,9 @@ int TKN_PopData (TKN_Data *cBuf)
 {
     if ( !TKN_Queue_IsEmpty(&RX_QUEUE) )
     {
-		return (int) TKN_Queue_Pop (&RX_QUEUE, cBuf);
+        return (int) TKN_Queue_Pop (&RX_QUEUE, cBuf);
     }
-    
+
     return -1;
 }
 
@@ -592,22 +592,22 @@ int TKN_PushData (TKN_Data * cBuf, BYTE recipientId)
         TKN_Queue_Push (&TX_QUEUE, cBuf, recipientId);
         return 0;
     }
-    
+
     return -1;
 }
 
-int TKN_SendString (char * str, BYTE dest_id) 
+int TKN_SendString (char * str, BYTE dest_id)
 {
     TKN_Data lineBuf;
     int rem = strlen(str);
-	
+
     while (rem>0) {
-		strncpy( (char*) &lineBuf, str, sizeof(lineBuf));
-		str += sizeof(lineBuf);
-		rem -= sizeof(lineBuf);
-		TKN_PushData ( &lineBuf, dest_id);
+        strncpy( (char*) &lineBuf, str, sizeof(lineBuf));
+        str += sizeof(lineBuf);
+        rem -= sizeof(lineBuf);
+        TKN_PushData ( &lineBuf, dest_id);
     }
-    
+
     return 0;
 }
 
@@ -631,7 +631,7 @@ int TKN_GetTokenCount()
     return TKN_TokenCount;
 }
 
-#ifdef __linux__ 
+#ifdef __linux__
 void* TKN_Run(void* params)
 #else
 DWORD WINAPI TKN_Run (LPVOID params)
@@ -640,10 +640,10 @@ DWORD WINAPI TKN_Run (LPVOID params)
     TKN_Data data;
     BYTE rid;
 
-    while (TKN_Running) 
+    while (TKN_Running)
     {
         TKN_PassToken();
-        
+
         if (TKN_Receive() == TKN_TYPE_TOKEN){
             TKN_TokenCount++;
 

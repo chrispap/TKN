@@ -14,7 +14,7 @@
 #include "../lib/TKN_Util.h"
 
 #define FULL_LOAD 1
-#define SECONDS_TO_RUN 2
+#define SECONDS_TO_RUN 10
 
 BYTE dest_id;
 static time_t time_start, time_end;
@@ -29,42 +29,41 @@ int main (int argc, char *argv[])
     dest_id = (argc > 3)? atoi (argv[3]) : TKN_DEST_ID_DEFAULT;
 
     /* Start the network */
-    time_start = time (NULL);
+
     TKN_Start ();
-	TKN_PrintCols();
+    TKN_PrintCols();
     int packC = 0;
-    
+
+    time_start = time (NULL);
+
     if (FULL_LOAD)  // Send DATA whenever possible!
     {
         do{
-            char myData[TKN_DATA_SIZE] = {0};
+            char myData[TKN_DATA_SIZE] = "test msg";
             while (TKN_PushData ((TKN_Data *) myData, dest_id));
             packC++;
-        } while (packC<10); //(time (NULL) - time_start) < SECONDS_TO_RUN);
-        
-        sleep(1);
-        printf("\n>> Receive back \n");
+        } while ((time (NULL) - time_start) < SECONDS_TO_RUN);
 
-        int i;
-        for (i=0; i<packC; i++) {
-            TKN_Data recData;
-            while (TKN_PopData(&recData) < 0 );
-        }
-        
+        time_end = time (NULL);
+        sleep(2); // wait for all the Tx Queue to be sent
+        printf("\n>> Receive back \n");
+        char recData[TKN_DATA_SIZE];
+        while (TKN_PopData(recData) > 0 ); // Pop all the data out of the Rx Queue
     }
     else  // Send nothing
     {
-		sleep (SECONDS_TO_RUN);
+        sleep (SECONDS_TO_RUN);
+        time_end = time (NULL);
     }
 
     /* Shut downn the network */
     TKN_Stop ();
     TKN_Close ();
-    time_end = time (NULL);
+
 
     printf ("\n>> Ellapsed time: %ld sec \n", time_end - time_start);
     printf (">> Token Counter: %d \n", TKN_GetTokenCount ());
-    printf (">> Data Packets pushed: %d \n", packC);
+    printf (">> Data Packets pushed: %d - (size of tx_queue)\n", packC);
 
     return 0;
 }
