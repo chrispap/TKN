@@ -330,8 +330,8 @@ TKN_Transmitter:
     mov temp1, TKN_TX_STATUS
     cbr temp1, 0xFC ; Keep only the MODE bits
 
-    ldi ZH,HIGH(TKN_Transmitter_Modes)
-    ldi ZL,LOW(TKN_Transmitter_Modes)
+    ldi ZH, HIGH(TKN_Transmitter_Modes)
+    ldi ZL, LOW(TKN_Transmitter_Modes)
     add ZL, temp1
     brcc TKN_Transmitter_Switch_NoOverflow
     inc ZH

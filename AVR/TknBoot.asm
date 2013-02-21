@@ -77,8 +77,8 @@ packetBuff:	.byte TKN_PACKET_SIZE
 ver_str:	.db "AVR TKN BOOT v0 "
 err_str:	.db "Error           "
 int_str:	.db "Interrupt fired "
-run_str:	.db "Run user        "
-ret_str:	.db "Return from user"
+run_str:	.db "Run user app... "
+ret_str:	.db "User app exited."
 rdy_str:	.db "-MCU-READY------"
 
 main:

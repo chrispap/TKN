@@ -158,7 +158,7 @@ void TKN_NodeBox::hexUpload()
 
         /* Wait MCU */
         do {
-            if ( !dataDeque(&recData, 400)) {
+            if ( !dataDeque(&recData, 1500)) {
                 emit consoleOut("MCU Busy, aborting.");
                 return;
             }
