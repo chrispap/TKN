@@ -76,6 +76,9 @@ void TKN_Window::tokenReceivedCallback()
 
     /* Every tknInv tokens show the rate
        of the respective time period */
+
+    //emit self->tokenReceived(self->mTknCounter);
+    //return;
     if (self->mTknCounter%tknInv == 0) {
         emit self->tokenReceived(1000*tknInv/self->mTime->elapsed());
         self->mTime->start();
@@ -209,3 +212,4 @@ void TKN_Window::consoleOut(QString msg)
 {
     ui->textEditConsoleStatus->append(msg);
 }
+

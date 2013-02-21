@@ -82,8 +82,10 @@ ret_str:	.db "Return from user"
 rdy_str:	.db "-MCU-READY------"
 
 main:
-    call ledInit
     call TKN_init
+
+main_hot:
+	call ledInit
     call Enable_PcInt7
 
 	ldi YL, LOW(pageBuff)

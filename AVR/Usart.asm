@@ -61,14 +61,15 @@ USART_Receive:
 /*******************************************
  * ISRs for the USART
  *******************************************/
+
 /*==============================================================
 === USART0 Rx Complete ISR =====================================
 ================================================================*/
 URXC0_ISR:
 	in rsreg, SREG
-	mov itemp0, temp0
-	mov itemp1, temp1
-	mov itemp2, temp2
+	push temp0
+	push temp1
+	push temp2
 	push XL
 	push XH
 	push YL
@@ -85,9 +86,9 @@ URXC0_ISR:
 	pop YL
 	pop XH
 	pop XL
-	mov temp2, itemp2
-	mov temp1, itemp1
-	mov temp0, itemp0
+	pop temp2
+	pop temp1
+	pop temp0
 	out SREG, rsreg
 
 	reti
@@ -97,9 +98,9 @@ URXC0_ISR:
 ================================================================*/
 US0TKN_TX_ISR:
 	in rsreg, SREG
-	mov itemp0, temp0
-	mov itemp1, temp1
-	mov itemp2, temp2
+	push temp0
+	push temp1
+	push temp2
 	push XL
 	push XH
 	push YL
@@ -115,9 +116,9 @@ US0TKN_TX_ISR:
 	pop YL
 	pop XH
 	pop XL
-	mov temp2, itemp2
-	mov temp1, itemp1
-	mov temp0, itemp0
+	pop temp2
+	pop temp1
+	pop temp0
 	out SREG, rsreg
 
 	reti

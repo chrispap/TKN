@@ -52,25 +52,29 @@
 ===		The RX/TX Queues should be 0x80 aligned
 ================================================================*/
 .dseg
-.org SRAM_START
 
-TKN_RX_QUEUE:
-    .byte TKN_QUEUE_SIZE
+;.org SRAM_START
+.org 0x500
 
-TKN_TX_QUEUE:
-    .byte TKN_QUEUE_SIZE
+TKN_RX_QUEUE:					.byte TKN_QUEUE_SIZE
+TKN_TX_QUEUE:					.byte TKN_QUEUE_SIZE
+TKN_TX_QUEUE_ADDR:				.byte TKN_QUEUE_LEN
+TKN_RX_QUEUE_ADDR:				.byte TKN_QUEUE_LEN
+TKN_TX_BUFFER:					.byte TKN_MAX_PACKET_SIZE
+TKN_RX_BUFFER:					.byte TKN_MAX_PACKET_SIZE
 
-TKN_TX_QUEUE_ADDR:
-    .byte TKN_QUEUE_LEN
-
-TKN_RX_QUEUE_ADDR:
-    .byte TKN_QUEUE_LEN
-
-TKN_TX_BUFFER:
-    .byte TKN_MAX_PACKET_SIZE
-
-TKN_RX_BUFFER:
-    .byte TKN_MAX_PACKET_SIZE
+TKN_TX_QUEUE_INDEX_IN_RAM:  	.byte 1
+TKN_TX_PENDING_RAM:  			.byte 1
+TKN_TX_BYTE_RAM:  				.byte 1
+TKN_TX_STATUS_RAM:  			.byte 1
+TKN_TX_QUEUE_INDEX_OUT_RAM:  	.byte 1
+TKN_TX_PACKET_ID_RAM:  			.byte 1
+TKN_ID_RAM:  					.byte 1
+TKN_RX_QUEUE_INDEX_IN_RAM:  	.byte 1
+TKN_RX_BYTE_RAM:  				.byte 1
+TKN_RX_STATUS_RAM:  			.byte 1
+TKN_RX_PENDING_RAM:  			.byte 1
+TKN_RX_QUEUE_INDEX_OUT_RAM:  	.byte 1
 
 .cseg
 TOKEN_PACKET:
@@ -85,24 +89,41 @@ TOKEN_PACKET:
 ===     Initialize the data structures used by the network
 ================================================================*/
 TKN_init:
-    clr TKN_TX_QUEUE_INDEX_IN
+    ldi temp1, 0
+    ldi temp2, 0
+    call EEPROM_read
+    mov TKN_ID, temp0
+	
+	clr TKN_TX_QUEUE_INDEX_IN
     clr TKN_TX_QUEUE_INDEX_OUT
     clr TKN_TX_PENDING
     clr TKN_TX_STATUS
     clr TKN_TX_BYTE
     clr TKN_TX_PACKET_ID
-
     clr TKN_RX_QUEUE_INDEX_IN
     clr TKN_RX_QUEUE_INDEX_OUT
     clr TKN_RX_PENDING
+	clr TKN_RX_STATUS
     clr TKN_RX_BYTE
 
-    ldi temp1, 0
-    ldi temp2, 0
-    call EEPROM_read
-    mov TKN_ID, temp0
-    call USART_Init
-    ret
+	ldi XL, LOW(TKN_TX_QUEUE_INDEX_IN_RAM)
+	ldi XH, HIGH(TKN_TX_QUEUE_INDEX_IN_RAM)
+	st X+, TKN_TX_QUEUE_INDEX_IN
+	st X+, TKN_TX_PENDING
+	st X+, TKN_TX_BYTE
+	st X+, TKN_TX_STATUS
+	st X+, TKN_TX_QUEUE_INDEX_OUT
+	st X+, TKN_TX_PACKET_ID
+	st X+, TKN_ID
+	st X+, TKN_RX_QUEUE_INDEX_IN
+	st X+, TKN_RX_BYTE
+	st X+, TKN_RX_STATUS
+	st X+, TKN_RX_PENDING
+	st X+, TKN_RX_QUEUE_INDEX_OUT
+
+	call USART_Init
+    
+	ret
 
 /*==============================================================
 === Routine: TKN_pushPacket
@@ -121,17 +142,23 @@ TKN_pushPacket:
     in temp2, SREG
     cli
     
+	push XL
+	push XH
+	push YL
+	push YH
+
+	; Load from RAM
+	ldi XL, LOW(TKN_TX_QUEUE_INDEX_IN_RAM)
+	ldi XH, HIGH(TKN_TX_QUEUE_INDEX_IN_RAM)
+	ld  TKN_TX_QUEUE_INDEX_IN, X+
+	ld  TKN_TX_PENDING, X+
+
     ;If there is NOT an empty slot discard the new packet and return;
     mov temp1, TKN_TX_PENDING
     cpi temp1, TKN_QUEUE_LEN
-    in temp1, SREG
+    in  temp1, SREG
     sbrc temp1, SREG_Z
-    rjmp TKN_pushPacketFullQueue
-        
-    push XL
-    push XH
-    push YL
-    push YH
+    rjmp TKN_pushPacketRet
 
     ldi XL, LOW(TKN_TX_QUEUE_ADDR)
     ldi XH, HIGH(TKN_TX_QUEUE_ADDR)
@@ -175,12 +202,21 @@ copyPacket:
     clr temp0
 
 TKN_pushPacketRet:
+	; Store to RAM
+	ldi XL, LOW(TKN_TX_PENDING_RAM)
+	ldi XH, HIGH(TKN_TX_PENDING_RAM)
+	st  X, TKN_TX_PENDING
+
+	ldi XL, LOW(TKN_TX_QUEUE_INDEX_IN_RAM)
+	ldi XH, HIGH(TKN_TX_QUEUE_INDEX_IN_RAM)
+	st  X+, TKN_TX_QUEUE_INDEX_IN
+	st  X+, TKN_TX_PENDING
+
     pop YH
     pop YL
     pop XH
     pop XL
     
-TKN_pushPacketFullQueue:
     ;Restore Interrupt Flag in its previous state
     out SREG, temp2
     ret
@@ -200,15 +236,21 @@ TKN_popPacket:
     in temp2, SREG
     cli
     
-    ;Check if there is pending data
-    mov temp0, TKN_RX_PENDING
-    and temp0, temp0
-    breq TKN_popPacketEmptyQueue
-    
-    push XL
+	push XL
     push XH
     push YL
     push YH
+
+	; Load from RAM
+	ldi XL, LOW(TKN_RX_PENDING_RAM)
+	ldi XH, HIGH(TKN_RX_PENDING_RAM)
+	ld  TKN_RX_PENDING, X+
+	ld  TKN_RX_QUEUE_INDEX_OUT, X+
+
+    ;Check if there is pending data
+    mov temp0, TKN_RX_PENDING
+    and temp0, temp0
+    breq TKN_popPacketRet
     
     /* Copy the first packet to the buffer pointed by Y */
     lsl TKN_RX_QUEUE_INDEX_OUT
@@ -245,12 +287,17 @@ TKN_Pop_fetchPacketLoop:
     dec TKN_RX_PENDING
 
 TKN_popPacketRet:
+	; Store to RAM
+	ldi XL, LOW(TKN_RX_PENDING_RAM)
+	ldi XH, HIGH(TKN_RX_PENDING_RAM)
+	st  X+, TKN_RX_PENDING
+	st  X+, TKN_RX_QUEUE_INDEX_OUT
+
     pop YH
     pop YL
     pop XH
     pop XL
 
-TKN_popPacketEmptyQueue:
     out SREG, temp2
     ret
 
@@ -265,10 +312,20 @@ TKN_popPacketEmptyQueue:
 ===     send the next one.
 ================================================================*/
 TKN_Transmitter:
+	; Load from RAM
+	ldi XL, LOW(TKN_TX_PENDING_RAM)
+	ldi XH, HIGH(TKN_TX_PENDING_RAM)
+	ld   TKN_TX_PENDING, X+
+	ld   TKN_TX_BYTE, X+
+	ld   TKN_TX_STATUS, X+
+	ld   TKN_TX_QUEUE_INDEX_OUT, X+
+	ld   TKN_TX_PACKET_ID, X+
+	ld   TKN_ID, X+
+
     sbrs TKN_TX_STATUS, 6 ; return if inactive
-    ret
+    rjmp TKN_Transmitter_Return
     sbrc TKN_TX_STATUS, 5 ; return if waiting for ACK
-    ret
+    rjmp TKN_Transmitter_Return
 
     mov temp1, TKN_TX_STATUS
     cbr temp1, 0xFC ; Keep only the MODE bits
@@ -296,8 +353,8 @@ TKN_Transmitter_Activate:
     sbr temp0, TKN_MODE_TOKEN 
     cbr temp0, (~$FC & ~TKN_MODE_TOKEN)
     mov TKN_TX_STATUS, temp0
-    ;;;call setLeds0
-    ret
+    call setLeds0
+    rjmp TKN_Transmitter_Return
 
 TKN_Transmitter_FetchPacket:
     ldi XL, LOW(TKN_TX_BUFFER)
@@ -350,8 +407,8 @@ TKN_Push_fetchPacketLoop:
     sbr temp0, TKN_MODE_DATA
     cbr temp0, (~$FC & ~TKN_MODE_DATA)
     mov TKN_TX_STATUS, temp0
-    ;;;call setLeds0
-    ret
+    call setLeds0
+    rjmp TKN_Transmitter_Return
 
 TKN_Transmitter_TOKEN:
     ldi ZL, LOW(TOKEN_PACKET<<1)
@@ -367,20 +424,20 @@ TKN_Transmitter_TOKEN:
     mov temp2, TKN_TX_BYTE
     cpi temp2, TKN_OFFS_TOKEN_EOF + 1
     breq TKN_Transmitter_TOKEN_Passed
-    ret
+    rjmp TKN_Transmitter_Return
 
 TKN_Transmitter_TOKEN_Passed:
     ; MODE=idle / TxActive=0 / Token=0
     clr TKN_TX_BYTE
     clr TKN_TX_STATUS
     mov temp0, TKN_TX_STATUS
-    ;;;call setLeds0
+    call setLeds0
 
     ;Disable DATA REGISTER READY INTERRUPT on the USART
     lds temp0, UCSR0B
     cbr temp0, (1<<UDRIE0)
     sts UCSR0B, temp0
-    ret
+    rjmp TKN_Transmitter_Return
 
 TKN_Transmitter_DATA:
     ldi temp2, TKN_OFFS_DATA_EOF + 1
@@ -393,7 +450,7 @@ TKN_Transmitter_DATA:
     ld temp0, X
     call USART_Transmit
     inc TKN_TX_BYTE
-    ret
+    rjmp TKN_Transmitter_Return
 
 TKN_Transmitter_DATA_PacketSent:
     sbrs TKN_TX_STATUS, 4
@@ -404,8 +461,8 @@ TKN_Transmitter_DATA_PacketSent_Forward:
     clr TKN_TX_BYTE
     clr TKN_TX_STATUS
     mov temp0, TKN_TX_STATUS
-    ;;;call setLeds0
-    ret
+    call setLeds0
+    rjmp TKN_Transmitter_Return
     
 TKN_Transmitter_DATA_PacketSent_Normal:
     ;Clear TX_ACTIVE / Set waiting for ACK
@@ -413,8 +470,8 @@ TKN_Transmitter_DATA_PacketSent_Normal:
     cbr temp0, (1<<6)
     sbr temp0, (1<<5)
     mov TKN_TX_STATUS, temp0
-    ;;;call setLeds0
-    ret
+    call setLeds0
+    rjmp TKN_Transmitter_Return
 
 TKN_AckArrived:
     ;TKN_TX_QUEUE_INDEX_OUT = 
@@ -432,8 +489,8 @@ TKN_AckArrived:
     sbr temp0, TKN_MODE_TOKEN | (1<<6) 
     cbr temp0, (~$FC & ~TKN_MODE_TOKEN) | (1<<5)
     mov TKN_TX_STATUS, temp0
-    ;;;call setLeds0
-    ret
+    call setLeds0
+    rjmp TKN_Transmitter_Return
 
 TKN_Transmitter_ACK:
     ldi temp2, TKN_OFFS_ACK_EOF + 1
@@ -446,16 +503,27 @@ TKN_Transmitter_ACK:
     ld temp0, X
     call USART_Transmit
     inc TKN_TX_BYTE
-    ret
+    rjmp TKN_Transmitter_Return
 
 TKN_Transmitter_ACK_PacketSent:
     ; MODE=idle / TxActive=0 / Token=0
     clr TKN_TX_BYTE
     clr TKN_TX_STATUS
     mov temp0, TKN_TX_STATUS
-    ;;;call setLeds0
-    ret
+    call setLeds0
+    ;rjmp TKN_Transmitter_Return
 
+TKN_Transmitter_Return:
+	ldi XL, LOW(TKN_TX_PENDING_RAM)
+	ldi XH, HIGH(TKN_TX_PENDING_RAM)
+	st  X+, TKN_TX_PENDING
+	st  X+, TKN_TX_BYTE
+	st  X+, TKN_TX_STATUS
+	st  X+, TKN_TX_QUEUE_INDEX_OUT
+	st  X+, TKN_TX_PACKET_ID
+	st  X+, TKN_ID
+
+	ret
 
 /*******************************************
  *** R E C E I V E R                     ***
@@ -475,7 +543,7 @@ TKN_TokenArrived:
     mov temp0, TKN_TX_STATUS
     sbr temp0, (1<<7) | (1<<6)
     mov TKN_TX_STATUS, temp0
-    ;;;call setLeds0
+    call setLeds0
     
     ;Enable DATA REGISTER READY INTERRUPT on the USART
     lds temp0, UCSR0B
@@ -489,6 +557,19 @@ TKN_TokenArrived:
 ===		based on the state in which we are.
 ================================================================*/
 TKN_Receiver:
+	ldi XL, LOW(TKN_TX_PENDING_RAM)
+	ldi XH, HIGH(TKN_TX_PENDING_RAM)
+	ld  TKN_TX_PENDING, X+
+	ld  TKN_TX_BYTE, X+
+	ld  TKN_TX_STATUS, X+	
+	ldi XL, LOW(TKN_ID_RAM)
+	ldi XH, HIGH(TKN_ID_RAM)
+	ld  TKN_ID, X+
+	ld  TKN_RX_QUEUE_INDEX_IN, X+
+	ld  TKN_RX_BYTE, X+
+	ld  TKN_RX_STATUS, X+
+	ld  TKN_RX_PENDING, X+
+
     mov temp1, TKN_RX_STATUS
     cbr temp1, 0xFC ; Keep only the MODE bits
 
@@ -520,10 +601,10 @@ TKN_Receiver_HeaderByte_Correct:
     ldi XH, HIGH(TKN_RX_BUFFER)
     st X, temp0
     inc TKN_RX_BYTE
-    ret
+    rjmp TKN_Receiver_Return
 
 TKN_Receiver_HeaderByte_Incorrect:
-    ret
+    rjmp TKN_Receiver_Return
 
 TKN_Receiver_TypeByte:
     cpi temp0, TKN_TYPE_DATA
@@ -538,7 +619,7 @@ TKN_Receiver_TypeByte:
     ldi temp1, TKN_HEADER_BYTE
     cpse temp0, temp1
     dec TKN_RX_BYTE
-    ret
+    rjmp TKN_Receiver_Return
 
 TKN_Receiver_TypeByte_DATA:
     ;Set DATA_MODE
@@ -568,7 +649,7 @@ TKN_Receiver_TypeByte_Valid:
     ldi YH, HIGH(TKN_RX_BUFFER)
     std Y+1, temp0
     inc TKN_RX_BYTE
-    ret
+    rjmp TKN_Receiver_Return
 
 /** END OF DETECT_PACKET **/
 
@@ -581,7 +662,7 @@ TKN_Receiver_DATA:
     inc TKN_RX_BYTE
     ldi temp0, TKN_OFFS_DATA_EOF + 1
     cpse temp0, TKN_RX_BYTE
-    ret
+    rjmp TKN_Receiver_Return
 
 TKN_Receiver_DATA_Received:
     ;For now only the mode bits are held in the RX_STATUS, 
@@ -626,17 +707,17 @@ TKN_Receiver_DATA_Forward_cpy:
     sbr temp0, TKN_MODE_DATA         ;Set the '1' bits of MODE
     cbr temp0, (~$FC & ~TKN_MODE_DATA);Set the '0' bits of MODE
     mov TKN_TX_STATUS, temp0
-    ;;;call setLeds0
+    call setLeds0
 
     ;Enable DATA REGISTER READY INTERRUPT on the USART
     lds temp0, UCSR0B
     sbr temp0, (1<<UDRIE0)
     sts UCSR0B, temp0
-    ret
+    rjmp TKN_Receiver_Return
 
 TKN_Receiver_DATA_FromMe:
     call TKN_AckArrived
-    ret
+    rjmp TKN_Receiver_Return
 
 TKN_Receiver_DATA_ForMe:
     ;Store tha packet in the RX_QUEUE
@@ -729,27 +810,27 @@ TKN_Receiver_DATA_SendACK:
     sbr temp0, TKN_MODE_ACK     ;Set the '1' bits of MODE
     cbr temp0, (~$FC & ~TKN_MODE_ACK)   ;Set the '0' bits of MODE
     mov TKN_TX_STATUS, temp0
-    ;;;call setLeds0
+    call setLeds0
 
     ;Enable DATA REGISTER READY INTERRUPT on the USART
     lds temp0, UCSR0B
     sbr temp0, (1<<UDRIE0)
     sts UCSR0B, temp0
-    ret
+    rjmp TKN_Receiver_Return
 
 TKN_Receiver_TOKEN:
     ;No need to actually *store* the token
     inc TKN_RX_BYTE
     ldi temp0, TKN_OFFS_TOKEN_EOF + 1
     cpse temp0, TKN_RX_BYTE
-    ret
+    rjmp TKN_Receiver_Return
 TKN_Receiver_TOKEN_Received:
     ;For now only the mode bits are held in the RX_STATUS, 
     ;so its safe to clear it.
     clr TKN_RX_BYTE    
     clr TKN_RX_STATUS 
     call TKN_TokenArrived
-    ret
+    rjmp TKN_Receiver_Return
 
 TKN_Receiver_ACK:
     ;Store The ACK PACKET
@@ -760,7 +841,7 @@ TKN_Receiver_ACK:
     inc TKN_RX_BYTE
     ldi temp0, TKN_OFFS_ACK_EOF + 1
     cpse temp0, TKN_RX_BYTE
-    ret
+    rjmp TKN_Receiver_Return
 TKN_Receiver_ACK_Received:
     clr TKN_RX_BYTE    
     clr TKN_RX_STATUS
@@ -801,15 +882,30 @@ TKN_Receiver_ACK_Forward_cpy:
     sbr temp0, TKN_MODE_ACK     ;Set the '1' bits of MODE
     cbr temp0, (~$FC & ~TKN_MODE_ACK)   ;Set the '0' bits of MODE
     mov TKN_TX_STATUS, temp0
-    ;;;call setLeds0
+    call setLeds0
 
     ;Enable DATA REGISTER READY INTERRUPT on the USART
     lds temp0, UCSR0B
     sbr temp0, (1<<UDRIE0)
     sts UCSR0B, temp0
-    ret
+    rjmp TKN_Receiver_Return
 TKN_Receiver_ACK_FromMe:
-    ret
+    rjmp TKN_Receiver_Return
 TKN_Receiver_ACK_ForMe:
     call TKN_AckArrived
-    ret
+    rjmp TKN_Receiver_Return
+
+TKN_Receiver_Return:
+	ldi XL, LOW(TKN_TX_PENDING_RAM)
+	ldi XH, HIGH(TKN_TX_PENDING_RAM)
+	st  X+, TKN_TX_PENDING
+	st  X+, TKN_TX_BYTE
+	st  X+, TKN_TX_STATUS	
+	ldi XL, LOW(TKN_RX_QUEUE_INDEX_IN_RAM)
+	ldi XH, HIGH(TKN_RX_QUEUE_INDEX_IN_RAM)
+	st  X+, TKN_RX_QUEUE_INDEX_IN
+	st  X+, TKN_RX_BYTE
+	st  X+, TKN_RX_STATUS
+	st  X+, TKN_RX_PENDING
+	
+	ret

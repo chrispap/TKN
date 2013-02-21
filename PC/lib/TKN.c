@@ -19,9 +19,9 @@
 #define TKN_DEBUG
 #ifdef TKN_DEBUG
   //#define ECHO_ATTEMPTS
-  #define ECHO_TOKENS
+  //#define ECHO_TOKENS
   #define ECHO_EVENTS
-  //#define ECHO_DATA
+  #define ECHO_DATA
 #endif
 
 /* The Packet Buffers */
