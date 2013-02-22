@@ -18,8 +18,8 @@
 
 #define TKN_DEBUG
 #ifdef TKN_DEBUG
-  //#define ECHO_ATTEMPTS
-  //#define ECHO_TOKENS
+  #define ECHO_ATTEMPTS
+  #define ECHO_TOKENS
   #define ECHO_EVENTS
   #define ECHO_DATA
 #endif
@@ -536,37 +536,26 @@ int TKN_Stop()
 
 int TKN_Start()
 {
-
-    if (!TKN_Running)
-    {
+    if (!TKN_Running) {
         TKN_Running=1;
         if ( !(TKN_Thread = CreateThread( NULL, 0, &TKN_Run, NULL, 0, NULL)))
             TKN_Running=0;
-
-        return !TKN_Running;
     }
-    else return -1;
 
+    return !TKN_Running;
 }
 
 int TKN_Stop()
 {
-
-    if (TKN_Running)
-    {
+    if (TKN_Running) {
         TKN_Running=0;
-        if ( WaitForSingleObject (TKN_Thread, 2000))
+        if (WaitForSingleObject (TKN_Thread, 1000))
             TKN_Running=1;
-        else {
-      CloseHandle(TKN_Thread);
+        else
+            CloseHandle(TKN_Thread);
     }
 
-        return TKN_Running;
-    }
-    else return -1;
-
-
-
+    return TKN_Running;
 }
 
 #endif
@@ -651,8 +640,8 @@ DWORD WINAPI TKN_Run (LPVOID params)
                 rid = TKN_Queue_Pop(&TX_QUEUE, &data);
                 TKN_SendDataPacket ( &data, rid);
             }
-
         }
+
         fflush (stdout);
     }
 

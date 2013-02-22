@@ -13,11 +13,9 @@
 
 .equ TKN_HEADER_BYTE    = $00
 .equ TKN_EOF_BYTE       = $FF
-
 .equ TKN_TYPE_DATA      = $AA
 .equ TKN_TYPE_ACK       = $BB
 .equ TKN_TYPE_TOKEN     = $CC
-
 .equ TKN_MODE_DATA      = $01
 .equ TKN_MODE_ACK       = $02
 .equ TKN_MODE_TOKEN     = $03
@@ -79,7 +77,6 @@ TKN_RX_QUEUE_INDEX_OUT_RAM:  	.byte 1
 .cseg
 TOKEN_PACKET:
     .db $00, TKN_TYPE_TOKEN, $00, $00, $FF
-
 
 /*******************************************
  *** C L I E N T  R O U T I N E S        ***

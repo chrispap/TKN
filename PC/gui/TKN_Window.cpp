@@ -65,7 +65,6 @@ void TKN_Window::closeEvent(QCloseEvent *evt){
     }
 }
 
-
 void TKN_Window::tokenReceivedCallback()
 {
     static const int tknInv=50;
@@ -77,8 +76,8 @@ void TKN_Window::tokenReceivedCallback()
     /* Every tknInv tokens show the rate
        of the respective time period */
 
-    //emit self->tokenReceived(self->mTknCounter);
-    //return;
+    emit self->tokenReceived(self->mTknCounter); return;
+
     if (self->mTknCounter%tknInv == 0) {
         emit self->tokenReceived(1000*tknInv/self->mTime->elapsed());
         self->mTime->start();
@@ -105,7 +104,6 @@ void TKN_Window::dataReceive()
     }
 
 }
-
 
 void TKN_Window::on_buttonStartStop_clicked()
 {
@@ -187,6 +185,7 @@ void TKN_Window::stopTkn()
         this->mTknStarted = false;
         QTimer::singleShot(20, this, SLOT(shrink()));
     }
+    else emit consoleOut("Network is unstopable. (Not responding)");
 }
 
 void TKN_Window::shrink()

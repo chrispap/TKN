@@ -2,14 +2,12 @@
 #include <avr/interrupt.h>
 
 /* TKN Functions */
-void (*TKN_Reset)(void)		= (void(*)()) 0x7000;
-void (*TKN_Return)(void)	= (void(*)()) 0x7394;
-void (*__TKN_popPacket)(void)	= (void(*)()) 0x7098;
-void (*__TKN_pushPacket)(void)	= (void(*)()) 0x7062;
+#define TKN_RESET_ADDR	0x7000
+#define TKN_RETURN_ADDR 0x7394
+#define TKN_POP_ADDR	0x7098
+#define TKN_PUSH_ADDR	0x7062
 
-char PacketBuffer[17];
-
-char TKN_PushPacket(char *buf, char dest_id)
+char TKN_Send(char *buf, char dest_id)
 {
 	asm ("push r16");
 	asm ("push r17");
@@ -20,7 +18,7 @@ char TKN_PushPacket(char *buf, char dest_id)
 	asm ("mov r28, r24");
 	asm ("mov r29, r25");
 	asm ("mov r16, r22");
-	__TKN_pushPacket();
+	((void(*)()) TKN_PUSH_ADDR)();
 	asm ("mov  r24, r16");
 	
 	asm ("pop r29");
@@ -30,7 +28,7 @@ char TKN_PushPacket(char *buf, char dest_id)
 	asm ("pop r16");
 }
 
-char TKN_PopPacket(char *buf)
+char TKN_Receive(char *buf)
 {
 	asm ("push r16");
 	asm ("push r17");
@@ -38,7 +36,7 @@ char TKN_PopPacket(char *buf)
 	asm ("push r28");
 	asm ("push r29");
 
-	__TKN_popPacket();
+	((void(*)()) TKN_POP_ADDR)();
 	asm ("mov  r24, r16");
 	
 	asm ("pop r29");
@@ -48,13 +46,22 @@ char TKN_PopPacket(char *buf)
 	asm ("pop r16");
 }
 
-int main(void)
+char PacketBuffer[16];
+
+ISR(BADISR_vect)
 {
+	while (TKN_Send("Bad Interrupt!", 1) != 0);
+	((void(*)()) TKN_RETURN_ADDR)();
+}
+
+int main(void)
+{	
 	asm("sei");
 	
-	while(!TKN_PopPacket(PacketBuffer));
-	strcpy(PacketBuffer, "Hi World!");
-	TKN_PushPacket(PacketBuffer, 1);
+	strncpy(PacketBuffer, "From Gcc app!", 16);
 	
-	TKN_Return();
+	while (TKN_Receive( PacketBuffer) == 0);
+		//while (TKN_Send(PacketBuffer, 1) != 0);
+	
+	((void(*)()) TKN_RETURN_ADDR)();
 }

@@ -7,9 +7,7 @@
 */
 
 .cseg
-
 .equ MY_BOOTSTART = LARGEBOOTSTART
-
 .org MY_BOOTSTART
 
 jmp Reset

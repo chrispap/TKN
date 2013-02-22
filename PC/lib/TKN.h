@@ -9,10 +9,10 @@ extern "C" {
 #define TKN_BAUD_DEFAULT 	57600
 #define TKN_PORT_DEFAULT 	16
 #define TKN_ID_DEFAULT 		1
-#define TKN_DEST_ID_DEFAULT 	2
+#define TKN_DEST_ID_DEFAULT 2
 
 /* TKN Parameters */
-#define TKN_READ_TIMEOUT 	100
+#define TKN_READ_TIMEOUT 	250
 #define TKN_MAX_ATTEMPTS 	10
 #define TKN_QUEUE_SIZE 		50
 
