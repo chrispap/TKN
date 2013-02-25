@@ -15,7 +15,7 @@
     </MakeDirPath>
     <GlobalToolchainPath>C:\Program Files (x86)\Atmel\AVR Studio 5.0\avrassembler</GlobalToolchainPath>
     <AssemblyName>SimpleLed</AssemblyName>
-    <Name>Nodes</Name>
+    <Name>asm_sample</Name>
     <RootNamespace>SimpleLed</RootNamespace>
     <EntryFile>$(MSBuildProjectDirectory)\pwm_setBrightness.asm</EntryFile>
   </PropertyGroup>

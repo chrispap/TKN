@@ -9,5 +9,4 @@
 #define BIN1TOHEX2_ADDR	0x734d
 #define SETLEDS_ADDR	0x72c0
 
-
 #endif /* GVVAPPLICATION_H_ */

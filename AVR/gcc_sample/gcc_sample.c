@@ -1,6 +1,6 @@
 ﻿#include <avr/io.h>
 #include <avr/interrupt.h>
-#include "GccApplication.h"
+#include "gcc_sample.h"
 
 char TKN_Send(char *buf, char dest_id)
 {
