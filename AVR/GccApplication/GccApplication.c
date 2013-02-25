@@ -1,11 +1,6 @@
 ﻿#include <avr/io.h>
 #include <avr/interrupt.h>
-
-/* TKN Functions */
-#define TKN_RESET_ADDR	0x7000
-#define TKN_RETURN_ADDR 0x7394
-#define TKN_POP_ADDR	0x7098
-#define TKN_PUSH_ADDR	0x7062
+#include "GccApplication.h"
 
 char TKN_Send(char *buf, char dest_id)
 {
@@ -50,18 +45,22 @@ char PacketBuffer[16];
 
 ISR(BADISR_vect)
 {
-	while (TKN_Send("Bad Interrupt!", 1) != 0);
-	((void(*)()) TKN_RETURN_ADDR)();
+	TKN_Send("BAD_INTERRUPT!!!", 1);
 }
 
 int main(void)
-{	
-	asm("sei");
+{
+	/* Enable interrupts */
+	sei();
 	
 	strncpy(PacketBuffer, "From Gcc app!", 16);
 	
-	while (TKN_Receive( PacketBuffer) == 0);
-		//while (TKN_Send(PacketBuffer, 1) != 0);
+	/* main loop */
+	while (TKN_Receive( PacketBuffer) == 0)
+	{
+		while (TKN_Send(PacketBuffer, 1) != 0);	
+	}
 	
+	/*Return to TKN_BOOT */
 	((void(*)()) TKN_RETURN_ADDR)();
 }

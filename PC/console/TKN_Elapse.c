@@ -13,8 +13,8 @@
 #include "../lib/TKN.h"
 #include "../lib/TKN_Util.h"
 
-#define FULL_LOAD 1
-#define SECONDS_TO_RUN 10
+#define FULL_LOAD 0
+#define SECONDS_TO_RUN 200
 
 BYTE dest_id;
 static time_t time_start, time_end;
@@ -29,7 +29,6 @@ int main (int argc, char *argv[])
     dest_id = (argc > 3)? atoi (argv[3]) : TKN_DEST_ID_DEFAULT;
 
     /* Start the network */
-
     TKN_Start ();
     TKN_PrintCols();
     int packC = 0;

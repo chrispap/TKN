@@ -321,13 +321,13 @@ Move_interrupts_BootSec:
 === - Enable the PCINT7 (switch)
 ================================================================*/
 Enable_PcInt7:
-	cbi EIMSK, INT0
+	nop ;cbi EIMSK, INT0
 
-	lds temp0, EICRA
-	sbr temp0, (2<<ISC00)
-	sts EICRA, temp0
+	nop nop ;lds temp0, EICRA
+	nop ;sbr temp0, (2<<ISC00)
+	nop nop ;sts EICRA, temp0
 
-	sbi EIMSK, INT0
+	nop ;sbi EIMSK, INT0
 	
 	lds temp0, PCICR
 	sbr temp0, (1<<PCIE0)

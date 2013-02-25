@@ -20,11 +20,11 @@
     <KeepTimersRunning>true</KeepTimersRunning>
     <AsfFrameworkConfig>
       <framework-data xmlns="">
-  <options />
-  <configurations />
-  <files />
-  <documentation help="" />
-</framework-data>
+        <options />
+        <configurations />
+        <files />
+        <documentation help="" />
+      </framework-data>
     </AsfFrameworkConfig>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
@@ -71,6 +71,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="GccApplication.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="GccApplication.h">
       <SubType>compile</SubType>
     </Compile>
   </ItemGroup>

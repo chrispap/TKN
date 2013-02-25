@@ -66,7 +66,6 @@ USART_Receive:
 === USART0 Rx Complete ISR =====================================
 ================================================================*/
 URXC0_ISR:
-	in rsreg, SREG
 	push temp0
 	push temp1
 	push temp2
@@ -76,10 +75,14 @@ URXC0_ISR:
 	push YH
 	push ZL
 	push ZH
-
+	push rsreg
+	in rsreg, SREG
+	
 	call USART_Receive
 	call TKN_Receiver
 
+	out SREG, rsreg
+	pop rsreg
 	pop ZH
 	pop ZL
 	pop YH
@@ -89,7 +92,6 @@ URXC0_ISR:
 	pop temp2
 	pop temp1
 	pop temp0
-	out SREG, rsreg
 
 	reti
 
@@ -97,7 +99,6 @@ URXC0_ISR:
 === USART0 Data Register Ready ISR==============================
 ================================================================*/
 US0TKN_TX_ISR:
-	in rsreg, SREG
 	push temp0
 	push temp1
 	push temp2
@@ -107,9 +108,13 @@ US0TKN_TX_ISR:
 	push YH
 	push ZL
 	push ZH
-
-	call TKN_Transmitter
+	push rsreg
+	in rsreg, SREG
 	
+	call TKN_Transmitter
+
+	out SREG, rsreg
+	pop rsreg
 	pop ZH
 	pop ZL
 	pop YH
@@ -119,7 +124,6 @@ US0TKN_TX_ISR:
 	pop temp2
 	pop temp1
 	pop temp0
-	out SREG, rsreg
 
 	reti
     

@@ -4,9 +4,9 @@
 
 .equ TKN_pushPacket     = 0x7062
 .equ TKN_popPacket      = 0x7098
-.equ fillPacketBuf      = 0x7430
-.equ bin1ToHex2         = 0x7349
-.equ setLeds            = 0x72bc
+.equ fillPacketBuf      = 0x7434
+.equ bin1ToHex2         = 0x734d
+.equ setLeds            = 0x72c0
 
 .def temp0              = r16
 .def temp1              = r17
@@ -14,7 +14,7 @@
 .def del_replays        = r21
 
 .dseg
-.org $400
+.org SRAM_START
 packetBuff: .byte TKN_PACKET_SIZE
 
 .cseg
