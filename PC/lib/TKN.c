@@ -16,11 +16,11 @@
 #include "TKN_Queue.h"
 #include "rs232.h"
 
-#define TKN_DEBUG
+//#define TKN_DEBUG
 #ifdef TKN_DEBUG
-  #define ECHO_ATTEMPTS
-  #define ECHO_TOKENS
-  #define ECHO_EVENTS
+  //#define ECHO_ATTEMPTS
+  //#define ECHO_TOKENS
+  //#define ECHO_EVENTS
   #define ECHO_DATA
 #endif
 
@@ -109,7 +109,7 @@ int TKN_PrintDataPacket (BYTE * buffer, int details, int bin)
     {
         int i;
         for (i = TKN_OFFS_DATA_START; i <= TKN_OFFS_DATA_STOP; i++)
-            TKN_PrintByte (buffer[i], 0);
+            TKN_PrintByte (buffer[i], bin==2);
         printf("\t");
     }
 
@@ -270,7 +270,7 @@ int TKN_Receive ()
                         printf ("F> ");
                         #endif
                         #ifdef ECHO_DATA
-                        TKN_PrintDataPacket (RX_Buffer, 1, 1);
+                        TKN_PrintDataPacket (RX_Buffer, 1, 2);
                         #endif
                         continue;
                     }
@@ -281,7 +281,7 @@ int TKN_Receive ()
                     printf ("L< ");
                     #endif
                     #ifdef ECHO_DATA
-                    TKN_PrintDataPacket (RX_Buffer, 1, 0);
+                    TKN_PrintDataPacket (RX_Buffer, 1, 2);
                     #endif
                     return TKN_TYPE_DATA;
                 }
@@ -304,7 +304,7 @@ int TKN_Receive ()
                     printf ("D< ");
                     #endif
                     #ifdef ECHO_DATA
-                    TKN_PrintDataPacket (RX_Buffer, 1, 1);
+                    TKN_PrintDataPacket (RX_Buffer, 1, 2);
                     #endif
                     if (recDataCallback) recDataCallback();
                     TKN_SendAckPacket (RX_Buffer[TKN_OFFS_SENDER], MY_ID, RX_Buffer[TKN_OFFS_PACKET_ID]);

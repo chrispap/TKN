@@ -52,7 +52,7 @@
 .dseg
 
 ;.org SRAM_START
-.org 0x500
+.org 0xE00
 
 TKN_RX_QUEUE:					.byte TKN_QUEUE_SIZE
 TKN_TX_QUEUE:					.byte TKN_QUEUE_SIZE

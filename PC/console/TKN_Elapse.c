@@ -13,8 +13,8 @@
 #include "../lib/TKN.h"
 #include "../lib/TKN_Util.h"
 
-#define FULL_LOAD 0
-#define SECONDS_TO_RUN 200
+#define FULL_LOAD 1
+#define SECONDS_TO_RUN 10
 
 BYTE dest_id;
 static time_t time_start, time_end;
@@ -44,8 +44,7 @@ int main (int argc, char *argv[])
         } while ((time (NULL) - time_start) < SECONDS_TO_RUN);
 
         time_end = time (NULL);
-        sleep(2); // wait for all the Tx Queue to be sent
-        printf("\n>> Receive back \n");
+        sleep(4); // wait for all the Tx Queue to be sent
         char recData[TKN_DATA_SIZE];
         while (TKN_PopData(recData) > 0 ); // Pop all the data out of the Rx Queue
     }

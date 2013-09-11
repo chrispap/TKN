@@ -35,6 +35,7 @@ setLeds:
 	ret
 
 setLeds0:
+	ret
 	push YL
 	push YH
 	push temp1
@@ -55,6 +56,7 @@ setLeds0:
 	ret
 
 setLeds1:
+	ret
 	push YL
 	push YH
 	push temp1

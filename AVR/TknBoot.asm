@@ -149,7 +149,7 @@ switch_command:
 	std Y+1, temp1
 	rjmp push_loop
 	
-	push_loop:
+push_loop:
 	call TKN_pushPacket
 	and temp0, temp0
 	brne push_loop
