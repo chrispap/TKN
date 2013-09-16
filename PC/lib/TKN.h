@@ -14,7 +14,7 @@ extern "C" {
 /* TKN Parameters */
 #define TKN_READ_TIMEOUT 	100
 #define TKN_MAX_ATTEMPTS 	10
-#define TKN_QUEUE_SIZE 		50
+#define TKN_QUEUE_SIZE 		1
 
 /* TKN Packet Types */ 
 #define TKN_TYPE_NONE 		0x00

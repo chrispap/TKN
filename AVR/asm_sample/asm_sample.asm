@@ -36,11 +36,15 @@ jmp BAD_ISR
 jmp BAD_ISR
 
 .equ TKN_PACKET_SIZE    = 0x10
+
 .equ TKN_pushPacket     = 0x7062
 .equ TKN_popPacket      = 0x7098
-.equ fillPacketBuf      = 0x7434
-.equ bin1ToHex2         = 0x734d
-.equ setLeds            = 0x72c0
+.equ fillPacketBuf      = 0x7436
+.equ Bin2ToHex4         = 0x7348
+.equ Bin1ToHex2         = 0x734f
+.equ Bin1ToHex1         = 0x7353
+.equ setLeds            = 0x72c4
+
 .def temp0              = r16
 .def temp1              = r17
 .def temp2              = r18

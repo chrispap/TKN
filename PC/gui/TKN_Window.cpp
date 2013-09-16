@@ -76,7 +76,7 @@ void TKN_Window::tokenReceivedCallback()
     /* Every tknInv tokens show the rate
        of the respective time period */
 
-    emit self->tokenReceived(self->mTknCounter); return;
+    //emit self->tokenReceived(self->mTknCounter); return;
 
     if (self->mTknCounter%tknInv == 0) {
         emit self->tokenReceived(1000*tknInv/self->mTime->elapsed());
@@ -95,10 +95,10 @@ void TKN_Window::dataReceivedCallback()
 void TKN_Window::dataReceive()
 {
     TKN_Data recData;
-    BYTE sender;
+    int sender;
 
-    if ((sender=TKN_PopData(&recData))) {
-        if (nodeMap.contains((int)sender)) {
+    while ((sender=TKN_PopData(&recData)) != -1) {
+        if (nodeMap.contains(sender)) {
             nodeMap[(int)(sender)]->dataReceive(&recData);
         }
     }

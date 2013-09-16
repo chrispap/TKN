@@ -24,10 +24,9 @@ TKN_NodeBox::TKN_NodeBox(QWidget *parent, int id) :
     /* Ui setup */
     this->NODE_ID = id;
     this->setTitle(QString("Node ").append(QString('0'+NODE_ID)));
-    //this->ui->labelAVR->setPixmap( QPixmap(":/AVR_Chip-W180px.png"));
 
     /* Signal connections */
-    //connect(this, SIGNAL(dataReceived()), this, SLOT(on_dataReceived()));
+    connect(this, SIGNAL(dataReceived(TKN_Data)), this, SLOT(dataReceivedObserver(TKN_Data)));
     connect(this, SIGNAL(consoleOut(QString)),parentWidget(), SLOT(consoleOut(QString)), Qt::QueuedConnection);
 
     PAGESIZE = 128;
@@ -40,22 +39,24 @@ TKN_NodeBox::~TKN_NodeBox()
 
 void TKN_NodeBox::dataReceive(TKN_Data *data)
 {
-    receivedDataEcho(data);
-
+    echo(data);
     dataQueueMutex.lock();
     dataQueue.enqueue(*data);
     dataQueueMutex.unlock();
     dataQueueSem.release();
-
-    emit dataReceived();
+    emit dataReceived(*data);
 }
 
-//void TKN_NodeBox::on_dataReceived()
-//{
-    // No action yet
-//}
+void TKN_NodeBox::dataReceivedObserver(TKN_Data data)
+{
+    if (data.data[0]=='A' && data.data[1]==':') {
+        int AD = (int) strtol((const char*)&data.data[2], NULL, 16);
+        ui->dial->setValue(AD);
+    }
+    return;
+}
 
-void TKN_NodeBox::receivedDataEcho(TKN_Data *data)
+void TKN_NodeBox::echo(TKN_Data *data)
 {
     ui->textEditConsole->append(QByteArray((char*)data, sizeof(TKN_Data)));
 }
@@ -93,6 +94,15 @@ void TKN_NodeBox::on_buttonHexUpload_clicked()
     QtConcurrent::run(this, &TKN_NodeBox::hexUpload);
 }
 
+void TKN_NodeBox::on_horizontalSlider_valueChanged(int value)
+{
+    if (value==0) return;
+
+    TKN_Data data;
+    *((ushort*)(&data)) = 255 * value/ui->horizontalSlider->maximum();
+    TKN_PushData(&data, NODE_ID);
+}
+
 bool TKN_NodeBox::dataDeque(TKN_Data *data, int timeout)
 {
     if (dataQueueSem.tryAcquire(1, timeout)) {
@@ -119,10 +129,6 @@ void TKN_NodeBox::flushRecDataQueue()
 
 void TKN_NodeBox::hexUpload()
 {
-    /* Flush any data */
-    flushRecDataQueue();
-
-    /* Do the job */
     int page=0;
     int word=0;
     int byteCount=0;
@@ -131,9 +137,6 @@ void TKN_NodeBox::hexUpload()
     BYTE sendData[TKN_DATA_SIZE];
     BYTE byteForEmpty = 0xff;
     QString recString;
-
-//    if (ui->lineEditHexFilePath->text().size() < 5)
-//        return;
 
     HEXFile *h;
 
@@ -153,6 +156,9 @@ void TKN_NodeBox::hexUpload()
         memset(sendData, 0, TKN_DATA_SIZE);
         strcpy ((char*)sendData, "B:");
         sendData[3] = addr/(PAGESIZE*2);
+
+        /* Flush any data from receive queue */
+        flushRecDataQueue();
 
         while (TKN_PushData ((TKN_Data *) sendData, NODE_ID));
 

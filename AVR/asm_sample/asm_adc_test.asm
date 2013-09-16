@@ -36,32 +36,59 @@ jmp BAD_ISR
 jmp BAD_ISR
 
 .equ TKN_PACKET_SIZE    = 0x10
+
 .equ TKN_pushPacket     = 0x7062
 .equ TKN_popPacket      = 0x7098
-.equ fillPacketBuf      = 0x7434
-.equ bin1ToHex2         = 0x734d
-.equ setLeds            = 0x72c0
+.equ fillPacketBuf      = 0x7436
+.equ Bin2ToHex4         = 0x7348
+.equ Bin1ToHex2         = 0x734f
+.equ Bin1ToHex1         = 0x7353
+.equ setLeds            = 0x72c4
+
 .def temp0              = r16
 .def temp1              = r17
 .def temp2              = r18
+.def last_val           = r21
 
 Reset:
     jmp main
 
 .dseg
 .org SRAM_START
-packetBuff: .byte TKN_PACKET_SIZE
+inPacketBuff: .byte TKN_PACKET_SIZE
+outPacketBuff: .byte TKN_PACKET_SIZE
 
 .cseg
-str:		.db "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+str:		.db "________________"
 str_bad:    .db "BAD INTERRUPT!!!"
 
 main:
-    ldi YL, LOW(packetBuff)
-    ldi YH, HIGH(packetBuff)
-	ldi ZL, LOW(str<<1)
-	ldi ZH, HIGH(str<<1)
-	call fillPacketBuf
+    ldi YL, LOW(outPacketBuff)
+    ldi YH, HIGH(outPacketBuff)
+	ldi temp1, TKN_PACKET_SIZE
+	
+	ldi temp0, 'A'
+	st Y+, temp0
+	dec temp1
+	
+	ldi temp0, ':'
+	st Y+, temp0
+	dec temp1
+	
+	ldi temp0, '0'
+	st Y+, temp0
+	dec temp1
+	
+	ldi temp0, 'x'
+	st Y+, temp0
+	dec temp1
+	
+	clr temp0
+init_buf:
+	st Y+, temp0
+	dec temp1
+	and temp1, temp1
+	brne init_buf
 	
 set_adc:
 	ldi temp1,  (1 << REFS0) | (1<<ADLAR) | (2<<MUX0)
@@ -69,7 +96,7 @@ set_adc:
 	or temp0, temp1
 	sts ADMUX, temp0 
 	
-	ldi temp1, (1 << ADATE) | (7<<ADPS0);
+	ldi temp1, (1 << ADATE) //| (7<<ADPS0)
 	lds temp0, ADCSRA
 	or temp0, temp1
 	sts ADCSRA, temp0
@@ -82,16 +109,34 @@ set_adc:
 	or temp0, temp1
 	sts ADCSRA, temp0 
 
-loop:	
+loop:
+    ldi YL, LOW(inPacketBuff)
+    ldi YH, HIGH(inPacketBuff)
+loop1:
 	call TKN_popPacket
     and temp0, temp0
 	brne exit
 
 send_val:
-	lds temp1, ADCH
-	st Y, temp1
+	lds temp2, ADCH
+	cp temp2, last_val
+	breq loop1
+	mov last_val, temp2
+    ldi YL, LOW(outPacketBuff)
+    ldi YH, HIGH(outPacketBuff)
+	mov ZL, YL 
+	mov ZH, YH
+	inc ZL
+	inc ZL
+	inc ZL
+	inc ZL
+	clr temp1
+	call Bin2ToHex4
 	ldi temp0, 1
+sendLoop:
 	call TKN_pushPacket
+	and temp0, temp0
+	brne sendLoop
 
     rjmp loop
 	 

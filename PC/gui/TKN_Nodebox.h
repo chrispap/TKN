@@ -26,15 +26,16 @@ public slots:
     void dataReceive(TKN_Data*);
 
 signals:
-    void dataReceived();
+    void dataReceived(TKN_Data data);
     void consoleOut(QString msg);
 
 private slots:
     void on_buttonSend_clicked();
     void on_buttonHexUpload_clicked();
-    //void on_dataReceived();
     void on_buttonBrowseHex_clicked();
-    void receivedDataEcho(TKN_Data *data);
+    void dataReceivedObserver(TKN_Data data);
+    void echo(TKN_Data *data);
+    void on_horizontalSlider_valueChanged(int value);
 
 private:
     Ui::TKN_NodeBox *ui;
