@@ -10,20 +10,31 @@
 #include <QMutex>
 #include <QSemaphore>
 #include <QFileDialog>
+#include <qwt_dial.h>
+#include <qwt_dial_needle.h>
 
 #include "lib/TKN.h"
 #include "lib/HEXParser.hpp"
 #include "lib/ErrorMsg.hpp"
 
 TKN_NodeBox::TKN_NodeBox(QWidget *parent, int id) :
+    voltometer(this),
     QGroupBox(parent),
     ui(new Ui::TKN_NodeBox)
 {
     ui->setupUi(this);
 
     /* Ui setup */
-    this->NODE_ID = id;
-    this->setTitle(QString("Node ").append(QString('0'+NODE_ID)));
+    NODE_ID = id;
+    setTitle(QString("Node ").append(QString('0'+NODE_ID)));
+
+    ui->groupBox_adc->layout()->addWidget(&voltometer);
+    voltometer.setReadOnly(true);
+    voltometer.setMode(QwtDial::RotateNeedle);
+    voltometer.setScaleArc(30, 330);
+    voltometer.setScale(0.0, 5.0);
+    voltometer.setNeedle(new QwtDialSimpleNeedle(QwtDialSimpleNeedle::Arrow));
+
 
     /* Signal connections */
     connect(this, SIGNAL(dataReceived(TKN_Data)), this, SLOT(dataReceivedObserver(TKN_Data)));
@@ -51,7 +62,7 @@ void TKN_NodeBox::dataReceivedObserver(TKN_Data data)
 {
     if (data.data[0]=='A' && data.data[1]==':') {
         int AD = (int) strtol((const char*)&data.data[2], NULL, 16);
-        ui->dial->setValue(AD);
+        voltometer.setValue((float)AD/255.*5.);
     }
     return;
 }
@@ -89,9 +100,16 @@ void TKN_NodeBox::on_buttonBrowseHex_clicked()
         ui->lineEditHexFilePath->setText(newPath);
 }
 
-void TKN_NodeBox::on_buttonHexUpload_clicked()
+void TKN_NodeBox::on_buttonUpload_clicked()
 {
     QtConcurrent::run(this, &TKN_NodeBox::hexUpload);
+}
+
+void TKN_NodeBox::on_buttonRun_clicked()
+{
+    TKN_Data data;
+    memcpy((void*)data.data, (void*)"R:", 3);
+    TKN_PushData(&data, NODE_ID);
 }
 
 void TKN_NodeBox::on_horizontalSlider_valueChanged(int value)

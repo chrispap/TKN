@@ -6,6 +6,7 @@
 #include <QQueue>
 #include <QMutex>
 #include <QSemaphore>
+#include <qwt_dial.h>
 
 #include "lib/TKN.h"
 
@@ -30,8 +31,9 @@ signals:
     void consoleOut(QString msg);
 
 private slots:
-    void on_buttonSend_clicked();
-    void on_buttonHexUpload_clicked();
+    void on_buttonSend_clicked();    
+    void on_buttonRun_clicked();
+    void on_buttonUpload_clicked();
     void on_buttonBrowseHex_clicked();
     void dataReceivedObserver(TKN_Data data);
     void echo(TKN_Data *data);
@@ -39,6 +41,7 @@ private slots:
 
 private:
     Ui::TKN_NodeBox *ui;
+    QwtDial voltometer;
     QQueue<TKN_Data>dataQueue;
     QMutex dataQueueMutex;
     QSemaphore dataQueueSem;

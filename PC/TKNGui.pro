@@ -28,5 +28,7 @@ FORMS += \
 
 #CONFIG += CONSOLE
 
+include ( C:\Qwt-6.1.0\features\qwt.prf )
+
 RESOURCES += \
     gui/resources.qrc
