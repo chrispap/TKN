@@ -96,7 +96,7 @@ set_adc:
 	or temp0, temp1
 	sts ADMUX, temp0 
 	
-	ldi temp1, (1 << ADATE) //| (7<<ADPS0)
+	ldi temp1, (1 << ADATE) | (7<<ADPS0)
 	lds temp0, ADCSRA
 	or temp0, temp1
 	sts ADCSRA, temp0

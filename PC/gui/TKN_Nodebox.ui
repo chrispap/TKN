@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>270</width>
+    <width>240</width>
     <height>460</height>
    </rect>
   </property>
@@ -18,13 +18,13 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>270</width>
+    <width>240</width>
     <height>460</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>270</width>
+    <width>240</width>
     <height>16777215</height>
    </size>
   </property>
@@ -35,13 +35,6 @@
    <string>Node </string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="4" column="1">
-    <widget class="QPushButton" name="buttonBrowseHex">
-     <property name="text">
-      <string>Browse</string>
-     </property>
-    </widget>
-   </item>
    <item row="1" column="0" colspan="2">
     <widget class="QLineEdit" name="lineEdit_DataToSend">
      <property name="font">
@@ -59,24 +52,10 @@
      </property>
     </widget>
    </item>
-   <item row="8" column="0">
-    <widget class="QLabel" name="label">
+   <item row="1" column="2">
+    <widget class="QPushButton" name="buttonSend">
      <property name="text">
-      <string>Console</string>
-     </property>
-    </widget>
-   </item>
-   <item row="4" column="0">
-    <widget class="QLineEdit" name="lineEditHexFilePath">
-     <property name="text">
-      <string>.hex</string>
-     </property>
-    </widget>
-   </item>
-   <item row="10" column="0">
-    <widget class="QPushButton" name="buttonClear">
-     <property name="text">
-      <string>Clear</string>
+      <string>Send</string>
      </property>
     </widget>
    </item>
@@ -87,10 +66,17 @@
      </property>
     </widget>
    </item>
-   <item row="9" column="0" colspan="2">
-    <widget class="QTextEdit" name="textEditConsole">
-     <property name="readOnly">
-      <bool>true</bool>
+   <item row="4" column="0">
+    <widget class="QLineEdit" name="lineEditHexFilePath">
+     <property name="text">
+      <string>.hex</string>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="1">
+    <widget class="QPushButton" name="buttonBrowseHex">
+     <property name="text">
+      <string>Browse</string>
      </property>
     </widget>
    </item>
@@ -101,33 +87,52 @@
      </property>
     </widget>
    </item>
-   <item row="1" column="2">
-    <widget class="QPushButton" name="buttonSend">
+   <item row="8" column="0">
+    <widget class="QLabel" name="label">
      <property name="text">
-      <string>Send</string>
+      <string>Console</string>
+     </property>
+    </widget>
+   </item>
+   <item row="9" column="0" colspan="2">
+    <widget class="QTextEdit" name="textEditConsole">
+     <property name="readOnly">
+      <bool>true</bool>
      </property>
     </widget>
    </item>
    <item row="9" column="2">
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
-      <widget class="QCheckBox" name="checkBox">
-       <property name="text">
-        <string>Send value</string>
+      <widget class="QGroupBox" name="groupBox_2">
+       <property name="title">
+        <string>Byte Out</string>
        </property>
-       <property name="checked">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QSlider" name="horizontalSlider">
-       <property name="maximum">
-        <number>255</number>
-       </property>
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_2">
+        <item>
+         <widget class="QSlider" name="horizontalSlider">
+          <property name="maximum">
+           <number>255</number>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="verticalSpacer">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
       </widget>
      </item>
      <item>
@@ -138,39 +143,55 @@
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="label_3">
-       <property name="text">
-        <string>ADC Input</string>
+      <widget class="QGroupBox" name="groupBox">
+       <property name="title">
+        <string>ADC In</string>
        </property>
+       <layout class="QVBoxLayout" name="verticalLayout_3">
+        <item>
+         <widget class="QDial" name="dial">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="maximum">
+           <number>255</number>
+          </property>
+          <property name="invertedAppearance">
+           <bool>false</bool>
+          </property>
+          <property name="notchesVisible">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="verticalSpacer_2">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+       <zorder>dial</zorder>
+       <zorder>dial</zorder>
+       <zorder>groupBox_2</zorder>
+       <zorder>verticalSpacer_2</zorder>
       </widget>
-     </item>
-     <item>
-      <widget class="QDial" name="dial">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="maximum">
-        <number>255</number>
-       </property>
-       <property name="notchesVisible">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <spacer name="verticalSpacer">
-       <property name="orientation">
-        <enum>Qt::Vertical</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>20</width>
-         <height>40</height>
-        </size>
-       </property>
-      </spacer>
      </item>
     </layout>
+   </item>
+   <item row="10" column="0" colspan="2">
+    <widget class="QPushButton" name="buttonClear">
+     <property name="text">
+      <string>Clear</string>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>
