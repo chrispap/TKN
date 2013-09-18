@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>250</width>
+    <width>328</width>
     <height>460</height>
    </rect>
   </property>
@@ -18,13 +18,13 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>250</width>
+    <width>280</width>
     <height>460</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>250</width>
+    <width>400</width>
     <height>16777215</height>
    </size>
   </property>
@@ -48,18 +48,17 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="1">
-       <widget class="QPushButton" name="buttonBrowseHex">
-        <property name="text">
-         <string>Browse</string>
-        </property>
-       </widget>
-      </item>
       <item row="1" column="1">
        <widget class="QCommandLinkButton" name="buttonRun">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="maximumSize">
          <size>
-          <width>80</width>
+          <width>70</width>
           <height>36</height>
          </size>
         </property>
@@ -70,7 +69,7 @@
          <bool>false</bool>
         </property>
         <property name="text">
-         <string>RUN!</string>
+         <string>RUN</string>
         </property>
        </widget>
       </item>
@@ -87,6 +86,25 @@
         </property>
        </widget>
       </item>
+      <item row="0" column="1">
+       <widget class="QPushButton" name="buttonBrowseHex">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>60</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Browse</string>
+        </property>
+       </widget>
+      </item>
      </layout>
     </widget>
    </item>
@@ -96,7 +114,7 @@
       <string>Console</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
-      <item row="0" column="0">
+      <item row="0" column="0" colspan="2">
        <widget class="QLineEdit" name="lineEdit_DataToSend">
         <property name="font">
          <font>
@@ -113,15 +131,33 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="1">
+      <item row="0" column="2">
        <widget class="QPushButton" name="buttonSend">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>60</width>
+          <height>16777215</height>
+         </size>
+        </property>
         <property name="text">
          <string>Send</string>
         </property>
        </widget>
       </item>
-      <item row="1" column="0" colspan="2">
+      <item row="1" column="0" colspan="3">
        <widget class="QTextEdit" name="textEditConsole">
+        <property name="font">
+         <font>
+          <family>Courier</family>
+          <pointsize>10</pointsize>
+         </font>
+        </property>
         <property name="readOnly">
          <bool>true</bool>
         </property>
@@ -134,6 +170,43 @@
         </property>
        </widget>
       </item>
+      <item row="2" column="2">
+       <layout class="QVBoxLayout" name="verticalLayout">
+        <item>
+         <widget class="QCheckBox" name="checkBox_log">
+          <property name="text">
+           <string>Echo</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="radioButton_ascii">
+          <property name="layoutDirection">
+           <enum>Qt::RightToLeft</enum>
+          </property>
+          <property name="text">
+           <string>ascii</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="radioButton_hex">
+          <property name="layoutDirection">
+           <enum>Qt::RightToLeft</enum>
+          </property>
+          <property name="text">
+           <string>hex</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
      </layout>
     </widget>
    </item>
@@ -142,7 +215,7 @@
      <item>
       <widget class="QGroupBox" name="groupBox_adc">
        <property name="title">
-        <string>ADC In</string>
+        <string>Analog input</string>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_3"/>
       </widget>
@@ -157,7 +230,7 @@
      <item>
       <widget class="QGroupBox" name="groupBox_out">
        <property name="title">
-        <string>Byte Out</string>
+        <string>Byte out</string>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>

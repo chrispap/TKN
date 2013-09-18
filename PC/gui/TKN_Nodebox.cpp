@@ -18,16 +18,15 @@
 #include "lib/ErrorMsg.hpp"
 
 TKN_NodeBox::TKN_NodeBox(QWidget *parent, int id) :
+    NODE_ID(id),
     voltometer(this),
     QGroupBox(parent),
     ui(new Ui::TKN_NodeBox)
 {
     ui->setupUi(this);
-
-    /* Ui setup */
-    NODE_ID = id;
     setTitle(QString("Node ").append(QString('0'+NODE_ID)));
 
+    /* Configure the voltometer */
     ui->groupBox_adc->layout()->addWidget(&voltometer);
     voltometer.setReadOnly(true);
     voltometer.setMode(QwtDial::RotateNeedle);
@@ -35,10 +34,10 @@ TKN_NodeBox::TKN_NodeBox(QWidget *parent, int id) :
     voltometer.setScale(0.0, 5.0);
     voltometer.setNeedle(new QwtDialSimpleNeedle(QwtDialSimpleNeedle::Arrow));
 
-
     /* Signal connections */
-    connect(this, SIGNAL(dataReceived(TKN_Data)), this, SLOT(dataReceivedObserver(TKN_Data)));
-    connect(this, SIGNAL(consoleOut(QString)),parentWidget(), SLOT(consoleOut(QString)), Qt::QueuedConnection);
+    connect(this, SIGNAL(dataReceived(TKN_Data)), this, SLOT(dataEcho(TKN_Data)));
+    connect(this, SIGNAL(dataReceived(TKN_Data)), this, SLOT(voltometerSet(TKN_Data)));
+    connect(this, SIGNAL(consoleOut(QString)), parentWidget(), SLOT(consoleOut(QString)), Qt::QueuedConnection);
 
     PAGESIZE = 128;
 }
@@ -48,9 +47,8 @@ TKN_NodeBox::~TKN_NodeBox()
     delete ui;
 }
 
-void TKN_NodeBox::dataReceive(TKN_Data *data)
+void TKN_NodeBox::receiveData(TKN_Data *data)
 {
-    echo(data);
     dataQueueMutex.lock();
     dataQueue.enqueue(*data);
     dataQueueMutex.unlock();
@@ -58,7 +56,7 @@ void TKN_NodeBox::dataReceive(TKN_Data *data)
     emit dataReceived(*data);
 }
 
-void TKN_NodeBox::dataReceivedObserver(TKN_Data data)
+void TKN_NodeBox::voltometerSet(TKN_Data data)
 {
     if (data.data[0]=='A' && data.data[1]==':') {
         int AD = (int) strtol((const char*)&data.data[2], NULL, 16);
@@ -67,9 +65,37 @@ void TKN_NodeBox::dataReceivedObserver(TKN_Data data)
     return;
 }
 
-void TKN_NodeBox::echo(TKN_Data *data)
+void TKN_NodeBox::dataEcho(TKN_Data data)
 {
-    ui->textEditConsole->append(QByteArray((char*)data, sizeof(TKN_Data)));
+    if (!ui->checkBox_log->isChecked()) return;
+
+    if (ui->radioButton_ascii->isChecked())
+        ui->textEditConsole->append(QByteArray((char*)&data, sizeof(TKN_Data)));
+    else {
+        QString line = "HEX: ";
+        QString b;
+        int i;
+        for (i=0; i<TKN_DATA_SIZE/2-1; i++){
+            b = QString::number(data.data[i],16).toUpper();
+            if (b.length()==1) line += "0" + b; else line += b;
+            line += "|";
+        }
+        b = QString::number(data.data[i++],16).toUpper();
+        if (b.length()==1) line += "0" + b; else line += b;
+
+        ui->textEditConsole->append(line);
+        line = "     ";
+
+        for ( ; i<TKN_DATA_SIZE-1; i++){
+            QString b = QString::number(data.data[i],16).toUpper();
+            if (b.length()==1) line += "0" + b; else line += b;
+            line += "|";
+        }
+        b = QString::number(data.data[i],16).toUpper();
+        if (b.length()==1) line += "0" + b; else line += b;
+
+        ui->textEditConsole->append(line);
+    }
 }
 
 void TKN_NodeBox::on_buttonSend_clicked()
@@ -209,4 +235,10 @@ void TKN_NodeBox::hexUpload()
 
     QString msg = QString("Hex upload complete. Sent ") + QString::number(byteCount) + QString(" bytes.");
     emit consoleOut(msg);
+}
+
+void TKN_NodeBox::on_checkBox_log_toggled(bool checked)
+{
+    ui->radioButton_ascii->setEnabled(checked);
+    ui->radioButton_hex->setEnabled(checked);
 }

@@ -99,7 +99,7 @@ void TKN_Window::dataReceive()
 
     while ((sender=TKN_PopData(&recData)) != -1) {
         if (nodeMap.contains(sender)) {
-            nodeMap[(int)(sender)]->dataReceive(&recData);
+            nodeMap[(int)(sender)]->receiveData(&recData);
         }
     }
 

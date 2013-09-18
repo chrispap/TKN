@@ -24,7 +24,7 @@ public:
     int getNode_id(){return NODE_ID;}
 
 public slots:
-    void dataReceive(TKN_Data*);
+    void receiveData(TKN_Data*);
 
 signals:
     void dataReceived(TKN_Data data);
@@ -35,20 +35,20 @@ private slots:
     void on_buttonRun_clicked();
     void on_buttonUpload_clicked();
     void on_buttonBrowseHex_clicked();
-    void dataReceivedObserver(TKN_Data data);
-    void echo(TKN_Data *data);
     void on_horizontalSlider_valueChanged(int value);
+    void voltometerSet(TKN_Data data);
+    void dataEcho(TKN_Data data);
+
+    void on_checkBox_log_toggled(bool checked);
 
 private:
     Ui::TKN_NodeBox *ui;
+    int PAGESIZE;
+    int NODE_ID;
     QwtDial voltometer;
     QQueue<TKN_Data>dataQueue;
     QMutex dataQueueMutex;
     QSemaphore dataQueueSem;
-
-    int PAGESIZE;
-    int NODE_ID;
-
     void flushRecDataQueue();
     bool dataDeque(TKN_Data *data, int timeout);
     void hexUpload();
