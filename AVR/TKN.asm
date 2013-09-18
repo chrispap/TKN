@@ -131,6 +131,8 @@ TKN_init:
 ===
 === @param: temp0 The Receiver of the packet
 === 
+=== @destroy: temp1, temp2
+===
 === @return: In success -> temp0 = 0;
 ===          In failure -> temp0 remains as is.
 ================================================================*/
@@ -224,7 +226,9 @@ TKN_pushPacketRet:
 ===
 === @param: Y The Address of the buffer where 
 ===           the packet will be copied
-=== 
+===  
+=== @destroy: temp1, temp2
+===
 === @return: If RX_QUEUE Empty -> temp0 = 0;
 ===          Else temp0 = The Sender of the packet.
 ================================================================*/

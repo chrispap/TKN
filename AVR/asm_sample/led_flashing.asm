@@ -4,11 +4,11 @@
 
 .equ TKN_pushPacket     = 0x7062
 .equ TKN_popPacket      = 0x7098
-.equ fillPacketBuf      = 0x7436
-.equ Bin2ToHex4         = 0x7348
-.equ Bin1ToHex2         = 0x734f
-.equ Bin1ToHex1         = 0x7353
-.equ setLeds            = 0x72c4
+.equ fillPacketBuf      = 0x7432
+.equ Bin2ToHex4         = 0x7344
+.equ Bin1ToHex2         = 0x734b
+.equ Bin1ToHex1         = 0x734f
+.equ setLeds            = 0x72bc
 
 .def temp0              = r16
 .def temp1              = r17

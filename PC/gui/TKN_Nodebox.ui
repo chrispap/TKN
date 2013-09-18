@@ -6,25 +6,25 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>328</width>
+    <width>250</width>
     <height>460</height>
    </rect>
   </property>
   <property name="sizePolicy">
-   <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+   <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
   </property>
   <property name="minimumSize">
    <size>
-    <width>280</width>
+    <width>250</width>
     <height>460</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>400</width>
+    <width>300</width>
     <height>16777215</height>
    </size>
   </property>
@@ -36,7 +36,7 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_5">
    <item>
-    <widget class="QGroupBox" name="buttonUpload">
+    <widget class="QGroupBox" name="groupBoxProgramming">
      <property name="title">
       <string>MCU Programming</string>
      </property>
@@ -74,7 +74,7 @@
        </widget>
       </item>
       <item row="1" column="0">
-       <widget class="QPushButton" name="pushButton">
+       <widget class="QPushButton" name="buttonUpload">
         <property name="minimumSize">
          <size>
           <width>0</width>

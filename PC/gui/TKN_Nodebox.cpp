@@ -101,11 +101,11 @@ void TKN_NodeBox::dataEcho(TKN_Data data)
 void TKN_NodeBox::on_buttonSend_clicked()
 {
     TKN_Data data;
-    qMemSet(&data, 0, sizeof(data));
-    bool ok=false;
-    ushort x = ui->lineEdit_DataToSend->text().toUShort(&ok, 16);
-    if (ok){
-        *((ushort*)(&data)) = x;
+    memset(&data, 0, sizeof(data));
+    char *inv_ptr=0;
+    long x = strtol (ui->lineEdit_DataToSend->text().toAscii().data() , &inv_ptr, 0);
+    if (!*inv_ptr){
+        *((long*)(&data)) = x;
     }
     else {
         QByteArray bytes = ui->lineEdit_DataToSend->text().toAscii();
@@ -145,6 +145,12 @@ void TKN_NodeBox::on_horizontalSlider_valueChanged(int value)
     TKN_Data data;
     *((ushort*)(&data)) = 255 * value/ui->horizontalSlider->maximum();
     TKN_PushData(&data, NODE_ID);
+}
+
+void TKN_NodeBox::on_checkBox_log_toggled(bool checked)
+{
+    ui->radioButton_ascii->setEnabled(checked);
+    ui->radioButton_hex->setEnabled(checked);
 }
 
 bool TKN_NodeBox::dataDeque(TKN_Data *data, int timeout)
@@ -237,8 +243,3 @@ void TKN_NodeBox::hexUpload()
     emit consoleOut(msg);
 }
 
-void TKN_NodeBox::on_checkBox_log_toggled(bool checked)
-{
-    ui->radioButton_ascii->setEnabled(checked);
-    ui->radioButton_hex->setEnabled(checked);
-}
