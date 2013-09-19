@@ -143,7 +143,24 @@ sendLoop:
 exit:
 turn_off_adc:
 	clr temp0
-	sts ADCSRA, temp0 
+	sts ADCSRA, temp0
+send_zero:
+	ldi YL, LOW(outPacketBuff)
+    ldi YH, HIGH(outPacketBuff)
+	mov ZL, YL 
+	mov ZH, YH
+	inc ZL
+	inc ZL
+	inc ZL
+	inc ZL
+	clr temp1
+	clr temp2
+	call Bin2ToHex4
+	ldi temp0, 1
+sendLoop1:
+	call TKN_pushPacket
+	and temp0, temp0
+	brne sendLoop1
 
     ret
 
