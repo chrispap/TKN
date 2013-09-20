@@ -24,22 +24,16 @@ packetBuff: .byte TKN_PACKET_SIZE
 .org 0x0000
     jmp main
 
-str:    .db "Timer counted!  "
-
 main:
     ldi YL, LOW(packetBuff)
     ldi YH, HIGH(packetBuff)
-    ldi ZL, LOW(str << 1)
-    ldi ZH, HIGH(str << 1)
-    call fillPacketBuf
 
     ; Init vars
-    ldi duty_cycle, $5
+    ldi duty_cycle, $FF
     
     ; Setup timer
     ldi temp0, 0xC3
     out TCCR0A, temp0
-    ldi temp0, 50
     out OCR0A, duty_cycle
     
     ; Start timer
@@ -47,7 +41,6 @@ main:
     out TCCR0B, temp0
 
 loop:
-    
     ; Read new del_replay
     call TKN_popPacket
     and temp0, temp0

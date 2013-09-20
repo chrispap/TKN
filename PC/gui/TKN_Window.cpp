@@ -44,7 +44,7 @@ TKN_Window::TKN_Window(QWidget *parent) :
     this->mTknStarted = false;
 
     /* Signal connections */
-    connect(this, SIGNAL(tokenReceived(int)), ui->lcd_TokenCounter, SLOT(display(int)), Qt::QueuedConnection);
+    connect(this, SIGNAL(tokenReceived()), this, SLOT(onTokenReceived()), Qt::QueuedConnection);
     connect(this, SIGNAL(dataReady()), this, SLOT(dataReceive()), Qt::QueuedConnection);
 
     this->ui->labelAVR->setPixmap( QPixmap(":/AVR_Chip-W180px.png"));
@@ -67,22 +67,25 @@ void TKN_Window::closeEvent(QCloseEvent *evt){
 
 void TKN_Window::tokenReceivedCallback()
 {
-    static const int tknInv=50;
     self->mTknCounter++;
+    emit self->tokenReceived();
+    return;
+}
 
-    //emit self->tokenReceived(self->mTknCounter++);
-    //return;
-
-    /* Every tknInv tokens show the rate
-       of the respective time period */
-
-    //emit self->tokenReceived(self->mTknCounter); return;
-
-    if (self->mTknCounter%tknInv == 0) {
-        emit self->tokenReceived(1000*tknInv/self->mTime->elapsed());
+void TKN_Window::onTokenReceived()
+{
+    /* Update the speed */
+    static const int tknInv=50;
+    if (mTknCounter%tknInv == 0) {
+        int el = self->mTime->elapsed();
+        if (el>0) ui->lcd_token_per_sec->display(1000*tknInv/el);
         self->mTime->start();
     }
+
+    ui->lcd_token_total->display(mTknCounter);
+
 }
+
 
 void TKN_Window::dataReceivedCallback()
 {

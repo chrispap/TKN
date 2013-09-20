@@ -103,9 +103,9 @@ void TKN_NodeBox::on_buttonSend_clicked()
     TKN_Data data;
     memset(&data, 0, sizeof(data));
     char *inv_ptr=0;
-    long x = strtol (ui->lineEdit_DataToSend->text().toAscii().data() , &inv_ptr, 0);
+    unsigned long x = strtoul (ui->lineEdit_DataToSend->text().toAscii().data() , &inv_ptr, 0);
     if (!*inv_ptr){
-        *((long*)(&data)) = x;
+        *((unsigned long*)(&data)) = x;
     }
     else {
         QByteArray bytes = ui->lineEdit_DataToSend->text().toAscii();
@@ -117,10 +117,7 @@ void TKN_NodeBox::on_buttonSend_clicked()
 
 void TKN_NodeBox::on_buttonBrowseHex_clicked()
 {
-    QString dir = ui->lineEditHexFilePath->text().length()>5?
-                ui->lineEditHexFilePath->text():
-                "";
-
+    QString dir = ui->lineEditHexFilePath->text().length()>5?ui->lineEditHexFilePath->text(): "C:/Users/Chris/Documents/GitHub/TKN/AVR/asm_sample/Debug";
     QString newPath = QFileDialog::getOpenFileName(this, "Open hex file", dir, "*.hex");
     if (newPath!=NULL)
         ui->lineEditHexFilePath->setText(newPath);
@@ -143,6 +140,7 @@ void TKN_NodeBox::on_horizontalSlider_valueChanged(int value)
     if (value==0) return;
 
     TKN_Data data;
+    memset(&data, 0, sizeof(data));
     *((ushort*)(&data)) = 255 * value/ui->horizontalSlider->maximum();
     TKN_PushData(&data, NODE_ID);
 }

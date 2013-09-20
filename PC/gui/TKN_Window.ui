@@ -69,6 +69,12 @@ QTextEdit {
         <height>480</height>
        </size>
       </property>
+      <property name="maximumSize">
+       <size>
+        <width>300</width>
+        <height>16777215</height>
+       </size>
+      </property>
       <property name="title">
        <string>TKN Status</string>
       </property>
@@ -117,7 +123,7 @@ QTextEdit {
           </widget>
          </item>
          <item row="0" column="1">
-          <widget class="QLCDNumber" name="lcd_TokenCounter">
+          <widget class="QLCDNumber" name="lcd_token_per_sec">
            <property name="minimumSize">
             <size>
              <width>0</width>
@@ -153,6 +159,36 @@ QTextEdit {
         </layout>
        </item>
        <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <item>
+          <widget class="QLabel" name="label">
+           <property name="text">
+            <string>Token counter:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLCDNumber" name="lcd_token_total">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>33</height>
+            </size>
+           </property>
+           <property name="lineWidth">
+            <number>2</number>
+           </property>
+           <property name="numDigits">
+            <number>10</number>
+           </property>
+           <property name="segmentStyle">
+            <enum>QLCDNumber::Flat</enum>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
         <widget class="Line" name="line">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
@@ -179,6 +215,19 @@ QTextEdit {
       </layout>
      </widget>
     </item>
+    <item>
+     <spacer name="horizontalSpacer">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>1</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menuBar">
@@ -187,7 +236,7 @@ QTextEdit {
      <x>0</x>
      <y>0</y>
      <width>318</width>
-     <height>21</height>
+     <height>20</height>
     </rect>
    </property>
    <property name="defaultUp">

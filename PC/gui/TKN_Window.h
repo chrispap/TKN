@@ -26,12 +26,13 @@ public slots:
     void consoleOut(QString msg);
 
 signals:
-    void tokenReceived(int);
+    void tokenReceived();
     void dataReady();
 
 private slots:
     void on_buttonStartStop_clicked();
     void on_actionAbout_triggered();
+    void onTokenReceived();
     void shrink();
     void dataReceive();
 

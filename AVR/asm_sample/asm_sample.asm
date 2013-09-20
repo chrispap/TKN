@@ -63,6 +63,11 @@ str_bad:    .db "BAD INTERRUPT!!!"
 main:
     ldi YL, LOW(packetBuff)
     ldi YH, HIGH(packetBuff)
+
+	// set portB on
+	ser temp0
+	call setLeds
+
 	
 loop:	
 	call TKN_popPacket
@@ -74,6 +79,8 @@ loop:
     rjmp loop
 	 
 exit:
+	clr temp0
+	call setLeds
     ret
 
 /* Bad Interrupt ISRs */

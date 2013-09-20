@@ -211,22 +211,7 @@
     </widget>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="box_in_out">
-     <item>
-      <widget class="QGroupBox" name="groupBox_adc">
-       <property name="title">
-        <string>Analog input</string>
-       </property>
-       <layout class="QVBoxLayout" name="verticalLayout_3"/>
-      </widget>
-     </item>
-     <item>
-      <widget class="Line" name="line_2">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-      </widget>
-     </item>
+    <layout class="QVBoxLayout" name="verticalLayout_4">
      <item>
       <widget class="QGroupBox" name="groupBox_out">
        <property name="title">
@@ -260,6 +245,21 @@
          </spacer>
         </item>
        </layout>
+      </widget>
+     </item>
+     <item>
+      <widget class="QGroupBox" name="groupBox_adc">
+       <property name="title">
+        <string>Analog input</string>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_3"/>
+      </widget>
+     </item>
+     <item>
+      <widget class="Line" name="line_2">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
       </widget>
      </item>
     </layout>

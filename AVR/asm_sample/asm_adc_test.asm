@@ -109,6 +109,8 @@ set_adc:
 	or temp0, temp1
 	sts ADCSRA, temp0 
 
+	clr last_val
+
 loop:
     ldi YL, LOW(inPacketBuff)
     ldi YH, HIGH(inPacketBuff)

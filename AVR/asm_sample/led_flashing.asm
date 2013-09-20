@@ -24,14 +24,9 @@ packetBuff: .byte TKN_PACKET_SIZE
 .org 0x0000
     jmp main
 
-str:    .db "Timer counted!  "
-
 main:
     ldi YL, LOW(packetBuff)
     ldi YH, HIGH(packetBuff)
-    ldi ZL, LOW(str << 1)
-    ldi ZH, HIGH(str << 1)
-    call fillPacketBuf
 
     ; Init vars
     ldi del_replays, $5
@@ -46,8 +41,8 @@ main:
 
 loop:
     in temp0, PINB
-    ldi temp1, $08
-    eor temp0, temp1
+	ser temp1
+	eor temp0, temp1
     out PORTB, temp0
     
     mov temp1, del_replays
