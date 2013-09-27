@@ -61,6 +61,17 @@ str:		.db "General Node.asm"
 str_bad:    .db "BAD INTERRUPT!!!"
 
 main:
+
+	; Configure PORTC as output
+	; All bits have logic zero output
+	ldi  temp0, $FF
+	out  PORTC, temp0
+	out  DDRC, temp0
+
+	; Set PORT C ON (ON -> LOW)
+	clr temp0
+	out PORTC, temp0
+
     ldi YL, LOW(packetBuff)
     ldi YH, HIGH(packetBuff)
 	
@@ -74,6 +85,8 @@ loop:
     rjmp loop
 	 
 exit:
+	ser temp0
+	out PORTC, temp0
     ret
 
 /* Bad Interrupt ISRs */

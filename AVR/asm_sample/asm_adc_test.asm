@@ -91,9 +91,7 @@ init_buf:
 	brne init_buf
 	
 set_adc:
-	ldi temp1,  (1 << REFS0) | (1<<ADLAR) | (2<<MUX0)
-	lds temp0, ADMUX
-	or temp0, temp1
+	ldi temp0,  (1 << REFS0) | (1<<ADLAR) | (0<<MUX0)
 	sts ADMUX, temp0 
 	
 	ldi temp1, (1 << ADATE) | (7<<ADPS0)
