@@ -10,24 +10,24 @@ ifdef SystemRoot
 	CC   = gcc.exe
 	WINDRES = windres.exe
 	#windows paths
-	INCS =  -I"C:/"  -I"C:/" 
-	CXXINCS =  -I"C:"  -I"C:/" 
-	THREADLIB = 
+	INCS =  -I"C:/"  -I"C:/"
+	CXXINCS =  -I"C:"  -I"C:/"
+	THREADLIB =
 ### For linux only
 else
-	THREADLIB = -lpthread 
+	THREADLIB = -lpthread
 endif
 
 ### ... ###
-OBJ  =  TKN_Interactive.o TKN_Step.o TKN_Boot.o TKN_PacketCreator.o TKN_Elapse.o 
-LINKOBJ = ../lib/rs232.o ../lib/TKN.o ../lib/TKN_Util.o ../lib/TKN_Queue.o ../lib/ListSerial.o 
+OBJ  =  TKN_Interactive.o TKN_Step.o TKN_Boot.o TKN_PacketCreator.o TKN_Elapse.o TKN_Led_Shift.o
+LINKOBJ = ../lib/rs232.o ../lib/TKN.o ../lib/TKN_Util.o ../lib/TKN_Queue.o ../lib/ListSerial.o
 
 ifdef SystemRoot
-BIN = TKN_Interactive.exe TKN_Step.exe TKN_Elapse.exe  TKN_Boot.exe 
+BIN = TKN_Interactive.exe TKN_Step.exe TKN_Elapse.exe  TKN_Boot.exe TKN_Led_Shift.exe
 else
-BIN = TKN_Interactive TKN_Step TKN_Elapse TKN_Boot 
+BIN = TKN_Interactive TKN_Step TKN_Elapse TKN_Boot TKN_Led_Shift
 endif
-CXXFLAGS = $(CXXINCS)  
+CXXFLAGS = $(CXXINCS)
 CFLAGS = $(INCS) -Wall -O2  -g
 RM = rm -f
 
@@ -53,10 +53,14 @@ TKN_Step.exe: TKN_Step.o $(LINKOBJ)
 	$(CC) -o TKN_Step.exe TKN_Step.o $(LINKOBJ) $(THREADLIB)
 
 TKN_Elapse.exe: TKN_Elapse.o $(LINKOBJ)
-	$(CC) -o TKN_Elapse.exe TKN_Elapse.o $(LINKOBJ) $(THREADLIB) 
+	$(CC) -o TKN_Elapse.exe TKN_Elapse.o $(LINKOBJ) $(THREADLIB)
 
 TKN_Boot.exe: TKN_Boot.o $(LINKOBJ)
-	$(CC) -o TKN_Boot.exe TKN_Boot.o $(LINKOBJ) $(THREADLIB)	
+	$(CC) -o TKN_Boot.exe TKN_Boot.o $(LINKOBJ) $(THREADLIB)
+
+TKN_Led_Shift.exe: TKN_Led_Shift.o $(LINKOBJ)
+	$(CC) -o TKN_Led_Shift.exe TKN_Led_Shift.o $(LINKOBJ) $(THREADLIB)
+
 
 else
 
@@ -68,13 +72,17 @@ TKN_Step: TKN_Step.o $(LINKOBJ)
 	$(CC) -o TKN_Step TKN_Step.o $(LINKOBJ) $(THREADLIB)
 
 TKN_Elapse: TKN_Elapse.o $(LINKOBJ)
-	$(CC) -o TKN_Elapse TKN_Elapse.o $(LINKOBJ) $(THREADLIB) 
+	$(CC) -o TKN_Elapse TKN_Elapse.o $(LINKOBJ) $(THREADLIB)
 
 TKN_Boot: TKN_Boot.o $(LINKOBJ)
 	$(CC) -o TKN_Boot TKN_Boot.o $(LINKOBJ) $(THREADLIB)
+
+TKN_Led_Shift: TKN_Led_Shift.o $(LINKOBJ)
+	$(CC) -o TKN_Led_Shift TKN_Led_Shift.o $(LINKOBJ) $(THREADLIB)
+
 endif
 
-	
+
 ### Object files (for executables) ###
 TKN_Interactive.o: TKN_Interactive.c
 	$(CC) -c TKN_Interactive.c -o TKN_Interactive.o $(CFLAGS)
@@ -84,9 +92,13 @@ TKN_Step.o: TKN_Step.c
 
 TKN_Elapse.o: TKN_Elapse.c
 	$(CC) -c TKN_Elapse.c -o TKN_Elapse.o $(CFLAGS)
-	
+
 TKN_PacketCreator.o: TKN_PacketCreator.c
 	$(CC) -c TKN_PacketCreator.c -o TKN_PacketCreator.o $(CFLAGS)
 
 TKN_Boot.o: TKN_Boot.c
 	$(CC) -c TKN_Boot.c -o TKN_Boot.o $(CFLAGS)
+
+TKN_Led_Shift.o: TKN_Led_Shift.c
+	$(CC) -c TKN_Led_Shift.c -o TKN_Led_Shift.o $(CFLAGS)
+
