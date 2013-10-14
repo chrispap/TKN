@@ -26,10 +26,10 @@ int main (int argc, char *argv[])
     TKN_Data packet;
     int pattern=1;
     int i;
-    
+
     memset(&packet,0,sizeof(packet));
-    
-    do 
+
+    do
     {
         /* Update LEDs in all nodes */
         for (i=0; i<3; ++i) {
@@ -42,10 +42,10 @@ int main (int argc, char *argv[])
 
         /* Advance pattern */
         pattern = pattern==0x800000? 1 : pattern<<1;
-        Sleep(100);
-        
+        sleep(1);
+
     } while (1);
-    
+
     while (TKN_PopData(&packet) > 0 ); // Pop all the data out of the Rx Queue
 
     /* Shut downn the network */
