@@ -68,10 +68,10 @@ loop:
 	call TKN_popPacket
     and temp0, temp0
     breq loop
-    ldd temp1, Y+0
-    and temp1, temp1
+    ldd temp1, Y+1
+	cpi temp1, 0xFF
     breq exit
-	mov temp0, temp1
+	ldd temp0, Y+0
 	call setLeds
     rjmp loop
 	 

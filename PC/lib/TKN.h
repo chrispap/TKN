@@ -50,6 +50,7 @@ int TKN_Start ();
 int TKN_Stop ();
 int TKN_GetTokenCount ();
 int TKN_PushData (TKN_Data * cpBuf, BYTE recipientId);
+int TKN_PushDataOvw (TKN_Data * cBuf, BYTE recipientId);
 int TKN_PopData (TKN_Data *);
 int TKN_SendString (char * str, BYTE dest_id);
 int TKN_WaitString(char *ready_str);

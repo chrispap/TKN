@@ -585,6 +585,12 @@ int TKN_PushData (TKN_Data * cBuf, BYTE recipientId)
     return -1;
 }
 
+int TKN_PushDataOvw (TKN_Data * cBuf, BYTE recipientId)
+{
+    TKN_Queue_Push (&TX_QUEUE, cBuf, recipientId);
+    return 0;
+}
+
 int TKN_SendString (char * str, BYTE dest_id)
 {
     TKN_Data lineBuf;
