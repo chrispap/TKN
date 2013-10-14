@@ -207,9 +207,7 @@ int TKN_Receive ()
             RX_Buffer[0] = RX_Buffer[1];
             PollComport (PORT_NUM, &RX_Buffer[1], 1);
             pType = RX_Buffer[1];
-            if (!
-                    (pType == TKN_TYPE_DATA || pType == TKN_TYPE_ACK
-                     || pType == TKN_TYPE_TOKEN))
+            if (! (pType==TKN_TYPE_DATA || pType==TKN_TYPE_ACK || pType==TKN_TYPE_TOKEN))
                 pType = TKN_TYPE_NONE;
         }
         while (pAttempts++ < TKN_MAX_ATTEMPTS && (!(RX_Buffer[0] == 0x00 && pType != TKN_TYPE_NONE)));
@@ -219,9 +217,9 @@ int TKN_Receive ()
             #ifdef TKN_DEBUG
             printf (" no response\n");
             #endif
-    }
-    else
-    {
+        }
+        else
+        {
             /* Determine packet length */
             switch (pType)
             {
@@ -243,7 +241,7 @@ int TKN_Receive ()
             int remaining = pLength - 2, rec = 0;
             BYTE *RX_Buffer_tmp = RX_Buffer + 2;
             while (remaining > 0 && pAttempts < (TKN_MAX_ATTEMPTS << 2)) // Be more tolerant compared to the first byte max-Attempts
-        {
+            {
                 #ifdef ECHO_ATTEMPTS
                 printf (",");
                 #endif
@@ -287,9 +285,9 @@ int TKN_Receive ()
                 }
             }
 
-            /* Here I have a packet which is ~FOR ME~ */
+            /* Here I have a packet which is FOR ME !!! */
             int i;
-        switch (pType)
+            switch (pType)
             {
             case TKN_TYPE_DATA:
                 if (TKN_IsDataValid(RX_Buffer+TKN_OFFS_DATA_START, RX_Buffer[TKN_OFFS_CONTROL]))
