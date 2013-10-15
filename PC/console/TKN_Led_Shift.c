@@ -24,7 +24,8 @@ int main (int argc, char *argv[])
     BYTE nodes[3] = {2,3,4};
     BYTE led[3] = {0,0,0};
     TKN_Data packet;
-    int pattern=1;
+    const unsigned long long pat0=0x07;
+    unsigned long long pat=pat0;
     int i;
 
     memset(&packet,0,sizeof(packet));
@@ -33,16 +34,17 @@ int main (int argc, char *argv[])
     {
         /* Update LEDs in all nodes */
         for (i=0; i<3; ++i) {
-            packet.data[0] = *(((BYTE*)&pattern)+i);
+            packet.data[0] = *(((BYTE*)&pat)+i)  |  *(((BYTE*)&pat)+(i+3));
             if (led[i] != packet.data[0]) {
                 led[i] = packet.data[0];
-                while(TKN_PushData (&packet, nodes[i]));
+                while (TKN_PushData (&packet, nodes[i]));
             }
         }
 
         /* Advance pattern */
-        pattern = pattern==0x800000? 1 : pattern<<1;
+        pat = pat==pat0<<23? pat0 : pat<<1;
         sleep(1);
+        //~ getchar();
 
     } while (1);
 
