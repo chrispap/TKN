@@ -86,7 +86,6 @@ void TKN_Window::onTokenReceived()
 
 }
 
-
 void TKN_Window::dataReceivedCallback()
 {
     /* In this point just emit the signal
@@ -214,4 +213,3 @@ void TKN_Window::consoleOut(QString msg)
 {
     ui->textEditConsoleStatus->append(msg);
 }
-

@@ -1,0 +1,17 @@
+# Clean build directory
+src=$1
+src=${src%".c"}
+
+#rm -f $src.*[!c]
+
+# Compile source code   (Produces $src.o)
+avr-gcc -mmcu=atmega644pa -c $src.c &&
+
+# Link  object code         (Produces $src.elf, $src.map)
+avr-gcc -mmcu=atmega644pa -Wl,-Map,$src.map -o $src.elf $src.o &&
+
+# Create a listing      (Produces $src.lst)
+avr-objdump -h -S $src.elf > $src.lst &&
+
+# Produce hex file      (Produces $src.hex)
+avr-objcopy -j .text -j .data -O ihex $src.elf $src.hex

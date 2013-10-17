@@ -6,6 +6,10 @@
 *.exe
 *.o
 *.so
+*.elf
+*.hex
+*.lst
+*.map
 
 # KDevelop Project files #
 ##########################
@@ -26,7 +30,7 @@ debug
 ###########################
 *.pro.user
 *.pro.user*
-*-Release*
-*-Debug*
-*-build-*
+*Release*
+*Debug*
+*build*
 *~
