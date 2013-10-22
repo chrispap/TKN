@@ -26,9 +26,9 @@
 
 /* The Packet Buffers */
 static BYTE PACKET_COUNTER;
-static BYTE DATA_PACKET[TKN_OFFS_DATA_EOF + 1]    = { 0x00, TKN_TYPE_DATA, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xFF };
-static BYTE ACK_PACKET[TKN_OFFS_ACK_EOF + 1]      = { 0x00, TKN_TYPE_ACK, 0x00, 0x00, 0x00, 0xFF };
-static BYTE TOKEN_PACKET[TKN_OFFS_TOKEN_EOF + 1]  = { 0x00, TKN_TYPE_TOKEN, 0x00, 0x00, 0xFF };
+static BYTE DATA_PACKET  [TKN_OFFS_DATA_EOF  +1] = {0,0xAA, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0xFF};
+static BYTE ACK_PACKET   [TKN_OFFS_ACK_EOF   +1] = {0,0xBB, 0,0,0,0xFF };
+static BYTE TOKEN_PACKET [TKN_OFFS_TOKEN_EOF +1] = {0,0xCC, 0,0,0xFF };
 
 /* The Data Queues*/
 static TKN_Queue RX_QUEUE;
@@ -183,7 +183,8 @@ int TKN_ExportPackets ()
  */
 int TKN_Receive ()
 {
-    static BYTE RX_Buffer[TKN_OFFS_DATA_EOF + 1];   // Receive buffer. Its size is determined by the largest packet which is the data packet.
+     // Receive buffer. Its size is determined by the largest packet which is the data packet.
+    static BYTE RX_Buffer[TKN_OFFS_DATA_EOF + 1];
     static TKN_Data rxdata;
     int pLength, pAttempts;
     BYTE pType;
@@ -240,7 +241,8 @@ int TKN_Receive ()
             pAttempts = 0;
             int remaining = pLength - 2, rec = 0;
             BYTE *RX_Buffer_tmp = RX_Buffer + 2;
-            while (remaining > 0 && pAttempts < (TKN_MAX_ATTEMPTS << 2)) // Be more tolerant compared to the first byte max-Attempts
+            // Be more tolerant compared to the first byte max-Attempts
+            while (remaining > 0 && pAttempts < (TKN_MAX_ATTEMPTS << 2))
             {
                 #ifdef ECHO_ATTEMPTS
                 printf (",");
@@ -257,11 +259,13 @@ int TKN_Receive ()
                 return TKN_TYPE_NONE;
 
             /* Analyze the packet */
-            if (pType != TKN_TYPE_TOKEN) // The Token is always for the one who receives it, so no need to check receivers etc.
+            // The Token is always for the one who receives it, so no need to check receivers etc.
+            if (pType != TKN_TYPE_TOKEN)
             {
                 if (RX_Buffer[TKN_OFFS_SENDER] != MY_ID) // OK, I didnt send this packet!
                 {
-                    if (RX_Buffer[TKN_OFFS_RECEIVER] != MY_ID) // Packet NOT for me!! // Forward and keep receiving!!!
+                    // Packet NOT for me!! // Forward and keep receiving!!!
+                    if (RX_Buffer[TKN_OFFS_RECEIVER] != MY_ID)
                     {
                         SendBuf (PORT_NUM, RX_Buffer, pLength);
                         #ifdef ECHO_EVENTS
@@ -292,8 +296,9 @@ int TKN_Receive ()
             case TKN_TYPE_DATA:
                 if (TKN_IsDataValid(RX_Buffer+TKN_OFFS_DATA_START, RX_Buffer[TKN_OFFS_CONTROL]))
                 {
+                     //Extract the data from tha packet and store it in a buffer
                     for (i = TKN_OFFS_DATA_START; i <= TKN_OFFS_DATA_STOP; i++)
-                        rxdata.data[i-TKN_OFFS_DATA_START] = RX_Buffer [i]; //Extract the data from tha packet and store it in a buffer
+                        rxdata.data[i-TKN_OFFS_DATA_START] = RX_Buffer [i];
 
                     if ( !TKN_Queue_IsFull(&RX_QUEUE))
                         TKN_Queue_Push(&RX_QUEUE, &rxdata, RX_Buffer[TKN_OFFS_SENDER]);
@@ -414,7 +419,7 @@ int TKN_IsDataValid (BYTE * data, BYTE checkByte)
  * 1. Open the serial port
  * 2. Assign the node ID
  */
-int TKN_Init (int port, int baud, BYTE id, void (*_recTokenCallback)(void), void (*_recDataCallback)(void) )
+int TKN_Init (int port, int baud, BYTE id, void (*token_callback)(void), void (*data_callback)(void))
 {
     PORT_NUM = port;
     MY_ID = id;
@@ -431,8 +436,8 @@ int TKN_Init (int port, int baud, BYTE id, void (*_recTokenCallback)(void), void
         TKN_Queue_Init( &RX_QUEUE, TKN_QUEUE_SIZE);
         TKN_Queue_Init( &TX_QUEUE, TKN_QUEUE_SIZE);
 
-        recTokenCallback = _recTokenCallback;
-        recDataCallback = _recDataCallback;
+        recTokenCallback = token_callback;
+        recDataCallback = data_callback;
 
         return 0; //success
     }
@@ -492,7 +497,7 @@ BYTE* TKN_ListActiveNodes(BYTE maxID)
                 nodes[i++] = possibleNode; // TODO: check nodes' array bounds
             else if (ans>0)
                 continue;
-            else if (ans<0){ // in this case there is no connectivity, so its pointless to resume discovering.
+            else if (ans<0){ // in this case there is no connectivity, so its pointless to resume...
                 free(nodes);
                 return NULL;
             }
