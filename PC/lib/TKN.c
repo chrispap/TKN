@@ -603,7 +603,7 @@ int TKN_SendString (char * str, BYTE dest_id)
         strncpy( (char*) &lineBuf, str, sizeof(lineBuf));
         str += sizeof(lineBuf);
         rem -= sizeof(lineBuf);
-        TKN_PushData ( &lineBuf, dest_id);
+        while (TKN_PushData ( &lineBuf, dest_id));
     }
 
     return 0;

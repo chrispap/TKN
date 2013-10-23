@@ -1,17 +1,20 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
 
 #ifdef __linux
 #include <signal.h>
 #include <unistd.h>
+#define Sleep(x) usleep((x)*1000)
 #else
 #include <windows.h>
-#define sleep(x) Sleep(x*1000)
 #endif
 
 #include "../lib/TKN.h"
 #include "../lib/TKN_Util.h"
+
+#define N 3
 
 int main (int argc, char *argv[])
 {
@@ -21,8 +24,8 @@ int main (int argc, char *argv[])
     TKN_Start ();
     TKN_PrintCols();
 
-    BYTE nodes[3] = {2,3,4};
-    BYTE led[3] = {0,0,0};
+    BYTE nodes[N] = {2,3,4};
+    BYTE led[N] = {0,0,0};
     TKN_Data packet;
     const unsigned long long pat0=0x07;
     unsigned long long pat=pat0;
@@ -30,10 +33,15 @@ int main (int argc, char *argv[])
 
     memset(&packet,0,sizeof(packet));
 
+    for (i=0; i<N; ++i) {
+        TKN_SendString("R:", nodes[i]); // Send `Run` command
+        while (TKN_PushData (&packet, nodes[i])); // Send a zero packet
+    }
+
     do
     {
         /* Update LEDs in all nodes */
-        for (i=0; i<3; ++i) {
+        for (i=0; i<N; ++i) {
             packet.data[0] = *(((BYTE*)&pat)+i)  |  *(((BYTE*)&pat)+(i+3));
             if (led[i] != packet.data[0]) {
                 led[i] = packet.data[0];
@@ -43,8 +51,7 @@ int main (int argc, char *argv[])
 
         /* Advance pattern */
         pat = pat==pat0<<23? pat0 : pat<<1;
-        sleep(1);
-        //~ getchar();
+        Sleep(100);
 
     } while (1);
 
