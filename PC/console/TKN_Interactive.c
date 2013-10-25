@@ -13,32 +13,39 @@ int main (int argc, char *argv[])
 {
     if (TKN_InitWithArgs(argc, argv))
         exit (1);
-	
-	dest_id = (argc > 3)? atoi (argv[3]) : TKN_DEST_ID_DEFAULT;
-	
+
+    dest_id = (argc > 3)? atoi (argv[3]) : TKN_DEST_ID_DEFAULT;
+
     printf (">> TKN opened succesfully.\n");
-    printf ("D  -> Send data \nE  -> Exit\n\n");
+    printf ("S  -> Send data \nR  -> Receive data \nE  -> Exit\n\n");
     TKN_PrintCols();
 
     /* Start the network */
     time_start = time(NULL);
     TKN_Start();
-    
+
     int action;
-    while ( (action = getKey ("Ee Dd")) != 'e' )
+    printf("Press your choice: ");
+    while ( (action = getKey ("Ee Ss Rr")) != 'e' )
     {
-        if (action == 'd') 
-            TKN_PushData((TKN_Data*)"__From Laptop___", dest_id);
-        
-        int rid;
-        BYTE rbuf[TKN_DATA_SIZE + 1]; // One extra byte for zero termination.
-        rbuf[TKN_DATA_SIZE]= '\0';
-        
-        rid = TKN_PopData((TKN_Data*)rbuf);
-        if (rid>0)
-            printf("Received from: %2d Data: %16s \n", rid, rbuf);
-        else printf("No-Data \n");
-        
+        TKN_Data packet;
+        int sender_id;
+
+        switch (action) {
+            case 's':
+                printf("Type data to send: ");
+                scanf("%s", packet.data);
+                while (TKN_PushData(&packet, dest_id));
+                break;
+            case 'r':
+                sender_id = TKN_PopData(&packet);
+                if (sender_id>0) printf("Received from: %2d Data: %16s. \n", sender_id, packet.data);
+                else printf("Nothing to receive.\n");
+                break;
+            default:
+                break;
+        }
+        printf("Press your choice: ");
     }
 
     /* Shut downn the network */
@@ -47,6 +54,6 @@ int main (int argc, char *argv[])
     time_end = time (NULL);
     printf (">> Ellapsed time: %ld sec \n", time_end - time_start);
     printf (">> Token Counter: %d \n", TKN_GetTokenCount() );
-    
+
     return 0;
 }
