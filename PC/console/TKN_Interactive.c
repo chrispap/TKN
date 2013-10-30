@@ -25,7 +25,7 @@ int main (int argc, char *argv[])
     TKN_Start();
 
     int action;
-    printf("Press your choice: ");
+    printf(">> ACTION:");
     while ( (action = getKey ("Ee Ss Rr")) != 'e' )
     {
         TKN_Data packet;
@@ -33,7 +33,7 @@ int main (int argc, char *argv[])
 
         switch (action) {
             case 's':
-                printf("Type data to send: ");
+                printf("\n>> DATA  : ");
                 scanf("%s", packet.data);
                 while (TKN_PushData(&packet, dest_id));
                 break;
@@ -45,7 +45,7 @@ int main (int argc, char *argv[])
             default:
                 break;
         }
-        printf("Press your choice: ");
+        printf(">> ACTION: ");
     }
 
     /* Shut downn the network */

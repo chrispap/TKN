@@ -5,10 +5,11 @@
 #ifdef __linux
 #include <signal.h>
 #include <unistd.h>
+#define Sleep(x) usleep((x)*1000)
 #else
 #include <windows.h>
-#define sleep(x) Sleep(x*1000)
 #endif
+
 
 #include "../lib/TKN.h"
 #include "../lib/TKN_Util.h"
@@ -38,13 +39,14 @@ int main (int argc, char *argv[])
     if (FULL_LOAD)  // Send DATA whenever possible!
     {
         do{
-            char myData[TKN_DATA_SIZE] = "test msg";
-            while (TKN_PushData ((TKN_Data *) myData, dest_id));
+            TKN_Data myData;
+            myData.data[0] = packC;
+            while (TKN_PushData (&myData, dest_id));
             packC++;
         } while ((time (NULL) - time_start) < SECONDS_TO_RUN);
 
         time_end = time (NULL);
-        sleep(4); // wait for all the Tx Queue to be sent
+        Sleep(400); // wait for all the Tx Queue to be sent
         char recData[TKN_DATA_SIZE];
         while (TKN_PopData(recData) > 0 ); // Pop all the data out of the Rx Queue
     }

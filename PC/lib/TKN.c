@@ -16,12 +16,12 @@
 #include "TKN_Queue.h"
 #include "rs232.h"
 
-//#define TKN_DEBUG
+#define TKN_DEBUG
 #ifdef TKN_DEBUG
-  #define ECHO_ATTEMPTS
-  #define ECHO_TOKENS
-  #define ECHO_EVENTS
-  #define ECHO_DATA
+  // #define ECHO_ATTEMPTS
+  // #define ECHO_TOKENS
+  // #define ECHO_EVENTS
+  // #define ECHO_DATA
 #endif
 
 /* The Packet Buffers */
