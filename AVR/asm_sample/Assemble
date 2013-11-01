@@ -1,0 +1,17 @@
+#!/bin/bash
+mkdir lst
+mkdir map
+
+for i in $( ls *.asm); do
+    P=${i%.*}
+    avra -I /usr/share/avra $P.asm -o hex/$P.hex -l lst/$P.lst -m map/$P.map &> /dev/null
+    if [ $? -eq 0 ]; then
+        echo OK : $P
+    else
+        echo ERR: $P
+    fi
+done
+
+rm *cof
+rm *obj
+rm *eep.hex

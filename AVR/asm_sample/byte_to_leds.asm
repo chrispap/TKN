@@ -57,35 +57,35 @@ Reset:
 packetBuff: .byte TKN_PACKET_SIZE
 
 .cseg
-str:		.db "General Node.asm"
+str:        .db "General Node.asm"
 str_bad:    .db "BAD INTERRUPT!!!"
 
 main:
     ldi YL, LOW(packetBuff)
     ldi YH, HIGH(packetBuff)
-	
+
 loop:
-	call TKN_popPacket
+    call TKN_popPacket
     and temp0, temp0
     breq loop
     ldd temp1, Y+1
-	cpi temp1, 0xFF
+    cpi temp1, 0xFF
     breq exit
-	ldd temp0, Y+0
-	call setLeds
+    ldd temp0, Y+0
+    call setLeds
     rjmp loop
-	 
+
 exit:
-	clr temp0
-	call setLeds
+    clr temp0
+    call setLeds
     ret
 
-/* Bad Interrupt ISRs */
+; Bad Interrupt ISRs
 BAD_ISR:
     ldi ZL, LOW(str_bad << 1)
     ldi ZH, HIGH(str_bad << 1)
     call fillPacketBuf
-	ldi temp0, 1
-	call TKN_PushPacket
-	reti
+    ldi temp0, 1
+    call TKN_PushPacket
+    reti
 

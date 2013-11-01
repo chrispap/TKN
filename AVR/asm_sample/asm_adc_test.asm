@@ -59,117 +59,117 @@ inPacketBuff: .byte TKN_PACKET_SIZE
 outPacketBuff: .byte TKN_PACKET_SIZE
 
 .cseg
-str:		.db "________________"
+str:        .db "________________"
 str_bad:    .db "BAD INTERRUPT!!!"
 
 main:
     ldi YL, LOW(outPacketBuff)
     ldi YH, HIGH(outPacketBuff)
-	ldi temp1, TKN_PACKET_SIZE
-	
-	ldi temp0, 'A'
-	st Y+, temp0
-	dec temp1
-	
-	ldi temp0, ':'
-	st Y+, temp0
-	dec temp1
-	
-	ldi temp0, '0'
-	st Y+, temp0
-	dec temp1
-	
-	ldi temp0, 'x'
-	st Y+, temp0
-	dec temp1
-	
-	clr temp0
+    ldi temp1, TKN_PACKET_SIZE
+
+    ldi temp0, 'A'
+    st Y+, temp0
+    dec temp1
+
+    ldi temp0, ':'
+    st Y+, temp0
+    dec temp1
+
+    ldi temp0, '0'
+    st Y+, temp0
+    dec temp1
+
+    ldi temp0, 'x'
+    st Y+, temp0
+    dec temp1
+
+    clr temp0
 init_buf:
-	st Y+, temp0
-	dec temp1
-	and temp1, temp1
-	brne init_buf
-	
+    st Y+, temp0
+    dec temp1
+    and temp1, temp1
+    brne init_buf
+
 set_adc:
-	ldi temp0,  (1 << REFS0) | (1<<ADLAR) | (0<<MUX0)
-	sts ADMUX, temp0 
-	
-	ldi temp1, (1 << ADATE) | (7<<ADPS0)
-	lds temp0, ADCSRA
-	or temp0, temp1
-	sts ADCSRA, temp0
+    ldi temp0,  (1 << REFS0) | (1<<ADLAR) | (0<<MUX0)
+    sts ADMUX, temp0
 
-	ldi temp0, 0 // Free running mode
-	sts ADCSRB, temp0
-	
-	ldi temp1, (1 << ADEN) | (1 << ADSC)
-	lds temp0, ADCSRA
-	or temp0, temp1
-	sts ADCSRA, temp0 
+    ldi temp1, (1 << ADATE) | (7<<ADPS0)
+    lds temp0, ADCSRA
+    or temp0, temp1
+    sts ADCSRA, temp0
 
-	clr last_val
+    ldi temp0, 0 ; Free running mode
+    sts ADCSRB, temp0
+
+    ldi temp1, (1 << ADEN) | (1 << ADSC)
+    lds temp0, ADCSRA
+    or temp0, temp1
+    sts ADCSRA, temp0
+
+    clr last_val
 
 loop:
     ldi YL, LOW(inPacketBuff)
     ldi YH, HIGH(inPacketBuff)
 loop1:
-	call TKN_popPacket
+    call TKN_popPacket
     and temp0, temp0
-	brne exit
+    brne exit
 
 send_val:
-	lds temp2, ADCH
-	cp temp2, last_val
-	breq loop1
-	mov last_val, temp2
+    lds temp2, ADCH
+    cp temp2, last_val
+    breq loop1
+    mov last_val, temp2
     ldi YL, LOW(outPacketBuff)
     ldi YH, HIGH(outPacketBuff)
-	mov ZL, YL 
-	mov ZH, YH
-	inc ZL
-	inc ZL
-	inc ZL
-	inc ZL
-	clr temp1
-	call Bin2ToHex4
-	ldi temp0, 1
+    mov ZL, YL
+    mov ZH, YH
+    inc ZL
+    inc ZL
+    inc ZL
+    inc ZL
+    clr temp1
+    call Bin2ToHex4
+    ldi temp0, 1
 sendLoop:
-	call TKN_pushPacket
-	and temp0, temp0
-	brne sendLoop
+    call TKN_pushPacket
+    and temp0, temp0
+    brne sendLoop
 
     rjmp loop
-	 
+
 exit:
 turn_off_adc:
-	clr temp0
-	sts ADCSRA, temp0
+    clr temp0
+    sts ADCSRA, temp0
 send_zero:
-	ldi YL, LOW(outPacketBuff)
+    ldi YL, LOW(outPacketBuff)
     ldi YH, HIGH(outPacketBuff)
-	mov ZL, YL 
-	mov ZH, YH
-	inc ZL
-	inc ZL
-	inc ZL
-	inc ZL
-	clr temp1
-	clr temp2
-	call Bin2ToHex4
-	ldi temp0, 1
+    mov ZL, YL
+    mov ZH, YH
+    inc ZL
+    inc ZL
+    inc ZL
+    inc ZL
+    clr temp1
+    clr temp2
+    call Bin2ToHex4
+    ldi temp0, 1
 sendLoop1:
-	call TKN_pushPacket
-	and temp0, temp0
-	brne sendLoop1
+    call TKN_pushPacket
+    and temp0, temp0
+    brne sendLoop1
 
     ret
 
-/* Bad Interrupt ISRs */
+; Bad Interrupt ISRs
 BAD_ISR:
     ldi ZL, LOW(str_bad << 1)
     ldi ZH, HIGH(str_bad << 1)
     call fillPacketBuf
-	ldi temp0, 1
-	call TKN_PushPacket
-	reti
+    ldi temp0, 1
+    call TKN_PushPacket
+    reti
 
