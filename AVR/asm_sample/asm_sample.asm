@@ -57,17 +57,38 @@ Reset:
 packetBuff: .byte TKN_PACKET_SIZE
 
 .cseg
-str:        .db "General Node.asm"
+msg_0:      .db "Hello Wordl !!! "
+msg_1:      .db "Send a zero byte"
+msg_2:      .db "to exit...      "
 str_bad:    .db "BAD INTERRUPT!!!"
 
 main:
     ldi YL, LOW(packetBuff)
     ldi YH, HIGH(packetBuff)
 
+    ldi ZL, LOW(msg_0 << 1)
+    ldi ZH, HIGH(msg_0 << 1)
+    call fillPacketBuf
+    ldi temp0, 1
+    call TKN_PushPacket
+
+    ldi ZL, LOW(msg_1 << 1)
+    ldi ZH, HIGH(msg_1 << 1)
+    call fillPacketBuf
+    ldi temp0, 1
+    call TKN_PushPacket
+
+    ldi ZL, LOW(msg_2 << 1)
+    ldi ZH, HIGH(msg_2 << 1)
+    call fillPacketBuf
+    ldi temp0, 1
+    call TKN_PushPacket
+
 loop:
     call TKN_popPacket
     and temp0, temp0
     breq loop
+
     ldd temp1, Y+0
     and temp1, temp1
     breq exit

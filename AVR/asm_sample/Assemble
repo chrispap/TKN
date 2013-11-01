@@ -1,6 +1,6 @@
 #!/bin/bash
-mkdir lst
-mkdir map
+mkdir lst &> /dev/null
+mkdir map &> /dev/null
 
 for i in $( ls *.asm); do
     P=${i%.*}
