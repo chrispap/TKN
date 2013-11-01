@@ -433,8 +433,8 @@ int TKN_Init (int port, int baud, BYTE id, void (*token_callback)(void), void (*
     }
     else
     {
-        TKN_Queue_Init( &RX_QUEUE, TKN_QUEUE_SIZE);
-        TKN_Queue_Init( &TX_QUEUE, TKN_QUEUE_SIZE);
+        TKN_Queue_Init( &RX_QUEUE, TKN_RX_QUEUE_SIZE);
+        TKN_Queue_Init( &TX_QUEUE, TKN_TX_QUEUE_SIZE);
 
         recTokenCallback = token_callback;
         recDataCallback = data_callback;
