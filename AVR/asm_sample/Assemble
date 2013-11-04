@@ -3,13 +3,14 @@ mkdir lst &> /dev/null
 mkdir map &> /dev/null
 
 for i in $( ls *.asm); do
-    P=${i%.*}
-    avra -I /usr/share/avra $P.asm -o hex/$P.hex -l lst/$P.lst -m map/$P.map &> /dev/null
+    src=${i%.*}
+    avra -I /usr/share/avra $src.asm -o hex/$src.hex -l lst/$src.lst -m map/$src.map &> /dev/null
     if [ $? -eq 0 ]; then
-        echo OK : $P
+        echo OK : $src
     else
-        echo ERR: $P
+        echo ERR: $src
     fi
+
 done
 
 rm *cof

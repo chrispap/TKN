@@ -1,0 +1,30 @@
+#!/bin/bash
+mkdir lst &> /dev/null
+mkdir map &> /dev/null
+
+for i in $( ls *.c); do
+    src=${i%.*}
+    src=${src%".c"}
+    # rm -f $src.*[!c]
+
+    # Compile source code   (Produces $src.o)
+    avr-gcc -mmcu=atmega644pa -c $src.c &&
+
+    # Link  object code         (Produces $src.elf, $src.map)
+    avr-gcc -mmcu=atmega644pa -Wl,-Map,map/$src.map -o $src.elf $src.o &&
+
+    # Create a listing      (Produces $src.lst)
+    avr-objdump -h -S $src.elf > lst/$src.lst &&
+
+    # Produce hex file      (Produces $src.hex)
+    avr-objcopy -j .text -j .data -O ihex $src.elf $src.hex
+
+    if [ $? -eq 0 ]; then
+        echo OK : $src
+    else
+        echo ERR: $src
+    fi
+
+    rm *.o
+    rm *.elf
+done
