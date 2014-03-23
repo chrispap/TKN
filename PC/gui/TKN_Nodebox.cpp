@@ -5,7 +5,7 @@
 #include <QPixmap>
 #include <QDebug>
 #include <QThread>
-#include <QtConcurrentRun>
+#include <QtConcurrent/QtConcurrentRun>
 #include <QQueue>
 #include <QMutex>
 #include <QSemaphore>
@@ -103,12 +103,12 @@ void TKN_NodeBox::on_buttonSend_clicked()
     TKN_Data data;
     memset(&data, 0, sizeof(data));
     char *inv_ptr=0;
-    unsigned long x = strtoul (ui->lineEdit_DataToSend->text().toAscii().data() , &inv_ptr, 0);
+    unsigned long x = strtoul (ui->lineEdit_DataToSend->text().toLatin1().data() , &inv_ptr, 0);
     if (!*inv_ptr){
         *((unsigned long*)(&data)) = x;
     }
     else {
-        QByteArray bytes = ui->lineEdit_DataToSend->text().toAscii();
+        QByteArray bytes = ui->lineEdit_DataToSend->text().toLatin1();
         memcpy(&data, bytes.data(), qMin(TKN_DATA_SIZE, bytes.size()));
     }
 

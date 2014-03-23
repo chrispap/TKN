@@ -125,7 +125,7 @@ void TKN_Window::startTkn()
 
     /*Get the port index. Needed by rs232 lib */
     char portName[32];
-    strcpy(portName, ui->comboBox_ComPort->currentText().toAscii().data());
+    strcpy(portName, ui->comboBox_ComPort->currentText().toLatin1().data());
     int port = getPortIndexByName(portName);
 
     if (port<0){

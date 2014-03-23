@@ -1,4 +1,4 @@
-#include <QtGui/QApplication>
+#include <QApplication>
 #include "TKN_Window.h"
 
 int main(int argc, char *argv[])
