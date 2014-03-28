@@ -14,10 +14,11 @@
 #include "lib/TKN_Util.h"
 
 TKN_Window* TKN_Window::self;
+const QString TKN_Window::mAuthorName = "Chris Papapavlou";
+const QString TKN_Window::mAuthorMail = "chrispapapaulou@ece.upatras.gr";
 const QString TKN_Window::buttonStartText = QString("TKN Start");
 const QString TKN_Window::buttonStopText = QString("TKN Stop");
 const QString TKN_Window::baudList[] = { "57600", "9600", "38400", "115200" };
-
 
 TKN_Window::TKN_Window(QWidget *parent) :
     QMainWindow(parent),
@@ -197,7 +198,7 @@ void TKN_Window::shrink()
 
 void TKN_Window::on_actionAbout_triggered()
 {
-    QMessageBox::information(this, "About TKN Gui", "Chris Papapavlou\nchrispapapaulou@gmail.com", QMessageBox::Ok);
+    QMessageBox::information(this, "About TKN Gui", mAuthorName+"\n"+mAuthorMail, QMessageBox::Ok);
 }
 
 void TKN_Window::updateUI()

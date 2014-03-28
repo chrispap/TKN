@@ -39,6 +39,7 @@ private slots:
 private:
     Ui::TKN_Window *ui;
     static TKN_Window *self;
+    static const QString mAuthorName, mAuthorMail;
     static const QString buttonStartText, buttonStopText;
     static const QString baudList[];
     bool mTknStarted;
