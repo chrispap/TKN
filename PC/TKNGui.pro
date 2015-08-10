@@ -1,3 +1,7 @@
+QT += core gui
+
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+
 HEADERS += \
     lib/TKN_Util.h \
     lib/TKN_Queue.h \
@@ -29,7 +33,7 @@ FORMS += \
 #CONFIG += CONSOLE
 
 
-include ( C:\Qwt-6.1.0\features\qwt.prf )
+include (C:\libs\Qwt-6.1.2-qt-5.5.0/features/qwt.prf)
 include ( /usr/local/qwt-6.1.1-svn/features/qwt.prf )
 
 RESOURCES += \

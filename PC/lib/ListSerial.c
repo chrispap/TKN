@@ -65,6 +65,8 @@ char ** listSerialPorts()
 
 #else
 
+#pragma comment(lib, "advapi32")
+
 #include <windows.h>
 
 #define MAX_KEY_LENGTH 255
