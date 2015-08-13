@@ -18,6 +18,8 @@
     <Name>asm_sample</Name>
     <RootNamespace>SimpleLed</RootNamespace>
     <EntryFile>$(MSBuildProjectDirectory)\pwm_setBrightness.asm</EntryFile>
+    <ToolchainName>com.Atmel.AVRAssembler</ToolchainName>
+    <ToolchainFlavour>Native</ToolchainFlavour>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <ToolchainSettings>

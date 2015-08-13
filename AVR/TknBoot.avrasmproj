@@ -55,6 +55,8 @@
         </InterfaceProperties>
       </ToolOptions>
     </com_atmel_avrdbg_tool_stk600>
+    <ToolchainName>com.Atmel.AVRAssembler</ToolchainName>
+    <ToolchainFlavour>Native</ToolchainFlavour>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <ToolchainSettings>

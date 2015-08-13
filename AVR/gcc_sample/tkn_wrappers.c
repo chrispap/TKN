@@ -1,6 +1,4 @@
-﻿#include <avr/io.h>
-#include <avr/interrupt.h>
-#include "gcc_sample.h"
+﻿#include "tkn_wrappers.h"
 
 char TKN_Send(char *buf, char dest_id)
 {
@@ -41,24 +39,4 @@ char TKN_Receive(char *buf)
 	asm ("pop r18");
 	asm ("pop r17");
 	asm ("pop r16");
-}
-
-char PacketBuffer[16];
-
-ISR(BADISR_vect)
-{
-	TKN_Send("BAD_INTERRUPT!!!", 1);
-}
-
-int main(void)
-{
-	sei(); // enable interrupts
-	
-	strncpy(PacketBuffer, "From Gcc app!", 16);
-	TKN_Send(PacketBuffer, 1);	
-	while (!TKN_Receive( PacketBuffer));
-	TKN_Send(PacketBuffer, 1);
-	
-	// Return to TKN_BOOT
-	((void(*)()) TKN_RETURN_ADDR)(); 
 }

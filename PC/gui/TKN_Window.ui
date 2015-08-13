@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>485</width>
-    <height>681</height>
+    <width>599</width>
+    <height>999</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -65,13 +65,13 @@ QTextEdit {
       </property>
       <property name="minimumSize">
        <size>
-        <width>400</width>
+        <width>550</width>
         <height>480</height>
        </size>
       </property>
       <property name="maximumSize">
        <size>
-        <width>400</width>
+        <width>550</width>
         <height>16777215</height>
        </size>
       </property>
@@ -232,7 +232,7 @@ QTextEdit {
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>485</width>
+     <width>599</width>
      <height>38</height>
     </rect>
    </property>

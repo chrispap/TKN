@@ -61,8 +61,8 @@ void TKN_Window::closeEvent(QCloseEvent *evt){
     if (nodeMap.isEmpty())
         evt->accept();
     else {
-        emit consoleOut("Stop the network first.");
-        evt->ignore();
+        on_buttonStartStop_clicked();
+        evt->accept();
     }
 }
 

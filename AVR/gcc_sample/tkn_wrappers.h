@@ -1,5 +1,5 @@
-﻿#ifndef GVVAPPLICATION_H_
-#define GVVAPPLICATION_H_
+﻿#ifndef _TKN_WRAPPER_
+#define _TKN_WRAPPER_
 
 /* TKN Functions */
 #define TKN_RESET_ADDR	0x7000
@@ -9,4 +9,7 @@
 #define BIN1TOHEX2_ADDR	0x734b
 #define SETLEDS_ADDR	0x72bc
 
-#endif /* GVVAPPLICATION_H_ */
+char TKN_Send(char *buf, char dest_id);
+char TKN_Receive(char *buf);
+
+#endif /* _TKN_WRAPPER_ */
